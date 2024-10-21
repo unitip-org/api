@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://unitip-s-workspace-na7h8a.ap-southeast-2.xata.sh/db/unitip",
+  "codegen": {
+    "output": "src/lib/database/xata.ts"
+  }
+}
