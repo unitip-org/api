@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import FormLogin from "./form-login";
 
 export default function Page() {
@@ -15,6 +17,13 @@ export default function Page() {
         <div className="mt-4">
           <FormLogin />
         </div>
+
+        <p className="text-muted-foreground text-center text-sm mt-4">
+          Belum punya akun Unitip? Daftar sekarang melalui link{" "}
+          <Button asChild className="p-0 h-fit" variant={"link"}>
+            <Link href={"/auth/register"}>berikut</Link>
+          </Button>
+        </p>
       </div>
     </>
   );
