@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { loginUser } from "./actions";
@@ -27,6 +28,8 @@ const formSchema = z.object({
 });
 
 export default function FormLogin() {
+  const router = useRouter();
+
   const { mutate: mutateLogin, isPending: isPendingLogin } = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
@@ -35,7 +38,8 @@ export default function FormLogin() {
         console.log(error);
         return;
       }
-      console.log("Login berhasil!");
+
+      if (result) router.replace("/");
     },
   });
 
