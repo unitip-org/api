@@ -20,12 +20,12 @@ const menus: {
   },
   {
     title: "Jobs",
-    href: "/",
+    href: "/jobs",
     icon: <BriefcaseIcon />,
   },
   {
     title: "Chats",
-    href: "/",
+    href: "/chats",
     icon: <MessagesSquareIcon />,
   },
   {
