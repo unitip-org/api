@@ -18,7 +18,7 @@ import { useState } from "react";
 import { logoutCustomer } from "./actions";
 
 export default function AlertLogout() {
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { mutate, isPending } = useMutation({
     mutationFn: logoutCustomer,
