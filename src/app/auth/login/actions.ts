@@ -13,7 +13,7 @@ export const loginUser = async (props: {
   try {
     const query = database
       .selectFrom("users as u")
-      .select(["u.id", "u.email", "u.password"])
+      .select(["u.id", "u.name", "u.email", "u.password"])
       .where("u.email", "=", props.email);
 
     // ambil first user berdasarkan email
@@ -33,6 +33,7 @@ export const loginUser = async (props: {
     const jwt = await new SignJWT({
       id: result.id,
       email: result.email,
+      name: result.name,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()

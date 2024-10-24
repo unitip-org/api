@@ -1,4 +1,10 @@
-import { HomeIcon, UserIcon } from "lucide-react";
+import NavbarComponent from "@/components/navbar";
+import {
+  BriefcaseIcon,
+  HomeIcon,
+  MessagesSquareIcon,
+  UserIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { PropsWithChildren, ReactNode } from "react";
 
@@ -8,22 +14,22 @@ const menus: {
   icon: ReactNode;
 }[] = [
   {
-    title: "Beranda",
+    title: "Dashboard",
     href: "/",
     icon: <HomeIcon />,
   },
   {
-    title: "Beranda",
+    title: "Jobs",
     href: "/",
-    icon: <HomeIcon />,
+    icon: <BriefcaseIcon />,
   },
   {
-    title: "Beranda",
+    title: "Chats",
     href: "/",
-    icon: <HomeIcon />,
+    icon: <MessagesSquareIcon />,
   },
   {
-    title: "Akun",
+    title: "Profile",
     href: "/account",
     icon: <UserIcon />,
   },
@@ -34,6 +40,8 @@ export default function Layout(props: PropsWithChildren) {
     <>
       <div className="bg-muted h-screen overflow-auto relative">
         <div className="max-w-[512px] mx-auto bg-background h-screen overflow-y-auto relative">
+          <NavbarComponent />
+
           {props.children}
 
           <div className="grid grid-cols-4 fixed bottom-0 backdrop-blur max-w-[512px] w-full z-20 h-16 border-t select-none">
