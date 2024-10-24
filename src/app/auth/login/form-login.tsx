@@ -2,14 +2,6 @@
 
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Form,
   FormControl,
   FormField,
@@ -50,7 +42,7 @@ export default function FormLogin() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: "email@example.com",
+      email: "rizaldwianggoro@unitip.com",
       password: "password",
     },
   });
@@ -64,61 +56,51 @@ export default function FormLogin() {
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>
-            Masukkan beberapa informasi berikut untuk masuk ke Unitip.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form className="space-y-2">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field: { value, onChange } }) => (
-                  <FormItem>
-                    <FormLabel>Alamat email</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field: { value, onChange } }) => (
-                  <FormItem>
-                    <FormLabel>Kata sandi</FormLabel>
-                    <FormControl>
-                      <Input
-                        value={value}
-                        onChange={(e) => onChange(e.target.value)}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </CardContent>
-        <CardFooter className="justify-end">
-          <Button
-            disabled={isPendingLogin}
-            onClick={() => form.handleSubmit(onSubmit)()}
-          >
-            {isPendingLogin && <Loader2 className="w-4 h-4 animate-spin" />}
-            Masuk
-          </Button>
-        </CardFooter>
-      </Card>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="space-y-2">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field: { value, onChange } }) => (
+                <FormItem>
+                  <FormLabel>Alamat email</FormLabel>
+                  <FormControl>
+                    <Input
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field: { value, onChange } }) => (
+                <FormItem>
+                  <FormLabel>Kata sandi</FormLabel>
+                  <FormControl>
+                    <Input
+                      value={value}
+                      onChange={(e) => onChange(e.target.value)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          <div className="flex justify-end mt-4">
+            <Button disabled={isPendingLogin} type="submit">
+              {isPendingLogin && <Loader2 className="w-4 h-4 animate-spin" />}
+              Masuk
+            </Button>
+          </div>
+        </form>
+      </Form>
     </>
   );
 }
