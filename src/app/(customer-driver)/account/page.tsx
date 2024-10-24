@@ -7,8 +7,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { getAuthSession } from "@/lib/session";
-import { ExternalLinkIcon, LogOutIcon } from "lucide-react";
+import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
+import AlertLogout from "./alert-logout";
 
 export default async function Page() {
   const session = await getAuthSession();
@@ -39,10 +40,7 @@ export default async function Page() {
             <CardDescription>{session.email}</CardDescription>
           </CardHeader>
           <CardFooter className="justify-end p-4 pt-0">
-            <Button variant={"destructive"}>
-              <LogOutIcon />
-              Keluar
-            </Button>
+            <AlertLogout />
           </CardFooter>
         </Card>
 
