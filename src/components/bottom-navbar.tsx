@@ -43,7 +43,7 @@ export default function BottomNavbarComponent() {
 
   return (
     <>
-      <div className="grid grid-cols-4 border-t fixed bottom-0 max-w-[512px] w-full z-20">
+      <div className="grid grid-cols-4 border-t fixed bottom-0 max-w-[512px] w-full z-20 bg-background">
         {menus.map((menu, index) => (
           <div key={"menuItem-" + index}>
             <Link
