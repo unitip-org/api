@@ -8,7 +8,6 @@ export type SessionType = {
 };
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-const cookieStore = cookies();
 const authTokenKey = "auth-token";
 
 // hanya bisa dijalankan di server side
@@ -31,6 +30,7 @@ export const generateAuthToken = async (props: {
 
 // hanya bisa dijalankan di server side
 export const getAuthSession = async (): Promise<SessionType | undefined> => {
+  const cookieStore = cookies();
   const authToken = cookieStore.get(authTokenKey);
 
   // jika user tidak memiliki auth token

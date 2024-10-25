@@ -15,6 +15,18 @@ const tables = [
       { name: "roles", type: "multiple" },
       { name: "name", type: "text", notNull: true, defaultValue: "" },
     ],
+    revLinks: [
+      { column: "from", table: "chats" },
+      { column: "to", table: "chats" },
+    ],
+  },
+  {
+    name: "chats",
+    columns: [
+      { name: "message", type: "text", notNull: true, defaultValue: "" },
+      { name: "from", type: "link", link: { table: "users" } },
+      { name: "to", type: "link", link: { table: "users" } },
+    ],
   },
 ] as const;
 
@@ -24,8 +36,12 @@ export type InferredTypes = SchemaInference<SchemaTables>;
 export type Users = InferredTypes["users"];
 export type UsersRecord = Users & XataRecord;
 
+export type Chats = InferredTypes["chats"];
+export type ChatsRecord = Chats & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
+  chats: ChatsRecord;
 };
 
 const DatabaseClient = buildClient();
