@@ -1,5 +1,5 @@
 import BottomNavbarComponent from "@/components/bottom-navbar";
-import BottomNavigation from "@/components/BottomNavigation";
+import BottomNavigation from "@/components/bottom-navigation-bar";
 import NavbarComponent from "@/components/navbar";
 import { PropsWithChildren } from "react";
 
