@@ -4,16 +4,19 @@ import { Button } from "./ui/button";
 export default function NavbarComponent() {
   return (
     <>
-      <div className="h-16 w-full flex items-center px-4 border-b justify-between fixed top-0 bg-background max-w-[512px] z-20">
-        <Button variant={"link"} className="px-0 font-semibold text-base">
-          Unitip
-        </Button>
+      <div className="h-16 w-full border-b fixed top-0 bg-background z-20">
+        {/* container */}
+        <div className="flex items-center justify-between h-16 max-w-[512px] px-4 mx-auto">
+          <Button variant={"link"} className="px-0 font-semibold text-base">
+            Unitip
+          </Button>
 
-        {/* profile icon */}
-        <Avatar>
-          <AvatarImage src="https://github.com/shadcn.png" />
-          <AvatarFallback>CN</AvatarFallback>
-        </Avatar>
+          {/* profile icon */}
+          <Avatar>
+            <AvatarImage src="https://github.com/shadcn.png" />
+            <AvatarFallback>CN</AvatarFallback>
+          </Avatar>
+        </div>
       </div>
     </>
   );
