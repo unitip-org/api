@@ -1,4 +1,5 @@
 import BottomNavbarComponent from "@/components/bottom-navbar";
+import BottomNavigation from "@/components/bottom-navigation-bar";
 import NavbarComponent from "@/components/navbar";
 import { PropsWithChildren } from "react";
 
@@ -6,7 +7,7 @@ export default function Layout(props: PropsWithChildren) {
   return (
     <>
       <div className="bg-muted h-screen w-full overflow-hidden">
-        <div className="max-w-[512px] mx-auto bg-background h-screen shadow relative">
+        <div className="max-w-lg mx-auto bg-background h-screen shadow relative">
           {/* top navbar */}
           <NavbarComponent />
 
@@ -16,7 +17,7 @@ export default function Layout(props: PropsWithChildren) {
           </div>
 
           {/* bottom navbar */}
-          <BottomNavbarComponent />
+          <BottomNavigation />
         </div>
       </div>
     </>
