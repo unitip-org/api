@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
+import mqtt from "mqtt";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedDate } from "react-intl";
@@ -18,12 +19,18 @@ const formSchema = z.object({
     .string({ required_error: "Pesan tidak boleh kosong!" })
     .min(1, "Pesan tidak boleh kosong!"),
 });
+const mqttBaseTopic = "com.unitip/room-chat-notifier";
 
 export default function Client(props: {
   authenticatedUser: { id: string };
   toUser: { id: string };
 }) {
+  // from - to
+  const mqttSubTopic = `${mqttBaseTopic}/${props.toUser.id}-${props.authenticatedUser.id}`;
+  const mqttPubTopic = `${mqttBaseTopic}/${props.authenticatedUser.id}-${props.toUser.id}`;
+
   const [isAtBottom, setIsAtBottom] = useState(false);
+  const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,6 +45,37 @@ export default function Client(props: {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // connect to mqtt notifier
+  useEffect(() => {
+    setMqttClient(
+      mqtt.connect({
+        host: "broker.hivemq.com",
+        protocol: "wss",
+        port: 8884,
+        path: "/mqtt",
+      })
+    );
+  }, []);
+  useEffect(() => {
+    if (mqttClient) {
+      mqttClient.on("connect", () => {
+        console.log("connect to mqtt broker");
+
+        // subscribe to mqtt topic
+        mqttClient.subscribe(mqttSubTopic, (err) => {
+          if (err) console.log("error subscribe to mqtt topic", err);
+          else console.log("subscribe to mqtt topic", mqttSubTopic);
+        });
+
+        // listen to mqtt message notifier
+        mqttClient.on("message", (topic, message) => {
+          console.log("mqtt message", topic, message.toString());
+          refetchMessages();
+        });
+      });
+    }
+  }, [mqttClient]);
 
   const {
     data: dataMessages,
@@ -57,6 +95,14 @@ export default function Client(props: {
     onSuccess: () => {
       form.reset({ message: "" });
       refetchMessages();
+
+      // send mqtt message notification
+      if (mqttClient) {
+        mqttClient.publish(mqttPubTopic, "new notification", (err) => {
+          if (err) console.log("error publish to mqtt topic", err);
+          else console.log("publish to mqtt topic", mqttPubTopic);
+        });
+      }
     },
   });
 
@@ -119,7 +165,6 @@ export default function Client(props: {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="fixed bottom-4 w-full left-0 right-0">
-              <p>is at bottom: {isAtBottom ? "true" : "false"}</p>
               <div className="flex items-center gap-2 px-4 max-w-[512px] mx-auto">
                 <FormField
                   control={form.control}
