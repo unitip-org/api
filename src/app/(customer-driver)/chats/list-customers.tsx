@@ -1,15 +1,8 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import { MessageCircleIcon } from "lucide-react";
 import Link from "next/link";
 import { getAllCustomers } from "./actions";
 
@@ -30,22 +23,33 @@ export default function ListCustomers() {
 
       {/* success state */}
       {!isLoadingCustomers && dataCustomers && (
-        <div className="space-y-2 mx-4">
+        <div>
           {dataCustomers.map((customer, index) => (
-            <Card key={"customerItem-" + index}>
-              <CardHeader className="p-4">
-                <CardTitle className="text-lg">{customer.name}</CardTitle>
-                <CardDescription>{customer.email}</CardDescription>
-              </CardHeader>
-              <CardFooter className="justify-end p-4 pt-0">
-                <Button asChild>
-                  <Link href={"/chats/" + customer.id}>
-                    <MessageCircleIcon className="w-4 h-4" />
-                    Chat
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
+            <Link href={"/chats/" + customer.id} key={"customerItem-" + index}>
+              <div
+                className={cn(
+                  "flex items-center gap-4 px-4 py-3 hover:bg-muted rounded duration-300",
+                  index === 0 || "border-t"
+                )}
+              >
+                {/* avatar */}
+                <Avatar>
+                  <AvatarImage src="https://github.com/shadcn.png" />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
+
+                {/* content */}
+                <div className="flex-1">
+                  <p className="font-semibold">{customer.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {customer.email}
+                  </p>
+                </div>
+
+                {/* date */}
+                <p className="text-xs text-muted-foreground">10.10</p>
+              </div>
+            </Link>
           ))}
         </div>
       )}
