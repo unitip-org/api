@@ -1,9 +1,9 @@
-import { getAuthSession } from "@/lib/session";
+import { verifyAuthToken } from "@/lib/auth-token";
 import { redirect } from "next/navigation";
 import Client from "./client";
 
 export default async function Page(props: { params: { userId: string } }) {
-  const session = await getAuthSession();
+  const session = await verifyAuthToken();
 
   if (!session) return redirect("/auth/login");
 

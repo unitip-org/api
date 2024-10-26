@@ -1,7 +1,7 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
 
-export type SessionType = {
+export type AuthTokenType = {
   id: string;
   name: string;
   email: string;
@@ -29,15 +29,14 @@ export const generateAuthToken = async (props: {
 };
 
 // hanya bisa dijalankan di server side
-export const getAuthSession = async (): Promise<SessionType | undefined> => {
+export const verifyAuthToken = async (): Promise<AuthTokenType> => {
   const cookieStore = cookies();
   const authToken = cookieStore.get(authTokenKey);
 
   // jika user tidak memiliki auth token
-  if (!authToken) return undefined;
+  if (!authToken) throw new Error("Unauthorized");
 
   // verify auth token
-  const result = await jwtVerify<SessionType>(authToken.value, secret);
-
-  return result.payload;
+  const { payload } = await jwtVerify<AuthTokenType>(authToken.value, secret);
+  return payload;
 };

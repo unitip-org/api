@@ -1,7 +1,7 @@
 "use server";
 
+import { generateAuthToken } from "@/lib/auth-token";
 import { database } from "@/lib/database";
-import { generateAuthToken } from "@/lib/session";
 import { ActionResult } from "@/lib/types/action";
 import { hash } from "bcrypt";
 import { cookies } from "next/headers";
