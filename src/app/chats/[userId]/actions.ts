@@ -98,3 +98,42 @@ export const getAllMessages = async (props: {
     throw e;
   }
 };
+
+export const deleteConversation = async (props: {
+  authenticatedUserId: string;
+  toUserId: string;
+}) => {
+  try {
+    const queryChatMessages = database
+      .deleteFrom("chats")
+      .where((eb) =>
+        eb.or([
+          eb("chats.from", "=", props.authenticatedUserId as any).and(
+            eb("chats.to", "=", props.toUserId as any)
+          ),
+          eb("chats.to", "=", props.authenticatedUserId as any).and(
+            eb("chats.from", "=", props.toUserId as any)
+          ),
+        ])
+      );
+    const queryChatRooms = database
+      .deleteFrom("chat_rooms")
+      .where((eb) =>
+        eb.or([
+          eb("chat_rooms.from_user", "=", props.authenticatedUserId as any).and(
+            eb("chat_rooms.to_user", "=", props.toUserId as any)
+          ),
+          eb("chat_rooms.to_user", "=", props.authenticatedUserId as any).and(
+            eb("chat_rooms.from_user", "=", props.toUserId as any)
+          ),
+        ])
+      );
+
+    const result = await queryChatMessages.execute();
+    const result2 = await queryChatRooms.execute();
+
+    return result.length > 0 && result2.length > 0;
+  } catch (e) {
+    throw e;
+  }
+};

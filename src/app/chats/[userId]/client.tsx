@@ -6,13 +6,14 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
+import { Loader2, Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
 import mqtt from "mqtt";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedDate } from "react-intl";
 import { z } from "zod";
-import { createMessage, getAllMessages } from "./actions";
+import { createMessage, deleteConversation, getAllMessages } from "./actions";
 
 const formSchema = z.object({
   message: z
@@ -29,6 +30,8 @@ export default function Client(props: {
   // from - to
   const mqttSubTopic = `${mqttChatMessageBaseTopic}/${props.toUser.id}-${props.authenticatedUser.id}`;
   const mqttPubTopic = `${mqttChatMessageBaseTopic}/${props.authenticatedUser.id}-${props.toUser.id}`;
+
+  const router = useRouter();
 
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
@@ -117,6 +120,10 @@ export default function Client(props: {
       }
     },
   });
+  const { mutate: mutateDelete, isPending: isPendingDelete } = useMutation({
+    mutationFn: deleteConversation,
+    onSuccess: () => router.back(),
+  });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -167,6 +174,23 @@ export default function Client(props: {
                   message={message.message}
                 />
               ))}
+
+              <div className="justify-center flex">
+                <Button
+                  variant={"destructive"}
+                  onClick={() =>
+                    mutateDelete({
+                      authenticatedUserId: props.authenticatedUser.id,
+                      toUserId: props.toUser.id,
+                    })
+                  }
+                >
+                  {isPendingDelete && (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  )}
+                  End conversations
+                </Button>
+              </div>
             </div>
 
             <div className="h-[4.5rem]"></div>
