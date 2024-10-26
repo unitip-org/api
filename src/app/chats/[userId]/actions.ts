@@ -1,6 +1,6 @@
 "use server";
 
-import { database } from "@/lib/database";
+import { database, xata } from "@/lib/database";
 import { sql } from "kysely";
 
 export const createMessage = async (props: {
@@ -9,18 +9,59 @@ export const createMessage = async (props: {
   message: string;
 }) => {
   try {
-    const query = database
-      .insertInto("chats")
-      .values({
-        from: props.fromUserId,
-        to: props.toUserId,
-        message: props.message,
-      } as any)
-      .returning("id");
+    const result = await xata.transactions.run([
+      {
+        insert: {
+          table: "chats",
+          record: {
+            from: props.fromUserId,
+            to: props.toUserId,
+            message: props.message,
+          },
+        },
+      },
+      {
+        update: {
+          table: "chat_rooms",
+          upsert: true,
+          id: `${props.fromUserId}-${props.toUserId}`,
+          fields: {
+            last_message: props.message,
+            from_user: props.fromUserId,
+            to_user: props.toUserId,
+            last_sent_user: props.fromUserId,
+          },
+        },
+      },
+      {
+        update: {
+          table: "chat_rooms",
+          upsert: true,
+          id: `${props.toUserId}-${props.fromUserId}`,
+          fields: {
+            last_message: props.message,
+            from_user: props.toUserId,
+            to_user: props.fromUserId,
+            last_sent_user: props.fromUserId,
+          },
+        },
+      },
+    ]);
 
-    const result = await query.execute();
-    if (result) return true;
-    return false;
+    return result.results.length === 3;
+
+    // const query = database
+    //   .insertInto("chats")
+    //   .values({
+    //     from: props.fromUserId,
+    //     to: props.toUserId,
+    //     message: props.message,
+    //   } as any)
+    //   .returning("id");
+
+    // const result = await query.execute();
+    // if (result) return true;
+    // return false;
   } catch (e) {
     throw e;
   }
