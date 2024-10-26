@@ -19,15 +19,16 @@ const formSchema = z.object({
     .string({ required_error: "Pesan tidak boleh kosong!" })
     .min(1, "Pesan tidak boleh kosong!"),
 });
-const mqttBaseTopic = "com.unitip/room-chat-notifier";
+const mqttChatMessageBaseTopic = "com.unitip/notifier-chat-messages";
+const mqttChatRoomBaseTopic = "com.unitip/notifier-chat-rooms";
 
 export default function Client(props: {
   authenticatedUser: { id: string };
   toUser: { id: string };
 }) {
   // from - to
-  const mqttSubTopic = `${mqttBaseTopic}/${props.toUser.id}-${props.authenticatedUser.id}`;
-  const mqttPubTopic = `${mqttBaseTopic}/${props.authenticatedUser.id}-${props.toUser.id}`;
+  const mqttSubTopic = `${mqttChatMessageBaseTopic}/${props.toUser.id}-${props.authenticatedUser.id}`;
+  const mqttPubTopic = `${mqttChatMessageBaseTopic}/${props.authenticatedUser.id}-${props.toUser.id}`;
 
   const [isAtBottom, setIsAtBottom] = useState(false);
   const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
@@ -98,10 +99,21 @@ export default function Client(props: {
 
       // send mqtt message notification
       if (mqttClient) {
+        //  publish ke chat messages
         mqttClient.publish(mqttPubTopic, "new notification", (err) => {
           if (err) console.log("error publish to mqtt topic", err);
           else console.log("publish to mqtt topic", mqttPubTopic);
         });
+
+        // publish ke chat rooms
+        mqttClient.publish(
+          `${mqttChatRoomBaseTopic}/${props.toUser.id}`,
+          "new notification",
+          (err) => {
+            if (err) console.log("error publish to mqtt topic", err);
+            else console.log("publish to mqtt topic", mqttPubTopic);
+          }
+        );
       }
     },
   });
