@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedDate } from "react-intl";
 import { z } from "zod";
@@ -22,6 +23,22 @@ export default function Client(props: {
   authenticatedUser: { id: string };
   toUser: { id: string };
 }) {
+  const [isAtBottom, setIsAtBottom] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsAtBottom(
+        window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 100
+      );
+    };
+
+    handleScroll();
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const {
     data: dataMessages,
     refetch: refetchMessages,
@@ -54,6 +71,17 @@ export default function Client(props: {
       message: values.message,
     });
   };
+
+  useEffect(() => {
+    const scrollToBottom = () => {
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: "smooth",
+      });
+    };
+
+    if (dataMessages && isAtBottom) scrollToBottom();
+  }, [dataMessages, isAtBottom]);
 
   return (
     <>
@@ -91,6 +119,7 @@ export default function Client(props: {
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
             <div className="fixed bottom-4 w-full left-0 right-0">
+              <p>is at bottom: {isAtBottom ? "true" : "false"}</p>
               <div className="flex items-center gap-2 px-4 max-w-[512px] mx-auto">
                 <FormField
                   control={form.control}
