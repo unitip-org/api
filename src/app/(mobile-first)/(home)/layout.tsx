@@ -5,19 +5,15 @@ import { PropsWithChildren } from "react";
 export default function Layout(props: PropsWithChildren) {
   return (
     <>
-      <div className="h-screen w-full overflow-hidden">
+      <div>
         {/* top navbar */}
         <NavbarComponent />
 
-        <div className="max-w-lg mx-auto bg-background h-screen">
-          {/* content */}
-          <div className="h-[calc(100vh-8rem)] overflow-y-auto my-16">
-            {props.children}
-          </div>
+        {/* content */}
+        <div>{props.children}</div>
 
-          {/* bottom navbar */}
-          <BottomNavigation />
-        </div>
+        {/* bottom navbar */}
+        <BottomNavigation />
       </div>
     </>
   );

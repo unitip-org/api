@@ -70,7 +70,7 @@ export default function ListChats(props: { authenticatedUserId: string }) {
                 {/* content */}
                 <div className="flex-1">
                   <p className="font-semibold">{chat.name}</p>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground line-clamp-1">
                     {chat.last_sent_user === (props.authenticatedUserId as any)
                       ? "Anda: "
                       : ""}

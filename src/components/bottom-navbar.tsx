@@ -38,6 +38,7 @@ const menus: {
   },
 ];
 
+// deprecated
 export default function BottomNavbarComponent() {
   const pathname = usePathname();
 

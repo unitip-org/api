@@ -5,17 +5,16 @@ export type AuthTokenType = {
   id: string;
   name: string;
   email: string;
+  role: string;
 };
 
 const secret = new TextEncoder().encode(process.env.JWT_SECRET);
 const authTokenKey = "auth-token";
 
 // hanya bisa dijalankan di server side
-export const generateAuthToken = async (props: {
-  id: string;
-  name: string;
-  email: string;
-}): Promise<string> => {
+export const generateAuthToken = async (
+  props: AuthTokenType
+): Promise<string> => {
   // generate jwt
   const jwt = await new SignJWT({
     ...props,

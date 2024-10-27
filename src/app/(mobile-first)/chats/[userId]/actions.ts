@@ -12,7 +12,7 @@ export const createMessage = async (props: {
     const result = await xata.transactions.run([
       {
         insert: {
-          table: "chats",
+          table: "chat_messages",
           record: {
             from: props.fromUserId,
             to: props.toUserId,
@@ -60,7 +60,7 @@ export const getAllMessages = async (props: {
 }) => {
   try {
     const query = database
-      .selectFrom("chats as c")
+      .selectFrom("chat_messages as c")
       .select(["c.id", "c.message", "c.from", "c.to", "c.is_deleted"])
       .select(sql<Date>`c."xata.createdAt"`.as("created_at"))
       .where((eb) =>
@@ -104,14 +104,14 @@ export const deleteConversation = async (props: {
 }) => {
   try {
     const queryChatMessages = database
-      .deleteFrom("chats")
+      .deleteFrom("chat_messages")
       .where((eb) =>
         eb.or([
-          eb("chats.from", "=", props.authenticatedUserId as any).and(
-            eb("chats.to", "=", props.toUserId as any)
+          eb("chat_messages.from", "=", props.authenticatedUserId as any).and(
+            eb("chat_messages.to", "=", props.toUserId as any)
           ),
-          eb("chats.to", "=", props.authenticatedUserId as any).and(
-            eb("chats.from", "=", props.toUserId as any)
+          eb("chat_messages.to", "=", props.authenticatedUserId as any).and(
+            eb("chat_messages.from", "=", props.toUserId as any)
           ),
         ])
       );
@@ -143,11 +143,11 @@ export const deleteMessage = async (props: {
 }) => {
   try {
     const query = database
-      .updateTable("chats")
+      .updateTable("chat_messages")
       .set({
         is_deleted: true,
       })
-      .where("chats.id", "=", props.messageId as any);
+      .where("chat_messages.id", "=", props.messageId as any);
 
     const result = await query.execute();
     return result.length > 0;

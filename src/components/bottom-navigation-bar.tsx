@@ -1,15 +1,15 @@
 "use client";
 
+import { cn } from "@/lib/utils";
 import {
   BriefcaseIcon,
   HomeIcon,
   MessagesSquareIcon,
-  User,
+  SettingsIcon,
 } from "lucide-react";
 import Link from "next/link";
-import { ReactNode, useCallback, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 const menus: {
   title: string;
@@ -33,8 +33,8 @@ const menus: {
   },
   {
     title: "Settings",
-    href: "/account",
-    icon: <User />,
+    href: "/settings",
+    icon: <SettingsIcon />,
   },
 ];
 
@@ -104,7 +104,7 @@ export default function BottomNavigation() {
               key={`menuItem-${index}`}
               href={menu.href}
               className={cn(
-                "flex flex-col items-center py-2 px-4",
+                "flex flex-col items-center py-2 px-4 text-muted-foreground",
                 pathname === menu.href && "text-indigo-600"
               )}
             >

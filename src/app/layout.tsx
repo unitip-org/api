@@ -4,6 +4,7 @@ import "./globals.css";
 import { Nunito } from "next/font/google";
 import NextTopLoader from "nextjs-toploader";
 import Provider from "./provider";
+import { ThemeProvider } from "./theme-provider";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -21,12 +22,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body className={`${nunito.className} antialiased`}>
-        <Provider>
-          <NextTopLoader />
-          {children}
-        </Provider>
+        <ThemeProvider defaultTheme="system" attribute="class">
+          <Provider>
+            <NextTopLoader />
+            {children}
+          </Provider>
+        </ThemeProvider>
       </body>
     </html>
   );

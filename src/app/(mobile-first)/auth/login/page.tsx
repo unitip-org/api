@@ -1,11 +1,16 @@
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 import Link from "next/link";
 import FormLogin from "./form-login";
+
+export const metadata: Metadata = {
+  title: "Masuk | Unitip",
+};
 
 export default function Page() {
   return (
     <>
-      <div className="py-8">
+      <div className="py-4 px-4">
         <p className="text-2xl font-semibold">
           Selamat datang kembali di Unitip
         </p>
