@@ -75,26 +75,31 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+   /* Scrollbar tersembunyi, muncul saat di-hover */
   ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 0px;
+    background: transparent;
   }
 
-  ::-webkit-scrollbar-track {
-    background: #e0e7ff;
+  :hover::-webkit-scrollbar {
+    width: 6px;
   }
 
   ::-webkit-scrollbar-thumb {
-    background-color: #ada9ea;
+    background-color: rgba(173, 169, 234, 0.5);
     border-radius: 3px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background-color: #ada9ea;
+    background-color: rgba(173, 169, 234, 0.8);
   }
 
   * {
     scrollbar-width: thin;
-    scrollbar-color: #ada9ea #e0e7ff;
+    scrollbar-color: transparent transparent;
+  }
+
+  *:hover {
+    scrollbar-color: rgba(173, 169, 234, 0.5) transparent;
   }
 }

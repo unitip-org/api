@@ -18,6 +18,12 @@ const tables = [
     revLinks: [
       { column: "from", table: "chats" },
       { column: "to", table: "chats" },
+      { column: "customerId", table: "customer_requests" },
+      { column: "driverId", table: "driver_offers" },
+      { column: "applicantId", table: "job_applications" },
+      { column: "from_user", table: "chat_rooms" },
+      { column: "to_user", table: "chat_rooms" },
+      { column: "last_sent_user", table: "chat_rooms" },
     ],
   },
   {
@@ -26,6 +32,71 @@ const tables = [
       { name: "message", type: "text", notNull: true, defaultValue: "" },
       { name: "from", type: "link", link: { table: "users" } },
       { name: "to", type: "link", link: { table: "users" } },
+    ],
+  },
+  {
+    name: "customer_requests",
+    columns: [
+      { name: "title", type: "text", notNull: true, defaultValue: "null" },
+      {
+        name: "pickupLocation",
+        type: "text",
+        notNull: true,
+        defaultValue: "null",
+      },
+      {
+        name: "dropoffLocation",
+        type: "text",
+        notNull: true,
+        defaultValue: "null",
+      },
+      { name: "additionalNotes", type: "text" },
+      { name: "customerId", type: "link", link: { table: "users" } },
+      { name: "type", type: "text" },
+      { name: "status", type: "text" },
+      { name: "preferredGender", type: "text" },
+    ],
+    revLinks: [{ column: "customerRequestId", table: "job_applications" }],
+  },
+  {
+    name: "driver_offers",
+    columns: [
+      { name: "title", type: "text", notNull: true, defaultValue: "null" },
+      { name: "fee", type: "float", notNull: true, defaultValue: "0" },
+      {
+        name: "availableUntil",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
+      { name: "location", type: "text", notNull: true, defaultValue: "null" },
+      { name: "additionalNotes", type: "text" },
+      { name: "driverId", type: "link", link: { table: "users" } },
+      { name: "type", type: "text" },
+      { name: "status", type: "text" },
+    ],
+    revLinks: [{ column: "driverOfferId", table: "job_applications" }],
+  },
+  {
+    name: "job_applications",
+    columns: [
+      { name: "status", type: "text", notNull: true, defaultValue: "null" },
+      { name: "driverOfferId", type: "link", link: { table: "driver_offers" } },
+      {
+        name: "customerRequestId",
+        type: "link",
+        link: { table: "customer_requests" },
+      },
+      { name: "applicantId", type: "link", link: { table: "users" } },
+    ],
+  },
+  {
+    name: "chat_rooms",
+    columns: [
+      { name: "last_message", type: "text", notNull: true, defaultValue: "" },
+      { name: "from_user", type: "link", link: { table: "users" } },
+      { name: "to_user", type: "link", link: { table: "users" } },
+      { name: "last_sent_user", type: "link", link: { table: "users" } },
     ],
   },
 ] as const;
@@ -39,9 +110,25 @@ export type UsersRecord = Users & XataRecord;
 export type Chats = InferredTypes["chats"];
 export type ChatsRecord = Chats & XataRecord;
 
+export type CustomerRequests = InferredTypes["customer_requests"];
+export type CustomerRequestsRecord = CustomerRequests & XataRecord;
+
+export type DriverOffers = InferredTypes["driver_offers"];
+export type DriverOffersRecord = DriverOffers & XataRecord;
+
+export type JobApplications = InferredTypes["job_applications"];
+export type JobApplicationsRecord = JobApplications & XataRecord;
+
+export type ChatRooms = InferredTypes["chat_rooms"];
+export type ChatRoomsRecord = ChatRooms & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chats: ChatsRecord;
+  customer_requests: CustomerRequestsRecord;
+  driver_offers: DriverOffersRecord;
+  job_applications: JobApplicationsRecord;
+  chat_rooms: ChatRoomsRecord;
 };
 
 const DatabaseClient = buildClient();
