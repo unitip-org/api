@@ -7,7 +7,7 @@ import { useMqttClient } from "@/contexts/mqtt-client";
 import { cn, getPrefixedTopic } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2, Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
+import { Loader2, Loader2Icon, SendIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -138,7 +138,9 @@ export default function Client(props: {
         {/* list chats */}
         {!isLoadingMessages && dataMessages && (
           <div>
-            <div className="flex flex-col gap-2">
+            <div className="h-20"></div>
+
+            <div className="flex flex-col gap-1">
               {dataMessages.map((message, index) => (
                 <ChatBubble
                   key={"chatBubbleItem-" + index}
@@ -152,7 +154,7 @@ export default function Client(props: {
                 />
               ))}
 
-              <div className="justify-center flex">
+              <div className="justify-center flex mt-4">
                 <Button
                   variant={"destructive"}
                   onClick={() =>
@@ -170,36 +172,27 @@ export default function Client(props: {
               </div>
             </div>
 
-            <div className="h-[4.5rem]"></div>
+            <div className="h-[5.5rem]"></div>
           </div>
         )}
 
         {/* bubble message */}
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="fixed bottom-4 w-full left-0 right-0">
-              <div className="flex items-center gap-2 px-4 max-w-[512px] mx-auto">
+            <div className="fixed bottom-0 p-4 bg-background border-t w-full left-0 right-0">
+              <div className="flex items-center gap-2 max-w-[512px] mx-auto">
                 <FormField
                   control={form.control}
                   name="message"
                   render={({ field }) => (
                     <FormItem className="flex-1">
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} placeholder="Tulis pesan..." />
                       </FormControl>
                     </FormItem>
                   )}
                 />
 
-                <Button
-                  size={"icon"}
-                  className="rounded-full"
-                  type="button"
-                  variant={"outline"}
-                  onClick={() => refetchMessages()}
-                >
-                  <RefreshCwIcon />
-                </Button>
                 <Button
                   size={"icon"}
                   className="rounded-full"

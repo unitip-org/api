@@ -49,19 +49,6 @@ export const createMessage = async (props: {
     ]);
 
     return result.results.length === 3;
-
-    // const query = database
-    //   .insertInto("chats")
-    //   .values({
-    //     from: props.fromUserId,
-    //     to: props.toUserId,
-    //     message: props.message,
-    //   } as any)
-    //   .returning("id");
-
-    // const result = await query.execute();
-    // if (result) return true;
-    // return false;
   } catch (e) {
     throw e;
   }
@@ -97,6 +84,18 @@ export const getAllMessages = async (props: {
   } catch (e) {
     throw e;
   }
+};
+
+export const getOtherProfile = async (props: { otherUserId: string }) => {
+  try {
+    const query = database
+      .selectFrom("users as u")
+      .where("u.id", "=", props.otherUserId as any)
+      .select(["u.name"]);
+
+    const result = await query.executeTakeFirst();
+    return result;
+  } catch (e) {}
 };
 
 export const deleteConversation = async (props: {
