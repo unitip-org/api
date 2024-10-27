@@ -10,10 +10,10 @@ import {
 
 import { Insertable, Updateable } from "kysely";
 
-type CustomerRequestInsertable = Insertable<DatabaseSchema["customer_requests"]>;
-type DriverOfferInsertable = Insertable<DatabaseSchema["driver_offers"]>;
-type CustomerRequestUpdateable = Updateable<DatabaseSchema["customer_requests"]>;
-type DriverOfferUpdateable = Updateable<DatabaseSchema["driver_offers"]>;
+export type CustomerRequestInsertable = Insertable<DatabaseSchema["customer_requests"]>;
+export type DriverOfferInsertable = Insertable<DatabaseSchema["driver_offers"]>;
+export type CustomerRequestUpdateable = Updateable<DatabaseSchema["customer_requests"]>;
+export type DriverOfferUpdateable = Updateable<DatabaseSchema["driver_offers"]>;
 
 export async function getCustomerPosts(): Promise<CustomerRequestsRecord[]> {
   try {
