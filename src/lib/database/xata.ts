@@ -105,6 +105,71 @@ const tables = [
       { name: "last_sent_user", type: "link", link: { table: "users" } },
     ],
   },
+  {
+    name: "customer_requests",
+    columns: [
+      { name: "title", type: "text", notNull: true, defaultValue: "null" },
+      {
+        name: "pickupLocation",
+        type: "text",
+        notNull: true,
+        defaultValue: "null",
+      },
+      {
+        name: "dropoffLocation",
+        type: "text",
+        notNull: true,
+        defaultValue: "null",
+      },
+      { name: "additionalNotes", type: "text" },
+      { name: "customerId", type: "link", link: { table: "users" } },
+      { name: "type", type: "text" },
+      { name: "status", type: "text" },
+      { name: "preferredGender", type: "text" },
+    ],
+    revLinks: [{ column: "customerRequestId", table: "job_applications" }],
+  },
+  {
+    name: "driver_offers",
+    columns: [
+      { name: "title", type: "text", notNull: true, defaultValue: "null" },
+      { name: "fee", type: "float", notNull: true, defaultValue: "0" },
+      {
+        name: "availableUntil",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
+      { name: "location", type: "text", notNull: true, defaultValue: "null" },
+      { name: "additionalNotes", type: "text" },
+      { name: "driverId", type: "link", link: { table: "users" } },
+      { name: "type", type: "text" },
+      { name: "status", type: "text" },
+    ],
+    revLinks: [{ column: "driverOfferId", table: "job_applications" }],
+  },
+  {
+    name: "job_applications",
+    columns: [
+      { name: "status", type: "text", notNull: true, defaultValue: "null" },
+      { name: "driverOfferId", type: "link", link: { table: "driver_offers" } },
+      {
+        name: "customerRequestId",
+        type: "link",
+        link: { table: "customer_requests" },
+      },
+      { name: "applicantId", type: "link", link: { table: "users" } },
+    ],
+  },
+  {
+    name: "chat_rooms",
+    columns: [
+      { name: "last_message", type: "text", notNull: true, defaultValue: "" },
+      { name: "from_user", type: "link", link: { table: "users" } },
+      { name: "to_user", type: "link", link: { table: "users" } },
+      { name: "last_sent_user", type: "link", link: { table: "users" } },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
