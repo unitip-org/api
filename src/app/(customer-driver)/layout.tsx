@@ -1,5 +1,4 @@
 import BottomNavigation from "@/components/bottom-navigation-bar";
-import ClientLayout from "@/components/ClientLayout";
 import NavbarComponent from "@/components/navbar";
 import { PropsWithChildren } from "react";
 

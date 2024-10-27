@@ -1,20 +1,52 @@
 // src\app\(customer-driver)\jobs\components\JobTabs.tsx
-'use client';
+"use client";
 
-import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
-import { CustomerRequestsRecord, DriverOffersRecord } from "@/lib/database/xata";
-import CustomerPostList from './CustomerPost/CustomerPostList';
-import OpenJobList from './OpenJob/OpenJobList';
+import CustomerPostList from "./CustomerPost/CustomerPostList";
+import OpenJobList from "./OpenJob/OpenJobList";
+import { getCustomerPosts, getOpenJobs } from "../action";
+import { useQuery } from "@tanstack/react-query";
 
-interface JobTabsProps {
-  initialCustomerPosts: CustomerRequestsRecord[];
-  initialOpenJobs: DriverOffersRecord[];
-}
+import {
+  CustomerRequestsRecord,
+  DriverOffersRecord,
+} from "@/lib/database/xata";
+import JobSkeleton from "./JobSkeleton";
 
-export default function JobTabs({ initialCustomerPosts, initialOpenJobs }: JobTabsProps) {
-  const [customerPosts] = useState(initialCustomerPosts);
-  const [openJobs] = useState(initialOpenJobs);
+export default function JobTabs() {
+  const customerPostsQuery = useQuery<CustomerRequestsRecord[]>({
+    queryKey: ["customerPosts"],
+    queryFn: async () => {
+      try {
+        const data = await getCustomerPosts();
+        console.log("refetching customer posts");
+        return data;
+      } catch (error) {
+        console.error("Error fetching customer posts:", error);
+        throw error;
+      }
+    },
+    refetchInterval: 5000,
+  });
+
+  const openJobsQuery = useQuery<DriverOffersRecord[]>({
+    queryKey: ["openJobs"],
+    queryFn: async () => {
+      try {
+        const data = await getOpenJobs();
+        console.log("refetching open jobs");
+        return data;
+      } catch (error) {
+        console.error("Error fetching open jobs:", error);
+        throw error;
+      }
+    },
+    refetchInterval: 5000,
+  });
+
+  if(customerPostsQuery.isLoading || openJobsQuery.isLoading) {
+    return <JobSkeleton />;
+  }
 
   return (
     <Tabs defaultValue="customer" className="w-full">
@@ -34,11 +66,11 @@ export default function JobTabs({ initialCustomerPosts, initialOpenJobs }: JobTa
       </TabsList>
 
       <TabsContent value="customer">
-        <CustomerPostList posts={customerPosts} />
+        <CustomerPostList posts={customerPostsQuery.data || []} />
       </TabsContent>
 
       <TabsContent value="open">
-        <OpenJobList jobs={openJobs} />
+        <OpenJobList jobs={openJobsQuery.data || []} />
       </TabsContent>
     </Tabs>
   );

@@ -12,6 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function ClientJobsPage({
   children,
@@ -30,7 +33,7 @@ export default function ClientJobsPage({
   };
 
   return (
-    <>
+    <QueryClientProvider client={queryClient}>
       {children}
       <FloatingActionButton
         onCreateCustomerPost={handleCreateCustomerPost}
@@ -63,6 +66,6 @@ export default function ClientJobsPage({
           <OpenJobForm onClose={() => setShowOpenJobModal(false)} />
         </DialogContent>
       </Dialog>
-    </>
+    </QueryClientProvider>
   );
 }

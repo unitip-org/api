@@ -1,16 +1,23 @@
 // server components
+// src\app\(customer-driver)\jobs\components\CustomerPost\CustomerPostCard.tsx
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { CustomerRequestsRecord } from "@/lib/database/xata";
 import { MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
+import { getApplicantCountCustomerPost } from "../../action";
 
 interface CustomerPostCardProps {
   post: CustomerRequestsRecord;
-  applicantCount: number;
 }
 
-export const CustomerPostCard: React.FC<CustomerPostCardProps> = ({ post, applicantCount }) => {
+export const CustomerPostCard: React.FC<CustomerPostCardProps> = ({ post }) => {
+  const { data: applicantCount = 0 } = useQuery({
+    queryKey: ['applicantCount', post.id],
+    queryFn: () => getApplicantCountCustomerPost(post.id),
+  });
+  
   const hashCustomerName = (name: string): string => {
     if (name.length <= 2) return name;
     return name[0] + "*".repeat(name.length - 2) + name[name.length - 1];

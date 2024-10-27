@@ -4,18 +4,22 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { DriverOffersRecord } from "@/lib/database/xata";
 import { Button } from "@/components/ui/button";
 import { MessageSquare, User } from "lucide-react";
+import { getApplicantCountOpenJob } from "../../action";
+import { useQuery } from "@tanstack/react-query";
 
 interface OpenJobCardProps {
   job: DriverOffersRecord;
-  applicantCount: number;
 }
-export const OpenJobCard: React.FC<OpenJobCardProps> = ({ job,applicantCount }) => {
+export const OpenJobCard: React.FC<OpenJobCardProps> = ({ job }) => {
+  const { data: applicantCount = 0 } = useQuery({
+    queryKey: ['applicantCount', job.id],
+    queryFn: () => getApplicantCountOpenJob(job.id),
+  });
 
   const hashCustomerName = (name: string): string => {
     if (name.length <= 2) return name;
     return name[0] + "*".repeat(name.length - 2) + name[name.length - 1];
   };
-
 
   return (
     <div className="border border-indigo-200 rounded-lg overflow-visible relative my-8">
