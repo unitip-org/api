@@ -2,23 +2,13 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 import { Nunito } from "next/font/google";
+import NextTopLoader from "nextjs-toploader";
 import Provider from "./provider";
 
 const nunito = Nunito({
   subsets: ["latin"],
   variable: "--font-nunito",
 });
-
-// const geistSans = localFont({
-//   src: "./fonts/GeistVF.woff",
-//   variable: "--font-geist-sans",
-//   weight: "100 900",
-// });
-// const geistMono = localFont({
-//   src: "./fonts/GeistMonoVF.woff",
-//   variable: "--font-geist-mono",
-//   weight: "100 900",
-// });
 
 export const metadata: Metadata = {
   title: "Unitip",
@@ -33,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${nunito.className} antialiased`}>
-        <Provider>{children}</Provider>
+        <Provider>
+          <NextTopLoader />
+          {children}
+        </Provider>
       </body>
     </html>
   );

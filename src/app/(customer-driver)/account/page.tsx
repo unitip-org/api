@@ -10,6 +10,7 @@ import { verifyAuthToken } from "@/lib/auth-token";
 import { ExternalLinkIcon } from "lucide-react";
 import Link from "next/link";
 import AlertLogout from "./alert-logout";
+import TestCounter from "./test-counter";
 
 export default async function Page() {
   try {
@@ -52,6 +53,8 @@ export default async function Page() {
             Masuk
           </Link>
         </Button>
+
+        <TestCounter />
       </>
     );
   }

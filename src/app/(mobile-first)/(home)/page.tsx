@@ -1,3 +1,5 @@
+import TestCounter from "./test-counter";
+
 export default function Page() {
   return (
     <>
@@ -7,6 +9,8 @@ export default function Page() {
         enim velit aperiam optio similique! Cumque veniam magnam et optio
         molestias?
       </p>
+
+      <TestCounter />
     </>
   );
 }
