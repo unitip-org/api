@@ -29,7 +29,7 @@ export default async function Page() {
               <p className="text-xs text-muted-foreground">{session.email}</p>
 
               <Badge variant="outline" className="mt-2">
-                Driver
+                {session.role}
               </Badge>
             </div>
           </div>

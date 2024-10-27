@@ -24,6 +24,7 @@ const tables = [
       { column: "from_user", table: "chat_rooms" },
       { column: "to_user", table: "chat_rooms" },
       { column: "last_sent_user", table: "chat_rooms" },
+      { column: "user", table: "user_roles" },
     ],
   },
   {
@@ -61,6 +62,12 @@ const tables = [
       { name: "type", type: "text" },
       { name: "status", type: "text" },
       { name: "preferredGender", type: "text" },
+      {
+        name: "pickupTime",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
     ],
     revLinks: [{ column: "customerRequestId", table: "job_applications" }],
   },
@@ -105,6 +112,13 @@ const tables = [
       { name: "last_sent_user", type: "link", link: { table: "users" } },
     ],
   },
+  {
+    name: "user_roles",
+    columns: [
+      { name: "user", type: "link", link: { table: "users" } },
+      { name: "role", type: "text", notNull: true, defaultValue: "" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -128,6 +142,9 @@ export type JobApplicationsRecord = JobApplications & XataRecord;
 export type ChatRooms = InferredTypes["chat_rooms"];
 export type ChatRoomsRecord = ChatRooms & XataRecord;
 
+export type UserRoles = InferredTypes["user_roles"];
+export type UserRolesRecord = UserRoles & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -135,6 +152,7 @@ export type DatabaseSchema = {
   driver_offers: DriverOffersRecord;
   job_applications: JobApplicationsRecord;
   chat_rooms: ChatRoomsRecord;
+  user_roles: UserRolesRecord;
 };
 
 const DatabaseClient = buildClient();
