@@ -1,10 +1,23 @@
-// src/app/(customer-driver)/jobs/ClientJobsPage.tsx
-'use client';
+// src/app/(customer-driver)/jobs/client-layout-jobs-page.tsx
+"use client";
 
 import { useState } from "react";
 import FloatingActionButton from "@/components/floating-action-button";
+import { CustomerPostForm } from "./components/CustomerPostForm";
+import { OpenJobForm } from "./components/OpenJobForm";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
-export default function ClientJobsPage({ children }: { children: React.ReactNode }) {
+export default function ClientJobsPage({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [showCustomerPostModal, setShowCustomerPostModal] = useState(false);
   const [showOpenJobModal, setShowOpenJobModal] = useState(false);
 
@@ -24,27 +37,32 @@ export default function ClientJobsPage({ children }: { children: React.ReactNode
         onCreateOpenJob={handleCreateOpenJob}
       />
 
-      {/* Modal Customer Post */}
-      {showCustomerPostModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg">
-            <h2>Create Customer Post</h2>
-            {/* form Customer Post  */}
-            <button onClick={() => setShowCustomerPostModal(false)}>Close</button>
-          </div>
-        </div>
-      )}
+      <Dialog
+        open={showCustomerPostModal}
+        onOpenChange={setShowCustomerPostModal}
+      >
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Buat Customer Post</DialogTitle>
+            <DialogDescription>
+              Please fill out the form below to create a new customer post
+            </DialogDescription>
+          </DialogHeader>
+          <CustomerPostForm onClose={() => setShowCustomerPostModal(false)} />
+        </DialogContent>
+      </Dialog>
 
-      {/* Modal Open Job */}
-      {showOpenJobModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg">
-            <h2>Create Open Job</h2>
-            {/* form Open Job */}
-            <button onClick={() => setShowOpenJobModal(false)}>Close</button>
-          </div>
-        </div>
-      )}
+      <Dialog open={showOpenJobModal} onOpenChange={setShowOpenJobModal}>
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Create Open Job</DialogTitle>
+            <DialogDescription>
+              Please fill out the form below to create a new open job
+            </DialogDescription>
+          </DialogHeader>
+          <OpenJobForm onClose={() => setShowOpenJobModal(false)} />
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
