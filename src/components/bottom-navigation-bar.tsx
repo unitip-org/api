@@ -33,7 +33,7 @@ const menus: {
   },
   {
     title: "Settings",
-    href: "/account",
+    href: "/settings",
     icon: <SettingsIcon />,
   },
 ];
