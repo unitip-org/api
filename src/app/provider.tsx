@@ -1,5 +1,6 @@
 "use client";
 
+import { CounterProvider } from "@/contexts/counter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren } from "react";
 import { IntlProvider } from "react-intl";
@@ -10,7 +11,9 @@ export default function Provider(props: PropsWithChildren) {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <IntlProvider locale="id">{props.children}</IntlProvider>
+        <IntlProvider locale="id">
+          <CounterProvider>{props.children}</CounterProvider>
+        </IntlProvider>
       </QueryClientProvider>
     </>
   );
