@@ -14,7 +14,7 @@ export default function Provider(props: PropsWithChildren) {
       <QueryClientProvider client={queryClient}>
         <IntlProvider locale="id">
           <CounterProvider>
-            <MqttClientProvider>{props.children}</MqttClientProvider>
+            <MqttClientProvider debug>{props.children}</MqttClientProvider>
           </CounterProvider>
         </IntlProvider>
       </QueryClientProvider>

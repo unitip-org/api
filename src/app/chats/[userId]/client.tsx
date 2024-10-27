@@ -3,11 +3,11 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
+import { useMqttClient } from "@/contexts/mqtt-client";
+import { cn, getPrefixedTopic } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, Loader2Icon, RefreshCwIcon, SendIcon } from "lucide-react";
-import mqtt from "mqtt";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -20,21 +20,25 @@ const formSchema = z.object({
     .string({ required_error: "Pesan tidak boleh kosong!" })
     .min(1, "Pesan tidak boleh kosong!"),
 });
-const mqttChatMessageBaseTopic = "com.unitip/notifier-chat-messages";
-const mqttChatRoomBaseTopic = "com.unitip/notifier-chat-rooms";
 
 export default function Client(props: {
   authenticatedUser: { id: string };
   toUser: { id: string };
 }) {
   // from - to
-  const mqttSubTopic = `${mqttChatMessageBaseTopic}/${props.toUser.id}-${props.authenticatedUser.id}`;
-  const mqttPubTopic = `${mqttChatMessageBaseTopic}/${props.authenticatedUser.id}-${props.toUser.id}`;
+  const mqttChatMessagesSubTopic = getPrefixedTopic(
+    `chat-messages/${props.toUser.id}-${props.authenticatedUser.id}`
+  );
+  const mqttChatMessagesPubTopic = getPrefixedTopic(
+    `chat-messages/${props.authenticatedUser.id}-${props.toUser.id}`
+  );
+  const mqttChatRoomsPubTopic = getPrefixedTopic(
+    `chat-rooms/${props.toUser.id}`
+  );
 
   const router = useRouter();
 
   const [isAtBottom, setIsAtBottom] = useState(false);
-  const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,35 +54,21 @@ export default function Client(props: {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // connect to mqtt notifier
-  useEffect(() => {
-    setMqttClient(
-      mqtt.connect({
-        host: "broker.hivemq.com",
-        protocol: "wss",
-        port: 8884,
-        path: "/mqtt",
-      })
-    );
-  }, []);
-  useEffect(() => {
-    if (mqttClient) {
-      mqttClient.on("connect", () => {
-        console.log("connect to mqtt broker");
+  const { publish, subscribe, unsubscribe, mqttClient } = useMqttClient({
+    onMessage: (topic, message) => {
+      if (topic === mqttChatMessagesSubTopic) {
+        console.log("mqtt message", topic, message.toString());
+        refetchMessages();
+      }
+    },
+  });
 
-        // subscribe to mqtt topic
-        mqttClient.subscribe(mqttSubTopic, (err) => {
-          if (err) console.log("error subscribe to mqtt topic", err);
-          else console.log("subscribe to mqtt topic", mqttSubTopic);
-        });
+  useEffect(() => {
+    subscribe(mqttChatMessagesSubTopic);
 
-        // listen to mqtt message notifier
-        mqttClient.on("message", (topic, message) => {
-          console.log("mqtt message", topic, message.toString());
-          refetchMessages();
-        });
-      });
-    }
+    return () => {
+      unsubscribe(mqttChatMessagesSubTopic);
+    };
   }, [mqttClient]);
 
   const {
@@ -100,24 +90,11 @@ export default function Client(props: {
       form.reset({ message: "" });
       refetchMessages();
 
-      // send mqtt message notification
-      if (mqttClient) {
-        //  publish ke chat messages
-        mqttClient.publish(mqttPubTopic, "new notification", (err) => {
-          if (err) console.log("error publish to mqtt topic", err);
-          else console.log("publish to mqtt topic", mqttPubTopic);
-        });
+      // send mqtt message to chat messages
+      publish(mqttChatMessagesPubTopic, "new notification");
 
-        // publish ke chat rooms
-        mqttClient.publish(
-          `${mqttChatRoomBaseTopic}/${props.toUser.id}`,
-          "new notification",
-          (err) => {
-            if (err) console.log("error publish to mqtt topic", err);
-            else console.log("publish to mqtt topic", mqttPubTopic);
-          }
-        );
-      }
+      // send mqtt message to chat rooms
+      publish(mqttChatRoomsPubTopic, "new notification");
     },
   });
   const { mutate: mutateDelete, isPending: isPendingDelete } = useMutation({

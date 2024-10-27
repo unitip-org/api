@@ -12,6 +12,7 @@ interface MqttClientState {
 }
 
 interface MqttClientAction {
+  publish: (topic: string, message: string) => void;
   subscribe: (topic: string) => void;
   unsubscribe: (topic: string) => void;
 }
@@ -20,9 +21,9 @@ const MqttClientContext = createContext<
   (MqttClientState & MqttClientAction) | undefined
 >(undefined);
 
-const baseMqttTopic = "com.unitip/mqtt-notifier";
-
-export const MqttClientProvider = (props: PropsWithChildren) => {
+export const MqttClientProvider = (
+  props: PropsWithChildren<{ debug?: boolean }>
+) => {
   const [topics, setTopics] = useState<string[]>([]);
   const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
 
@@ -43,7 +44,7 @@ export const MqttClientProvider = (props: PropsWithChildren) => {
     if (mqttClient) {
       // listen connection status
       mqttClient.on("connect", () => {
-        console.log("Connected to mqtt broker");
+        if (props.debug) console.log("Connected to mqtt broker");
       });
     }
 
@@ -55,11 +56,26 @@ export const MqttClientProvider = (props: PropsWithChildren) => {
     };
   }, [mqttClient]);
 
+  const publish = (topic: string, message: string) => {
+    if (mqttClient) {
+      mqttClient.publish(topic, message, { qos: 2 }, (err) => {
+        if (props.debug) {
+          if (err) console.error(err);
+          else console.log("Published to topic:", topic);
+        }
+      });
+    }
+  };
+
   const subscribe = (topic: string) => {
     if (mqttClient) {
       mqttClient.subscribe(topic, { qos: 2 }, (err) => {
-        if (err) console.error(err);
-        else setTopics((prevTopics) => [...prevTopics, topic]);
+        if (err) {
+          if (props.debug) console.error(err);
+        } else {
+          if (props.debug) console.log("Subscribed to topic:", topic);
+          setTopics((prevTopics) => [...prevTopics, topic]);
+        }
       });
     }
   };
@@ -67,8 +83,12 @@ export const MqttClientProvider = (props: PropsWithChildren) => {
   const unsubscribe = (topic: string) => {
     if (mqttClient) {
       mqttClient.unsubscribe(topic, (err) => {
-        if (err) console.error(err);
-        else setTopics((prevTopics) => prevTopics.filter((t) => t !== topic));
+        if (err) {
+          if (props.debug) console.error(err);
+        } else {
+          if (props.debug) console.log("Unsubscribed from topic:", topic);
+          setTopics((prevTopics) => prevTopics.filter((t) => t !== topic));
+        }
       });
     }
   };
@@ -78,6 +98,7 @@ export const MqttClientProvider = (props: PropsWithChildren) => {
       <MqttClientContext.Provider
         value={{
           mqttClient,
+          publish,
           subscribe,
           unsubscribe,
         }}
@@ -88,7 +109,7 @@ export const MqttClientProvider = (props: PropsWithChildren) => {
   );
 };
 
-export const useMqttClient = (props: {
+export const useMqttClient = (props?: {
   onMessage?: (topic: string, message: Buffer) => void;
 }) => {
   const context = useContext(MqttClientContext);
@@ -99,7 +120,11 @@ export const useMqttClient = (props: {
 
   useEffect(() => {
     if (mqttClient) {
-      if (props.onMessage) mqttClient.on("message", props.onMessage);
+      mqttClient.on("message", (topic, message) => {
+        if (props?.onMessage) {
+          props.onMessage(topic, message);
+        }
+      });
     }
   }, [mqttClient]);
 

@@ -1,50 +1,34 @@
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { useMqttClient } from "@/contexts/mqtt-client";
+import { cn, getPrefixedTopic } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
-import mqtt from "mqtt";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { FormattedDate } from "react-intl";
 import { getAllChats } from "./actions";
 
-const mqttBaseTopic = "com.unitip/notifier-chat-rooms";
-
 export default function ListChats(props: { authenticatedUserId: string }) {
-  const mqttSubTopic = `${mqttBaseTopic}/${props.authenticatedUserId}`;
+  const chatRoomTopic = getPrefixedTopic(
+    `chat-rooms/${props.authenticatedUserId}`
+  );
 
-  const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
+  const { subscribe, unsubscribe, mqttClient } = useMqttClient({
+    onMessage: (topic, message) => {
+      if (topic === chatRoomTopic) {
+        console.log("mqtt message", topic, message.toString());
+        refetchChats();
+      }
+    },
+  });
 
-  // connect to mqtt notifier
   useEffect(() => {
-    setMqttClient(
-      mqtt.connect({
-        host: "broker.hivemq.com",
-        protocol: "wss",
-        port: 8884,
-        path: "/mqtt",
-      })
-    );
-  }, []);
-  useEffect(() => {
-    if (mqttClient) {
-      mqttClient.on("connect", () => {
-        console.log("connect to mqtt broker");
+    subscribe(chatRoomTopic);
 
-        // subscribe to mqtt topic
-        mqttClient.subscribe(mqttSubTopic, (err) => {
-          if (err) console.log("error subscribe to mqtt topic", err);
-          else console.log("subscribe to mqtt topic", mqttSubTopic);
-        });
-
-        // listen to mqtt message notifier
-        mqttClient.on("message", (topic, message) => {
-          console.log("mqtt message", topic, message.toString());
-          refetchChats();
-        });
-      });
-    }
+    return () => {
+      unsubscribe(chatRoomTopic);
+    };
   }, [mqttClient]);
 
   const {
