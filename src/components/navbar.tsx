@@ -1,4 +1,4 @@
-import { SunIcon } from "lucide-react";
+import ButtonThemeSwitcher from "./button-theme-switcher";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Button } from "./ui/button";
 
@@ -14,9 +14,7 @@ export default function NavbarComponent(props: { title?: string }) {
 
           {/* profile icon */}
           <div className="flex items-center gap-2">
-            <Button size={"icon"} variant={"outline"}>
-              <SunIcon />
-            </Button>
+            <ButtonThemeSwitcher />
             <Avatar>
               <AvatarImage src="https://github.com/shadcn.png" />
               <AvatarFallback>CN</AvatarFallback>
