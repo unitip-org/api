@@ -61,7 +61,7 @@ export const getAllMessages = async (props: {
   try {
     const query = database
       .selectFrom("chats as c")
-      .select(["c.message", "c.from", "c.to"])
+      .select(["c.id", "c.message", "c.from", "c.to", "c.is_deleted"])
       .select(sql<Date>`c."xata.createdAt"`.as("created_at"))
       .where((eb) =>
         eb.or([
@@ -132,6 +132,25 @@ export const deleteConversation = async (props: {
     const result2 = await queryChatRooms.execute();
 
     return result.length > 0 && result2.length > 0;
+  } catch (e) {
+    throw e;
+  }
+};
+
+export const deleteMessage = async (props: {
+  authenticatedUserId: string;
+  messageId: string;
+}) => {
+  try {
+    const query = database
+      .updateTable("chats")
+      .set({
+        is_deleted: true,
+      })
+      .where("chats.id", "=", props.messageId as any);
+
+    const result = await query.execute();
+    return result.length > 0;
   } catch (e) {
     throw e;
   }

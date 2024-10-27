@@ -1,19 +1,32 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuLabel,
+  ContextMenuSeparator,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useMqttClient } from "@/contexts/mqtt-client";
 import { cn, getPrefixedTopic } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Loader2, Loader2Icon, SendIcon } from "lucide-react";
+import { Loader2, Loader2Icon, OctagonXIcon, SendIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedDate } from "react-intl";
 import { z } from "zod";
-import { createMessage, deleteConversation, getAllMessages } from "./actions";
+import {
+  createMessage,
+  deleteConversation,
+  deleteMessage,
+  getAllMessages,
+} from "./actions";
 
 const formSchema = z.object({
   message: z
@@ -101,6 +114,19 @@ export default function Client(props: {
     mutationFn: deleteConversation,
     onSuccess: () => router.back(),
   });
+  const { mutate: mutateDeleteMessage, isPending: isPendingDeleteMessage } =
+    useMutation({
+      mutationFn: deleteMessage,
+      onSuccess: () => {
+        refetchMessages();
+
+        // send mqtt message to chat messages
+        publish(mqttChatMessagesPubTopic, "new notification");
+
+        // send mqtt message to chat rooms
+        publish(mqttChatRoomsPubTopic, "new notification");
+      },
+    });
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -151,6 +177,13 @@ export default function Client(props: {
                   }
                   createdAt={message.created_at}
                   message={message.message}
+                  isDeleted={message.is_deleted}
+                  onClickMenuDeleteMessage={() =>
+                    mutateDeleteMessage({
+                      authenticatedUserId: props.authenticatedUser.id,
+                      messageId: message.id,
+                    })
+                  }
                 />
               ))}
 
@@ -215,9 +248,11 @@ export default function Client(props: {
 }
 
 function ChatBubble(props: {
+  onClickMenuDeleteMessage: () => void;
   position: "left" | "right";
   message: string;
   createdAt: Date;
+  isDeleted: boolean;
 }) {
   return (
     <>
@@ -228,28 +263,51 @@ function ChatBubble(props: {
           props.position === "right" && "justify-end"
         )}
       >
-        <div
-          className={cn(
-            "max-w-[360px] rounded-lg shadow py-2 px-3 text-sm",
-            props.position === "left" && "bg-muted text-muted-foreground",
-            props.position === "right" && "bg-primary text-primary-foreground"
-          )}
-        >
-          <p>{props.message}</p>
-          <p
-            className={cn(
-              "text-xs text-right mt-1",
-              props.position === "left" && "text-muted-foreground/70",
-              props.position === "right" && "text-primary-foreground/70"
-            )}
+        <ContextMenu>
+          <ContextMenuTrigger
+            asChild
+            disabled={props.position === "left" || props.isDeleted}
           >
-            <FormattedDate
-              value={props.createdAt}
-              hour="2-digit"
-              minute="2-digit"
-            />
-          </p>
-        </div>
+            <div
+              className={cn(
+                "max-w-[360px] rounded-lg shadow py-2 px-3 text-sm",
+                props.position === "left" && "bg-muted text-muted-foreground",
+                props.position === "right" &&
+                  "bg-primary text-primary-foreground"
+              )}
+            >
+              {props.isDeleted || <p>{props.message}</p>}
+              {props.isDeleted && (
+                <p className="italic">
+                  <OctagonXIcon className="h-4 w-4 inline mr-1" />
+                  pesan telah dihapus
+                </p>
+              )}
+              {props.isDeleted || (
+                <p
+                  className={cn(
+                    "text-xs text-right mt-1",
+                    props.position === "left" && "text-muted-foreground/70",
+                    props.position === "right" && "text-primary-foreground/70"
+                  )}
+                >
+                  <FormattedDate
+                    value={props.createdAt}
+                    hour="2-digit"
+                    minute="2-digit"
+                  />
+                </p>
+              )}
+            </div>
+          </ContextMenuTrigger>
+          <ContextMenuContent>
+            <ContextMenuLabel>Opsi</ContextMenuLabel>
+            <ContextMenuSeparator />
+            <ContextMenuItem onClick={props.onClickMenuDeleteMessage}>
+              Hapus pesan
+            </ContextMenuItem>
+          </ContextMenuContent>
+        </ContextMenu>
       </div>
     </>
   );
