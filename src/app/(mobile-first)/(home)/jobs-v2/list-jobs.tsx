@@ -68,7 +68,9 @@ export default function ListJobs() {
                     <FormattedNumber value={12} /> mengikuti
                   </p>
                 </div>
-                <Button>Ikut penawaran</Button>
+                <Button onClick={() => console.log("apply")}>
+                  Ikut penawaran
+                </Button>
               </CardFooter>
             </Card>
           ))}

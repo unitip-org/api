@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import ListJobs from "./list-jobs";
-import { Plus } from "lucide-react";
 import { verifyAuthToken } from "@/lib/auth-token";
 import { cn } from "@/lib/utils";
+import { Plus } from "lucide-react";
+import ListJobs from "./list-jobs";
 
 export default async function Page() {
   let isAuthenticated = false;
@@ -28,16 +28,22 @@ export default async function Page() {
           className={cn(
             "mt-4",
             isAuthenticated && role === "driver" ? "mb-[10.5rem]" : "mb-24"
-          )}>
+          )}
+        >
           <ListJobs />
         </div>
 
         {isAuthenticated && role === "driver" && (
-          <Button
-            className="fixed z-30 bottom-24 right-4 rounded-full size-14"
-            size={"icon"}>
-            <Plus />
-          </Button>
+          <div className="fixed z-30 bottom-24 w-full left-0 right-0 pointer-events-none">
+            <div className="max-w-[512px] mx-auto flex justify-end px-4 pointer-events-none">
+              <Button
+                className="rounded-full size-14 pointer-events-auto"
+                size={"icon"}
+              >
+                <Plus />
+              </Button>
+            </div>
+          </div>
         )}
       </div>
     </>
