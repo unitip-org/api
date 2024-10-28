@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import {
+  BriefcaseBusinessIcon,
   BriefcaseIcon,
   HomeIcon,
   MessagesSquareIcon,
@@ -19,12 +20,17 @@ const menus: {
   {
     title: "Dashboard",
     href: "/",
-    icon: <HomeIcon />,
+    icon: <HomeIcon className="size-6" />,
   },
   {
     title: "Jobs",
     href: "/jobs",
     icon: <BriefcaseIcon />,
+  },
+  {
+    title: "Penawaran",
+    href: "/jobs-v2",
+    icon: <BriefcaseBusinessIcon />,
   },
   {
     title: "Chats",
@@ -94,22 +100,22 @@ export default function BottomNavigation() {
   return (
     <div
       className={cn(
-        "fixed bottom-0 left-0 right-0 flex justify-center pb-4 px-4 transition-transform duration-300 z-99"
-      )}
-    >
-      <nav className="bg-white border shadow-lg rounded-full max-w-[480px] w-full">
-        <div className="flex justify-around">
+        "fixed bottom-0 left-0 right-0 flex justify-center pb-4 px-4 transition-transform duration-300 z-20"
+      )}>
+      <nav className="bg-white border shadow-lg rounded-full overflow-hidden max-w-[480px] w-full">
+        <div className="grid grid-cols-5 px-4 h-16">
           {menus.map((menu, index) => (
             <Link
               key={`menuItem-${index}`}
               href={menu.href}
               className={cn(
-                "flex flex-col items-center py-2 px-4 text-muted-foreground",
+                "flex flex-col items-center justify-center py-2 text-muted-foreground hover:bg-muted duration-300",
                 pathname === menu.href && "text-indigo-600"
-              )}
-            >
+              )}>
               {menu.icon}
-              <span className="text-xs mt-1">{menu.title}</span>
+              {pathname === menu.href && (
+                <span className="text-xs mt-1">{menu.title}</span>
+              )}
             </Link>
           ))}
         </div>
