@@ -46,6 +46,7 @@ export const registerCustomer = async (props: {
         id,
         email: props.email,
         name: props.name,
+        role: "",
       });
       const cookieStore = cookies();
       cookieStore.set("auth-token", authToken);
