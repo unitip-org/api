@@ -8,7 +8,7 @@ interface OpenJobListProps {
 
 export default function OpenJobList({ jobs }: OpenJobListProps) {
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-8">
       {jobs.map((job) => (
         <OpenJobCard key={job.id} job={job} />
       ))}

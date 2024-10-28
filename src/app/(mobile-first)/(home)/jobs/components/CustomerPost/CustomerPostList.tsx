@@ -8,7 +8,7 @@ interface CustomerPostListProps {
 
 export default function CustomerPostList({ posts }: CustomerPostListProps) {
   return (
-    <div className="w-full space-y-4">
+    <div className="w-full space-y-8">
       {posts.map((post) => (
         <CustomerPostCard key={post.id} post={post} />
       ))}
