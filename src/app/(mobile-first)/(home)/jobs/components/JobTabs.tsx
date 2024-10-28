@@ -19,7 +19,8 @@ export default function JobTabs() {
     queryFn: async () => {
       try {
         const data = await getCustomerPosts();
-        console.log("refetching customer posts");
+        // console.log("refetching customer posts");
+        // console.log("customerPostsQuery", data);
         return data;
       } catch (error) {
         console.error("Error fetching customer posts:", error);
@@ -34,7 +35,8 @@ export default function JobTabs() {
     queryFn: async () => {
       try {
         const data = await getOpenJobs();
-        console.log("refetching open jobs");
+        // console.log("refetching open jobs");
+        // console.log("openJobsQuery", data);
         return data;
       } catch (error) {
         console.error("Error fetching open jobs:", error);
@@ -44,22 +46,22 @@ export default function JobTabs() {
     refetchInterval: 5000,
   });
 
-  if(customerPostsQuery.isLoading || openJobsQuery.isLoading) {
+  if (customerPostsQuery.isLoading || openJobsQuery.isLoading) {
     return <JobSkeleton />;
   }
 
   return (
     <Tabs defaultValue="customer" className="w-full">
-      <TabsList className="flex w-full mb-6 bg-indigo-100 rounded-lg p-[6px]">
+      <TabsList className="flex w-full mb-6 bg-muted rounded-lg p-[6px]">
         <TabsTrigger
           value="customer"
-          className="flex-1 py-2 px-4 rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+          className="flex-1 py-2 px-4 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
         >
           Customer Post
         </TabsTrigger>
         <TabsTrigger
           value="open"
-          className="flex-1 py-2 px-4 rounded-md data-[state=active]:bg-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-sm transition-all"
+          className="flex-1 py-2 px-4 rounded-md data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all"
         >
           Open Job
         </TabsTrigger>

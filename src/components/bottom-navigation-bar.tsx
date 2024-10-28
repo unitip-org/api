@@ -8,6 +8,7 @@ import {
   MessagesSquareIcon,
   SettingsIcon,
 } from "lucide-react";
+import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode } from "react";
@@ -46,56 +47,7 @@ const menus: {
 
 export default function BottomNavigation() {
   const pathname = usePathname();
-  // const [isVisible, setIsVisible] = useState(true);
-  // const [lastScrollY, setLastScrollY] = useState(0);
-  // const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
-
-  // const controlNavbar = useCallback(() => {
-  //   if (typeof window !== "undefined") {
-  //     if (window.scrollY > lastScrollY) {
-  //       // jika scroll ke bawah, sembunyikan navbar
-  //       setIsVisible(false);
-  //     } else {
-  //       // jika scroll ke atas, tampilkan navbar
-  //       setIsVisible(true);
-  //     }
-
-  //     // update last scroll position
-  //     setLastScrollY(window.scrollY);
-  //   }
-  //   setLastInteractionTime(Date.now());
-  // }, [lastScrollY]);
-
-  // // callback untuk menampilkan navbar ketika ada interaksi
-  // const handleInteraction = useCallback(() => {
-  //   setIsVisible(true);
-  //   setLastInteractionTime(Date.now());
-  // }, []);
-
-  // useEffect(() => {
-  //   if (typeof window !== "undefined") {
-  //     window.addEventListener("scroll", controlNavbar);
-  //     window.addEventListener("touchstart", handleInteraction);
-  //     window.addEventListener("mousemove", handleInteraction);
-
-  //     // cleanup function
-  //     return () => {
-  //       window.removeEventListener("scroll", controlNavbar);
-  //       window.removeEventListener("touchstart", handleInteraction);
-  //       window.removeEventListener("mousemove", handleInteraction);
-  //     };
-  //   }
-  // }, [controlNavbar, handleInteraction]);
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     if (Date.now() - lastInteractionTime > 2000) {
-  //       setIsVisible(false);
-  //     }
-  //   }, 1000); // dicek setiap 1 detik
-
-  //   return () => clearInterval(timer);
-  // }, [lastInteractionTime]);
+  const { theme } = useTheme();
 
   return (
     <div
@@ -123,3 +75,53 @@ export default function BottomNavigation() {
     </div>
   );
 }
+// const [isVisible, setIsVisible] = useState(true);
+// const [lastScrollY, setLastScrollY] = useState(0);
+// const [lastInteractionTime, setLastInteractionTime] = useState(Date.now());
+
+// const controlNavbar = useCallback(() => {
+//   if (typeof window !== "undefined") {
+//     if (window.scrollY > lastScrollY) {
+//       // jika scroll ke bawah, sembunyikan navbar
+//       setIsVisible(false);
+//     } else {
+//       // jika scroll ke atas, tampilkan navbar
+//       setIsVisible(true);
+//     }
+
+//     // update last scroll position
+//     setLastScrollY(window.scrollY);
+//   }
+//   setLastInteractionTime(Date.now());
+// }, [lastScrollY]);
+
+// // callback untuk menampilkan navbar ketika ada interaksi
+// const handleInteraction = useCallback(() => {
+//   setIsVisible(true);
+//   setLastInteractionTime(Date.now());
+// }, []);
+
+// useEffect(() => {
+//   if (typeof window !== "undefined") {
+//     window.addEventListener("scroll", controlNavbar);
+//     window.addEventListener("touchstart", handleInteraction);
+//     window.addEventListener("mousemove", handleInteraction);
+
+//     // cleanup function
+//     return () => {
+//       window.removeEventListener("scroll", controlNavbar);
+//       window.removeEventListener("touchstart", handleInteraction);
+//       window.removeEventListener("mousemove", handleInteraction);
+//     };
+//   }
+// }, [controlNavbar, handleInteraction]);
+
+// useEffect(() => {
+//   const timer = setInterval(() => {
+//     if (Date.now() - lastInteractionTime > 2000) {
+//       setIsVisible(false);
+//     }
+//   }, 1000); // dicek setiap 1 detik
+
+//   return () => clearInterval(timer);
+// }, [lastInteractionTime]);
