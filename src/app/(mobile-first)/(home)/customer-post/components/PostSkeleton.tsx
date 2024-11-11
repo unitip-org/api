@@ -2,24 +2,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-export default function JobSkeleton() {
-  return (
-    <Tabs defaultValue="customerPosts" className="w-full">
-      <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="customerPosts">Customer Posts</TabsTrigger>
-        <TabsTrigger value="openJobs">Open Jobs</TabsTrigger>
-      </TabsList>
-      <TabsContent value="customerPosts">
-        <SkeletonContent />
-      </TabsContent>
-      <TabsContent value="openJobs">
-        <SkeletonContent />
-      </TabsContent>
-    </Tabs>
-  );
-}
-
-function SkeletonContent() {
+export default function PostSkeleton() {
   return (
     <div className="space-y-4">
       {[1, 2, 3].map((i) => (
