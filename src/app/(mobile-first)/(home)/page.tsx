@@ -1,3 +1,4 @@
+import DriverCounter from "./driver-counter";
 import TestCounter from "./test-counter";
 
 export default function Page() {
@@ -11,6 +12,7 @@ export default function Page() {
       </p>
 
       <TestCounter />
+      <DriverCounter />
     </>
   );
 }

@@ -1,3 +1,5 @@
+import { AuthTokenType } from "@/lib/auth-token";
+import { getPrefixedTopic } from "@/lib/utils";
 import mqtt from "mqtt";
 import {
   createContext,
@@ -9,6 +11,7 @@ import {
 
 interface MqttClientState {
   mqttClient?: mqtt.MqttClient;
+  onlineDriverCount?: number;
 }
 
 interface MqttClientAction {
@@ -22,10 +25,14 @@ const MqttClientContext = createContext<
 >(undefined);
 
 export const MqttClientProvider = (
-  props: PropsWithChildren<{ debug?: boolean }>
+  props: PropsWithChildren<{
+    debug?: boolean;
+    session?: AuthTokenType;
+  }>
 ) => {
   const [topics, setTopics] = useState<string[]>([]);
   const [mqttClient, setMqttClient] = useState<mqtt.MqttClient>();
+  const [onlineDriverIds, setOnlineDriverIds] = useState<string[]>([]);
 
   // connect to mqtt broker
   useEffect(() => {
@@ -35,6 +42,15 @@ export const MqttClientProvider = (
         protocol: "wss",
         port: 8884,
         path: "/mqtt",
+        will:
+          (props.session &&
+            props.session.role === "driver" && {
+              topic: getPrefixedTopic("user/status/" + props.session.id),
+              payload: Buffer.from("offline"),
+              qos: 2,
+              retain: true,
+            }) ||
+          undefined,
       })
     );
   }, []);
@@ -45,6 +61,29 @@ export const MqttClientProvider = (
       // listen connection status
       mqttClient.on("connect", () => {
         if (props.debug) console.log("Connected to mqtt broker");
+
+        // subscribe to driver status
+        subscribe(getPrefixedTopic("user/status/#"));
+
+        // publish status online driver ke broker
+        if (props.session) {
+          // berarti user sedang login
+          const { id, role } = props.session;
+          if (role === "driver")
+            publish(getPrefixedTopic("user/status/" + id), "online", true);
+        }
+      });
+
+      mqttClient.on("message", (topic, message) => {
+        if (topic.startsWith(getPrefixedTopic("user/status"))) {
+          if (String(message) === "online")
+            setOnlineDriverIds((prev) => [
+              ...prev.filter((it) => it !== topic),
+              topic,
+            ]);
+          else if (String(message) === "offline")
+            setOnlineDriverIds((prev) => prev.filter((it) => it !== topic));
+        }
       });
     }
 
@@ -54,14 +93,14 @@ export const MqttClientProvider = (
         setTopics([]);
       }
     };
-  }, [mqttClient]);
+  }, [mqttClient, props.session]);
 
-  const publish = (topic: string, message: string) => {
+  const publish = (topic: string, message: string, retain?: boolean) => {
     if (mqttClient) {
-      mqttClient.publish(topic, message, { qos: 2 }, (err) => {
+      mqttClient.publish(topic, message, { qos: 2, retain: retain }, (err) => {
         if (props.debug) {
           if (err) console.error(err);
-          else console.log("Published to topic:", topic);
+          else console.log("Published to topic:", topic, message);
         }
       });
     }
@@ -101,6 +140,7 @@ export const MqttClientProvider = (
           publish,
           subscribe,
           unsubscribe,
+          onlineDriverCount: onlineDriverIds.length,
         }}
       >
         {props.children}
