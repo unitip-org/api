@@ -52,7 +52,7 @@ export default function Page() {
                   <Image
                     alt={images.alt}
                     src={images.image}
-                    objectFit="fill"
+                    priority={true}
                     width={500}
                     height={300}
                   />
@@ -61,6 +61,7 @@ export default function Page() {
             </CarouselContent>
           </Carousel>
         </div>
+        <div></div>
       </div>
       <TestCounter />
     </>
