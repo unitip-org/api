@@ -1,6 +1,28 @@
 import { database } from "@/lib/database";
 import { compare } from "bcrypt";
 
+/**
+ * @swagger
+ * /api/v1/auth/login:
+ *   post:
+ *     description: Returns the hello world
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - email
+ *               - password
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Hello World!
+ */
 export async function POST(request: Request) {
   try {
     const json = await request.json();
@@ -31,6 +53,7 @@ export async function POST(request: Request) {
       token: "gatau",
     });
   } catch (e) {
+    console.error(e);
     return new Response("Terjadi kesalahan tak terduga pada server!", {
       status: 500,
     });
