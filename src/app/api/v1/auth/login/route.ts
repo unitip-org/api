@@ -1,5 +1,6 @@
 import { database } from "@/lib/database";
 import { compare } from "bcrypt";
+import { z } from "zod";
 
 /**
  * @swagger
@@ -23,12 +24,62 @@ import { compare } from "bcrypt";
  *                 type: string
  *     responses:
  *       200:
- *         description: Hello World!
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *                 name:
+ *                   type: string
+ *                 email:
+ *                   type: string
+ *                 token:
+ *                   type: string
+ *       400:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                       path:
+ *                         type: string
  */
 export async function POST(request: Request) {
   try {
     const json = await request.json();
     const { email, password } = json;
+
+    const parsedData = z
+      .object({
+        email: z
+          .string({ required_error: "Alamat email tidak boleh kosong!" })
+          .email("Alamat email tidak valid!"),
+        password: z
+          .string({ required_error: "Kata sandi tidak boleh kosong!" })
+          .min(6, "Kata sandi minimal terdiri dari 6 karakter!"),
+      })
+      .safeParse({ email, password });
+
+    if (!parsedData.success) {
+      return Response.json(
+        {
+          errors: parsedData.error.errors.map((it) => ({
+            message: it.message,
+            path: it.path[0],
+          })),
+        },
+        { status: 400 }
+      );
+    }
 
     const query = database
       .selectFrom("users as u")
