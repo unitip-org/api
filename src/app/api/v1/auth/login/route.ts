@@ -6,6 +6,8 @@ import { compare } from "bcrypt";
  * /api/v1/auth/login:
  *   post:
  *     description: Returns the hello world
+ *     tags:
+ *       - auth
  *     requestBody:
  *       content:
  *         application/json:
