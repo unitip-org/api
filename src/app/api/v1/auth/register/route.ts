@@ -6,6 +6,8 @@ import { z } from "zod";
  *   post:
  *     tags:
  *       - auth
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       content:
  *         application/json:
@@ -63,6 +65,16 @@ import { z } from "zod";
  */
 export async function POST(request: Request) {
   try {
+    // const authHeader = request.headers.get("Authorization");
+    // if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    //   return Response.json(
+    //     { message: "Token otorisasi tidak ditemukan!" },
+    //     { status: 401 }
+    //   );
+    // }
+    // const token = authHeader.substring(7);
+    // console.log(token);
+
     const json = await request.json();
     const { name, email, password } = json;
     const data = z
@@ -80,12 +92,15 @@ export async function POST(request: Request) {
       .safeParse({ name, email, password });
 
     if (!data.success)
-      return Response.json({
-        errors: data.error.errors.map(({ message, path }) => ({
-          message,
-          path: path[0],
-        })),
-      });
+      return Response.json(
+        {
+          errors: data.error.errors.map(({ message, path }) => ({
+            message,
+            path: path[0],
+          })),
+        },
+        { status: 400 }
+      );
 
     return Response.json({ success: true });
   } catch (e) {

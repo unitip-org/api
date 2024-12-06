@@ -8,6 +8,8 @@ import { z } from "zod";
  *   post:
  *     tags:
  *       - auth
+ *     security:
+ *       - BearerAuth: []
  *     requestBody:
  *       content:
  *         application/json:
