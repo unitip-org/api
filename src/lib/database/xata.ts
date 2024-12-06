@@ -12,7 +12,6 @@ const tables = [
     columns: [
       { name: "email", type: "text", notNull: true, defaultValue: "" },
       { name: "password", type: "text", notNull: true, defaultValue: "" },
-      { name: "roles", type: "multiple" },
       { name: "name", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [
@@ -25,6 +24,9 @@ const tables = [
       { column: "to_user", table: "chat_rooms" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
+      { column: "applicant", table: "customer_request_applications" },
+      { column: "user", table: "sessions" },
+      { column: "creator", table: "offers" },
     ],
   },
   {
@@ -44,7 +46,6 @@ const tables = [
   {
     name: "customer_requests",
     columns: [
-      { name: "title", type: "text", notNull: true, defaultValue: "null" },
       {
         name: "pickupLocation",
         type: "text",
@@ -69,7 +70,10 @@ const tables = [
         defaultValue: "now",
       },
     ],
-    revLinks: [{ column: "customerRequestId", table: "job_applications" }],
+    revLinks: [
+      { column: "customerRequestId", table: "job_applications" },
+      { column: "customer_requests", table: "customer_request_applications" },
+    ],
   },
   {
     name: "driver_offers",
@@ -119,6 +123,34 @@ const tables = [
       { name: "role", type: "text", notNull: true, defaultValue: "" },
     ],
   },
+  {
+    name: "customer_request_applications",
+    columns: [
+      { name: "status", type: "text" },
+      { name: "applicant", type: "link", link: { table: "users" } },
+      {
+        name: "customer_requests",
+        type: "link",
+        link: { table: "customer_requests" },
+      },
+      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
+    ],
+  },
+  {
+    name: "sessions",
+    columns: [
+      { name: "token", type: "text", notNull: true, defaultValue: "" },
+      { name: "user", type: "link", link: { table: "users" } },
+    ],
+  },
+  {
+    name: "offers",
+    columns: [
+      { name: "creator", type: "link", link: { table: "users" } },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "description", type: "text", notNull: true, defaultValue: "" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -145,6 +177,17 @@ export type ChatRoomsRecord = ChatRooms & XataRecord;
 export type UserRoles = InferredTypes["user_roles"];
 export type UserRolesRecord = UserRoles & XataRecord;
 
+export type CustomerRequestApplications =
+  InferredTypes["customer_request_applications"];
+export type CustomerRequestApplicationsRecord = CustomerRequestApplications &
+  XataRecord;
+
+export type Sessions = InferredTypes["sessions"];
+export type SessionsRecord = Sessions & XataRecord;
+
+export type Offers = InferredTypes["offers"];
+export type OffersRecord = Offers & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -153,6 +196,9 @@ export type DatabaseSchema = {
   job_applications: JobApplicationsRecord;
   chat_rooms: ChatRoomsRecord;
   user_roles: UserRolesRecord;
+  customer_request_applications: CustomerRequestApplicationsRecord;
+  sessions: SessionsRecord;
+  offers: OffersRecord;
 };
 
 const DatabaseClient = buildClient();
