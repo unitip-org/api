@@ -52,6 +52,14 @@ import { z } from "zod";
  *                         type: string
  *                       path:
  *                         type: string
+ *       500:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
  */
 export async function POST(request: Request) {
   try {
@@ -106,9 +114,11 @@ export async function POST(request: Request) {
       token: "gatau",
     });
   } catch (e) {
-    console.error(e);
-    return new Response("Terjadi kesalahan tak terduga pada server!", {
-      status: 500,
-    });
+    return Response.json(
+      { message: "Terjadi kesalahan tak terduga pada server!" },
+      {
+        status: 500,
+      }
+    );
   }
 }
