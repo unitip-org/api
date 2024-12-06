@@ -129,3 +129,113 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+/**
+ * @swagger
+ * /api/v1/offers:
+ *   post:
+ *     tags:
+ *       - offers
+ *     security:
+ *       - BearerAuth: []
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               title:
+ *                 type: string
+ *               description:
+ *                 type: string
+ *               fee:
+ *                 type: number
+ *               location:
+ *                 type: string
+ *               creator_id:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *       400:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 errors:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       message:
+ *                         type: string
+ *                       path:
+ *                         type: string
+ *       500:
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ */
+export async function POST(request: NextRequest) {
+  try {
+    const json = await request.json();
+    const { title, description, fee, location, creator_id } = json;
+
+    const data = z
+      .object({
+        title: z
+          .string({ required_error: "Judul penawaran tidak boleh kosong!" })
+          .min(1, "Judul penawaran tidak boleh kosong!"),
+        description: z.string().optional(),
+        fee: z
+          .number({ required_error: "Biaya penawaran tidak boleh kosong!" })
+          .min(0, "Biaya penawaran tidak boleh negatif!"),
+        location: z
+          .string({ required_error: "Lokasi penawaran tidak boleh kosong!" })
+          .min(1, "Lokasi penawaran tidak boleh kosong!"),
+        creator_id: z
+          .string({ required_error: "Id kreator tidak boleh kosong!" })
+          .min(1, "Id kreator tidak boleh kosong!"),
+      })
+      .safeParse({ title, description, fee, location, creator_id });
+    if (!data.success)
+      return Response.json(
+        {
+          errors: data.error.errors.map(({ message, path }) => ({
+            message,
+            path: path[0],
+          })),
+        },
+        { status: 400 }
+      );
+
+    const query = database.insertInto("offers").values({
+      title,
+      description: description ?? "",
+      fee,
+      location,
+      creator: creator_id,
+    } as any);
+    const result = await query.execute();
+
+    if (result.length > 0)
+      return Response.json({ message: "Berhasil membuat penawaran!" });
+    else throw new Error("Gagal membuat penawaran!");
+  } catch (e) {
+    return Response.json(
+      { message: "Terjadi kesalahan tak terduga pada server!" },
+      { status: 500 }
+    );
+  }
+}

@@ -149,6 +149,8 @@ const tables = [
       { name: "creator", type: "link", link: { table: "users" } },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
       { name: "description", type: "text", notNull: true, defaultValue: "" },
+      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
+      { name: "location", type: "text", notNull: true, defaultValue: "" },
     ],
   },
 ] as const;
