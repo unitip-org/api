@@ -80,7 +80,7 @@ export async function POST(request: Request) {
             id: userResult.id,
             name: userResult.name,
             email: userResult.email,
-            token: sessionResult,
+            token: sessionResult.token,
           });
       } else {
         const sessionQuery = database
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
             id: userResult.id,
             name: userResult.name,
             email: userResult.email,
-            token: sessionResult,
+            token: sessionResult.token,
           });
       }
     } else {
@@ -183,7 +183,7 @@ export async function POST(request: Request) {
             id: firstUser.id,
             name: firstUser.name,
             email: firstUser.email,
-            token: sessionResult,
+            token: sessionResult.token,
           });
       } else {
         const sessionQuery = database
@@ -202,7 +202,7 @@ export async function POST(request: Request) {
             id: firstUser.id,
             name: firstUser.name,
             email: firstUser.email,
-            token: sessionResult,
+            token: sessionResult.token,
           });
       }
     }
