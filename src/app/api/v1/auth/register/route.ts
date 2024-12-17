@@ -1,19 +1,21 @@
+import { database } from "@/lib/database";
+import { APIResponse } from "@/lib/models/api-response";
+import { generateRandomToken } from "@/lib/utils";
+import { hash } from "bcrypt";
 import { z } from "zod";
+
+interface POSTResponse {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+}
 
 export async function POST(request: Request) {
   try {
-    // const authHeader = request.headers.get("Authorization");
-    // if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    //   return Response.json(
-    //     { message: "Token otorisasi tidak ditemukan!" },
-    //     { status: 401 }
-    //   );
-    // }
-    // const token = authHeader.substring(7);
-    // console.log(token);
-
     const json = await request.json();
     const { name, email, password } = json;
+
     const data = z
       .object({
         name: z
@@ -28,22 +30,77 @@ export async function POST(request: Request) {
       })
       .safeParse({ name, email, password });
 
+    // validasi input dari user
     if (!data.success)
-      return Response.json(
-        {
-          errors: data.error.errors.map(({ message, path }) => ({
-            message,
-            path: path[0],
-          })),
-        },
-        { status: 400 }
+      return APIResponse.respondWithBadRequest(
+        data.error.errors.map((it) => ({
+          message: it.message,
+          path: it.path[0] as string,
+        }))
       );
 
-    return Response.json({ success: true });
+    // cek account existence
+    const checkQuery = database
+      .selectFrom("users as u")
+      .select(["u.id"])
+      .where("u.email", "=", email);
+    const checkResult = await checkQuery.executeTakeFirst();
+
+    // kembalikan response conflict jika alamat email telah didaftarkan
+    if (checkResult)
+      return APIResponse.respondWithConflict(
+        "Alamat email sudah didaftarkan sebelumnya! Silahkan mencoba untuk masuk"
+      );
+
+    // jika belum, lakukan registrasi user baru
+    const newToken = generateRandomToken(32);
+    const hashedPassword = await hash(password, 12);
+
+    /**
+     * harusnya proses create account dan create session dilakukan menggunakan transaction
+     * agar ketika salah satu gagal, semua operasi akan ikut gagal. tapi, xata belum support
+     * transaction menggunakan library kysely. jadi, untuk sementara di create secara sequential.
+     *
+     * mungkin bisa dilakukan menggunakan sdk bawaan dari xata, tapi terkendala dengan id
+     * yang tidak bisa auto generate.
+     */
+
+    // create user account
+    const createUserResult = await database
+      .insertInto("users")
+      .values({
+        name: name,
+        email: email,
+        password: hashedPassword,
+      } as any)
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    // create session
+    const createSessionResult = await database
+      .insertInto("sessions")
+      .values({
+        token: newToken,
+        user: createUserResult.id,
+      } as any)
+      .returning("token")
+      .executeTakeFirstOrThrow();
+
+    if (createSessionResult)
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        id: createUserResult.id,
+        name: name,
+        email: email,
+        token: createSessionResult.token,
+      });
+
+    return APIResponse.respondWithServerError(
+      "Terjadi kesalahan tak terduga pada server!"
+    );
   } catch (e) {
-    return Response.json(
-      { message: "Terjadi kesalahan tak terduga pada server!" },
-      { status: 500 }
+    console.log(e);
+    return APIResponse.respondWithServerError(
+      "Terjadi kesalahan tak terduga pada server!"
     );
   }
 }

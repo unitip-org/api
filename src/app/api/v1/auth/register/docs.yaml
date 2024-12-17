@@ -39,6 +39,11 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadRequestError"
+        409:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ConflictError"
         500:
           content:
             application/json:

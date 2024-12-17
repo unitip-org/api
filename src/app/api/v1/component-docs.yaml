@@ -25,6 +25,12 @@ components:
         message:
           type: string
 
+    ConflictError:
+      type: object
+      properties:
+        message:
+          type: string
+
     InternalServerError:
       type: object
       properties:

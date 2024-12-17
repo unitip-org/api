@@ -11,6 +11,9 @@ export const APIResponse = {
   respondWithNotFound: (message: string) =>
     Response.json({ message }, { status: 404 }),
 
+  respondWithConflict: (message: string) =>
+    Response.json({ message }, { status: 409 }),
+
   respondWithServerError: (message: string) =>
     Response.json({ message }, { status: 500 }),
 };
