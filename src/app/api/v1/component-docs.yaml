@@ -1,0 +1,20 @@
+components:
+  schemas:
+    BadRequestError:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              path:
+                type: string
+              message:
+                type: string
+
+    InternalServerError:
+      type: object
+      properties:
+        message:
+          type: string

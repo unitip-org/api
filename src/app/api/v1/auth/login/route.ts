@@ -2,66 +2,6 @@ import { database } from "@/lib/database";
 import { compare } from "bcrypt";
 import { z } from "zod";
 
-/**
- * @swagger
- * /api/v1/auth/login:
- *   post:
- *     tags:
- *       - auth
- *     security:
- *       - BearerAuth: []
- *     requestBody:
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 id:
- *                   type: string
- *                 name:
- *                   type: string
- *                 email:
- *                   type: string
- *                 token:
- *                   type: string
- *       400:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 errors:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       message:
- *                         type: string
- *                       path:
- *                         type: string
- *       500:
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
- */
 export async function POST(request: Request) {
   try {
     const json = await request.json();

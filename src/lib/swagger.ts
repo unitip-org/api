@@ -1,12 +1,11 @@
-import { createSwaggerSpec } from "next-swagger-doc";
+import swaggerJsdoc from "swagger-jsdoc";
 
-export const getApiDocs = async (apiFolder: string) => {
-  return createSwaggerSpec({
-    apiFolder, // define api folder under app folder
+export const getApiDocs = async () => {
+  return swaggerJsdoc({
     definition: {
-      openapi: "3.0.0",
+      openapi: "3.1.0",
       info: {
-        title: "Next Swagger API Example",
+        title: "Unitip API Documentation",
         version: "1.0",
       },
       components: {
@@ -18,7 +17,10 @@ export const getApiDocs = async (apiFolder: string) => {
           },
         },
       },
-      security: [],
     },
+    apis: [
+      "./src/app/api/v1/**/docs.yaml",
+      "./src/app/api/v1/**/component-docs.yaml",
+    ],
   });
 };

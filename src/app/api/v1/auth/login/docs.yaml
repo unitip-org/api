@@ -1,0 +1,45 @@
+paths:
+  /api/v1/auth/login:
+    post:
+      tags:
+        - auth
+      security:
+        - BearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                  name:
+                    type: string
+                  email:
+                    type: string
+                  token:
+                    type: string
+        400:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadRequestError"
+        500:
+          content:
+            application/json:
+              schemas:
+                $ref: "#/components/schemas/InternalServerError"
