@@ -4,6 +4,15 @@ import { generateRandomToken } from "@/lib/utils";
 import { compare } from "bcrypt";
 import { z } from "zod";
 
+interface POSTResponse {
+  need_role: boolean;
+  roles: string[];
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+}
+
 export async function POST(request: Request) {
   try {
     const json = await request.json();
@@ -74,7 +83,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.respondWithSuccess({
+          return APIResponse.respondWithSuccess<POSTResponse>({
             need_role: false,
             roles: [],
             id: userResult.id,
@@ -93,7 +102,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.respondWithSuccess({
+          return APIResponse.respondWithSuccess<POSTResponse>({
             need_role: false,
             roles: [],
             id: userResult.id,
@@ -156,9 +165,13 @@ export async function POST(request: Request) {
 
       // validasi jika role > 1, maka minta user untuk login percobaan kedua
       if (usersResult.length > 1)
-        return APIResponse.respondWithSuccess({
+        return APIResponse.respondWithSuccess<POSTResponse>({
           need_role: true,
           roles: usersResult.map((it) => it.role),
+          id: "",
+          name: "",
+          email: "",
+          token: "",
         });
 
       // jika len result === 1, alias user hanya punya 1 role saja
@@ -177,7 +190,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.respondWithSuccess({
+          return APIResponse.respondWithSuccess<POSTResponse>({
             need_role: false,
             roles: [],
             id: firstUser.id,
@@ -196,7 +209,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.respondWithSuccess({
+          return APIResponse.respondWithSuccess<POSTResponse>({
             need_role: false,
             roles: [],
             id: firstUser.id,

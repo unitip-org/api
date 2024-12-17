@@ -1,5 +1,6 @@
 export const APIResponse = {
-  respondWithSuccess: (data: Object) => Response.json(data, { status: 200 }),
+  // respondWithSuccess: (data: Object) => Response.json(data, { status: 200 }),
+  respondWithSuccess: <T>(data: T) => Response.json(data, { status: 200 }),
 
   respondWithBadRequest: (errors: { path: string; message: string }[]) =>
     Response.json({ errors }, { status: 400 }),
