@@ -82,6 +82,25 @@ export async function POST(request: Request) {
             email: userResult.email,
             token: sessionResult,
           });
+      } else {
+        const sessionQuery = database
+          .insertInto("sessions")
+          .values({
+            token: newToken,
+            user: userResult.id,
+          } as any)
+          .returning("token");
+        const sessionResult = await sessionQuery.executeTakeFirst();
+
+        if (sessionResult)
+          return APIResponse.Success({
+            need_role: false,
+            roles: [],
+            id: userResult.id,
+            name: userResult.name,
+            email: userResult.email,
+            token: sessionResult,
+          });
       }
     } else {
       /**
@@ -154,6 +173,25 @@ export async function POST(request: Request) {
           .set({
             token: newToken,
           })
+          .returning("token");
+        const sessionResult = await sessionQuery.executeTakeFirst();
+
+        if (sessionResult)
+          return APIResponse.Success({
+            need_role: false,
+            roles: [],
+            id: firstUser.id,
+            name: firstUser.name,
+            email: firstUser.email,
+            token: sessionResult,
+          });
+      } else {
+        const sessionQuery = database
+          .insertInto("sessions")
+          .values({
+            token: newToken,
+            user: firstUser.id,
+          } as any)
           .returning("token");
         const sessionResult = await sessionQuery.executeTakeFirst();
 
