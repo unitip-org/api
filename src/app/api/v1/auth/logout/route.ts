@@ -24,11 +24,12 @@ export async function DELETE(request: NextRequest) {
     const [_, token] = authorization.split(" ");
 
     const deleteQuery = database
-      .deleteFrom("sessions as s")
-      .where("s.token", "=", token);
-    const deleteResult = await deleteQuery.execute();
+      .deleteFrom("sessions")
+      .where("token", "=", token)
+      .returning("id");
+    const deleteResult = await deleteQuery.executeTakeFirst();
 
-    if (deleteResult.length > 0)
+    if (deleteResult)
       return APIResponse.respondWithSuccess<DELETEResponse>({
         success: true,
         message: "Berhasil keluar dari akun!",
