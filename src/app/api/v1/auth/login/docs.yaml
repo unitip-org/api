@@ -3,8 +3,6 @@ paths:
     post:
       tags:
         - auth
-      security:
-        - BearerAuth: []
       requestBody:
         content:
           application/json:
@@ -18,6 +16,8 @@ paths:
                   type: string
                 password:
                   type: string
+                role:
+                  type: string
       responses:
         200:
           content:
@@ -25,8 +25,12 @@ paths:
               schema:
                 type: object
                 properties:
-                  id:
-                    type: string
+                  need_role:
+                    type: boolean
+                  roles:
+                    type: array
+                    items:
+                      type: string
                   name:
                     type: string
                   email:
@@ -38,8 +42,13 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/BadRequestError"
+        404:
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotFoundError"
         500:
           content:
             application/json:
-              schemas:
+              schema:
                 $ref: "#/components/schemas/InternalServerError"

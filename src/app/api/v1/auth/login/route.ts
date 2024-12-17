@@ -1,65 +1,110 @@
 import { database } from "@/lib/database";
+import { APIResponse } from "@/lib/models/api-response";
+import { generateRandomToken } from "@/lib/utils";
 import { compare } from "bcrypt";
 import { z } from "zod";
 
 export async function POST(request: Request) {
   try {
     const json = await request.json();
-    const { email, password } = json;
+    const { email, password, role } = json;
 
-    const parsedData = z
-      .object({
-        email: z
-          .string({ required_error: "Alamat email tidak boleh kosong!" })
-          .email("Alamat email tidak valid!"),
-        password: z
-          .string({ required_error: "Kata sandi tidak boleh kosong!" })
-          .min(6, "Kata sandi minimal terdiri dari 6 karakter!"),
-      })
-      .safeParse({ email, password });
+    if (role) {
+      /**
+       * percobaan kedua
+       * masukkan user menggunakan role yang diminta.
+       */
+    } else {
+      /**
+       * percobaan pertama
+       * jika user tidak memiliki role ganda, maka login user menggunakan role tersebut.
+       * jika user memiliki role ganda, maka kembalikan daftar role ke user, kemudian
+       * user diminta untuk mengulangi percobaan login dengan menyertakan role yang
+       * akan digunakan.
+       */
+      const parsedData = z
+        .object({
+          email: z
+            .string({ required_error: "Alamat email tidak boleh kosong!" })
+            .email("Alamat email tidak valid!"),
+          password: z
+            .string({ required_error: "Kata sandi tidak boleh kosong!" })
+            .min(6, "Kata sandi minimal terdiri dari 6 karakter!"),
+        })
+        .safeParse({ email, password });
 
-    if (!parsedData.success) {
-      return Response.json(
-        {
-          errors: parsedData.error.errors.map((it) => ({
+      if (!parsedData.success)
+        return APIResponse.BadRequestError(
+          parsedData.error.errors.map((it) => ({
             message: it.message,
-            path: it.path[0],
-          })),
-        },
-        { status: 400 }
-      );
+            path: it.path[0] as string,
+          }))
+        );
+
+      const usersQuery = database
+        .selectFrom("users as u")
+        .innerJoin("user_roles as ur", "ur.user", "u.id")
+        .leftJoin("sessions as s", "s.user", "u.id")
+        .select([
+          "u.id",
+          "u.name",
+          "u.email",
+          "u.password",
+          "ur.role",
+          "s.token",
+        ])
+        .where("u.email", "=", email);
+      const usersResult = await usersQuery.execute();
+
+      // validasi user account existence dan kata sandi
+      if (
+        usersResult.length === 0 ||
+        (usersResult.length > 0 &&
+          !(await compare(password, usersResult[0].password)))
+      )
+        return APIResponse.NotFoundError(
+          "Alamat email atau kata sandi tidak valid!"
+        );
+
+      // validasi jika role > 1, maka minta user untuk login percobaan kedua
+      if (usersResult.length > 1)
+        return APIResponse.Success({
+          need_role: true,
+          roles: usersResult.map((it) => it.role),
+        });
+
+      // jika len result === 1, alias user hanya punya 1 role saja
+      const firstUser = usersResult[0];
+      const newToken = generateRandomToken(32);
+
+      // cek apakah user sedang memiliki session
+      if (firstUser.token) {
+        const sessionQuery = database
+          .updateTable("sessions")
+          .where("user", "=", firstUser.id as any)
+          .set({
+            token: newToken,
+          })
+          .returning("token");
+        const sessionResult = await sessionQuery.executeTakeFirst();
+
+        if (sessionResult)
+          return APIResponse.Success({
+            need_role: false,
+            roles: [],
+            name: firstUser.name,
+            email: firstUser.email,
+            token: sessionResult,
+          });
+      }
     }
 
-    const query = database
-      .selectFrom("users as u")
-      .select(["u.id", "u.name", "u.email", "u.password"])
-      .where("u.email", "=", email);
-    const result = await query.executeTakeFirst();
-
-    // email tidak ditemukan
-    if (!result)
-      return new Response("Alamat email atau kata sandi tidak valid!", {
-        status: 400,
-      });
-
-    // validasi kata sandi
-    if (!(await compare(password, result.password)))
-      return new Response("Alamat email atau kata sandi tidak valid!", {
-        status: 400,
-      });
-
-    return Response.json({
-      id: result.id,
-      name: result.name,
-      email: result.email,
-      token: "gatau",
-    });
+    return APIResponse.InternalServerError(
+      "Terjadi kesalahan tak terduga pada server!"
+    );
   } catch (e) {
-    return Response.json(
-      { message: "Terjadi kesalahan tak terduga pada server!" },
-      {
-        status: 500,
-      }
+    return APIResponse.InternalServerError(
+      "Terjadi kesalahan tak terduga pada server!"
     );
   }
 }

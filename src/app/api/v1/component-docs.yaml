@@ -13,6 +13,12 @@ components:
               message:
                 type: string
 
+    NotFoundError:
+      type: object
+      properties:
+        message:
+          type: string
+
     InternalServerError:
       type: object
       properties:
