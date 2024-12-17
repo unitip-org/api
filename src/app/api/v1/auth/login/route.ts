@@ -29,7 +29,7 @@ export async function POST(request: Request) {
         .safeParse({ email, password, role });
 
       if (!parsedData.success)
-        return APIResponse.BadRequestError(
+        return APIResponse.respondWithBadRequest(
           parsedData.error.errors.map((it) => ({
             message: it.message,
             path: it.path[0] as string,
@@ -57,7 +57,7 @@ export async function POST(request: Request) {
         !userResult ||
         (userResult && !(await compare(password, userResult.password)))
       )
-        return APIResponse.NotFoundError(
+        return APIResponse.respondWithNotFound(
           "Alamat email atau kata sandi tidak valid!"
         );
 
@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.Success({
+          return APIResponse.respondWithSuccess({
             need_role: false,
             roles: [],
             id: userResult.id,
@@ -93,7 +93,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.Success({
+          return APIResponse.respondWithSuccess({
             need_role: false,
             roles: [],
             id: userResult.id,
@@ -122,7 +122,7 @@ export async function POST(request: Request) {
         .safeParse({ email, password });
 
       if (!parsedData.success)
-        return APIResponse.BadRequestError(
+        return APIResponse.respondWithBadRequest(
           parsedData.error.errors.map((it) => ({
             message: it.message,
             path: it.path[0] as string,
@@ -150,13 +150,13 @@ export async function POST(request: Request) {
         (usersResult.length > 0 &&
           !(await compare(password, usersResult[0].password)))
       )
-        return APIResponse.NotFoundError(
+        return APIResponse.respondWithNotFound(
           "Alamat email atau kata sandi tidak valid!"
         );
 
       // validasi jika role > 1, maka minta user untuk login percobaan kedua
       if (usersResult.length > 1)
-        return APIResponse.Success({
+        return APIResponse.respondWithSuccess({
           need_role: true,
           roles: usersResult.map((it) => it.role),
         });
@@ -177,7 +177,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.Success({
+          return APIResponse.respondWithSuccess({
             need_role: false,
             roles: [],
             id: firstUser.id,
@@ -196,7 +196,7 @@ export async function POST(request: Request) {
         const sessionResult = await sessionQuery.executeTakeFirst();
 
         if (sessionResult)
-          return APIResponse.Success({
+          return APIResponse.respondWithSuccess({
             need_role: false,
             roles: [],
             id: firstUser.id,
@@ -207,11 +207,11 @@ export async function POST(request: Request) {
       }
     }
 
-    return APIResponse.InternalServerError(
+    return APIResponse.respondWithServerError(
       "Terjadi kesalahan tak terduga pada server!"
     );
   } catch (e) {
-    return APIResponse.InternalServerError(
+    return APIResponse.respondWithServerError(
       "Terjadi kesalahan tak terduga pada server!"
     );
   }
