@@ -1,3 +1,4 @@
+import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { NextRequest } from "next/server";
@@ -9,23 +10,13 @@ interface DELETEResponse {
 
 export async function DELETE(request: NextRequest) {
   try {
-    // mendapatkan token dari header
-    const authorization = request.headers.get("Authorization");
-
-    // validasi jika tidak ada token
-    if (
-      !authorization ||
-      (authorization && !authorization.startsWith("Bearer"))
-    )
-      return APIResponse.respondWithUnauthorized();
-
-    // memisahkan token dari string
-    // format penulisan => Bearer initokennya
-    const [_, token] = authorization.split(" ");
+    // verify bearer token, serta mendapatkan token, role, dan userId
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
 
     const deleteQuery = database
       .deleteFrom("sessions")
-      .where("token", "=", token)
+      .where("token", "=", authorization.token)
       .returning("id");
     const deleteResult = await deleteQuery.executeTakeFirst();
 

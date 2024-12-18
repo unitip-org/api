@@ -141,6 +141,7 @@ const tables = [
     columns: [
       { name: "token", type: "text", notNull: true, defaultValue: "" },
       { name: "user", type: "link", link: { table: "users" } },
+      { name: "role", type: "text", notNull: true, defaultValue: "" },
     ],
   },
   {
@@ -153,6 +154,12 @@ const tables = [
       { name: "location", type: "text", notNull: true, defaultValue: "" },
     ],
   },
+  { name: "single_offers", columns: [] },
+  { name: "multi_offers", columns: [] },
+  { name: "multi_offer_followers", columns: [] },
+  { name: "single_jobs", columns: [] },
+  { name: "multi_jobs", columns: [] },
+  { name: "multi_job_followers", columns: [] },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -190,6 +197,24 @@ export type SessionsRecord = Sessions & XataRecord;
 export type Offers = InferredTypes["offers"];
 export type OffersRecord = Offers & XataRecord;
 
+export type SingleOffers = InferredTypes["single_offers"];
+export type SingleOffersRecord = SingleOffers & XataRecord;
+
+export type MultiOffers = InferredTypes["multi_offers"];
+export type MultiOffersRecord = MultiOffers & XataRecord;
+
+export type MultiOfferFollowers = InferredTypes["multi_offer_followers"];
+export type MultiOfferFollowersRecord = MultiOfferFollowers & XataRecord;
+
+export type SingleJobs = InferredTypes["single_jobs"];
+export type SingleJobsRecord = SingleJobs & XataRecord;
+
+export type MultiJobs = InferredTypes["multi_jobs"];
+export type MultiJobsRecord = MultiJobs & XataRecord;
+
+export type MultiJobFollowers = InferredTypes["multi_job_followers"];
+export type MultiJobFollowersRecord = MultiJobFollowers & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -201,6 +226,12 @@ export type DatabaseSchema = {
   customer_request_applications: CustomerRequestApplicationsRecord;
   sessions: SessionsRecord;
   offers: OffersRecord;
+  single_offers: SingleOffersRecord;
+  multi_offers: MultiOffersRecord;
+  multi_offer_followers: MultiOfferFollowersRecord;
+  single_jobs: SingleJobsRecord;
+  multi_jobs: MultiJobsRecord;
+  multi_job_followers: MultiJobFollowersRecord;
 };
 
 const DatabaseClient = buildClient();
