@@ -49,7 +49,7 @@ export async function POST(request: Request) {
       const userQuery = database
         .selectFrom("users as u")
         .innerJoin("user_roles as ur", "ur.user", "u.id")
-        .leftJoin("sessions as s", "s.user", "u.id")
+        .leftJoin("user_sessions as s", "s.user", "u.id")
         .select([
           "u.id",
           "u.name",
@@ -75,7 +75,7 @@ export async function POST(request: Request) {
       const newToken = generateRandomToken(32);
       if (userResult.token) {
         const sessionQuery = database
-          .updateTable("sessions")
+          .updateTable("user_sessions")
           .where("user", "=", userResult.id as any)
           .set({
             token: newToken,
@@ -95,7 +95,7 @@ export async function POST(request: Request) {
           });
       } else {
         const sessionQuery = database
-          .insertInto("sessions")
+          .insertInto("user_sessions")
           .values({
             token: newToken,
             user: userResult.id,
@@ -144,7 +144,7 @@ export async function POST(request: Request) {
       const usersQuery = database
         .selectFrom("users as u")
         .innerJoin("user_roles as ur", "ur.user", "u.id")
-        .leftJoin("sessions as s", "s.user", "u.id")
+        .leftJoin("user_sessions as s", "s.user", "u.id")
         .select([
           "u.id",
           "u.name",
@@ -185,7 +185,7 @@ export async function POST(request: Request) {
       // cek apakah user sedang memiliki session
       if (firstUser.token) {
         const sessionQuery = database
-          .updateTable("sessions")
+          .updateTable("user_sessions")
           .where("user", "=", firstUser.id as any)
           .set({
             token: newToken,
@@ -205,7 +205,7 @@ export async function POST(request: Request) {
           });
       } else {
         const sessionQuery = database
-          .insertInto("sessions")
+          .insertInto("user_sessions")
           .values({
             token: newToken,
             user: firstUser.id,

@@ -15,7 +15,7 @@ export async function DELETE(request: NextRequest) {
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
     const deleteQuery = database
-      .deleteFrom("sessions")
+      .deleteFrom("user_sessions")
       .where("token", "=", authorization.token)
       .returning("id");
     const deleteResult = await deleteQuery.executeTakeFirst();

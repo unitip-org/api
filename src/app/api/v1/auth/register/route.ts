@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       {
         insert: {
           createOnly: true,
-          table: "sessions",
+          table: "user_sessions",
           record: {
             token: newToken,
             role: "customer",
