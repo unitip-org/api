@@ -18,6 +18,10 @@ export function formatDate(date: Date | string | null): string {
   return format(parsedDate, "dd/MM/yyyy, HH:mm", { locale: id });
 }
 
+/**
+ * @deprecated
+ * gunakan uuid v4 dari package uuid langsung agar lebih random
+ */
 export const generateRandomToken = (length: number): string => {
   const characters =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";

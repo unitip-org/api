@@ -25,7 +25,7 @@ const tables = [
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "applicant", table: "customer_request_applications" },
-      { column: "user", table: "sessions" },
+      { column: "user", table: "user_sessions" },
       { column: "creator", table: "offers" },
     ],
   },
@@ -137,7 +137,7 @@ const tables = [
     ],
   },
   {
-    name: "sessions",
+    name: "user_sessions",
     columns: [
       { name: "token", type: "text", notNull: true, defaultValue: "" },
       { name: "user", type: "link", link: { table: "users" } },
@@ -191,8 +191,8 @@ export type CustomerRequestApplications =
 export type CustomerRequestApplicationsRecord = CustomerRequestApplications &
   XataRecord;
 
-export type Sessions = InferredTypes["sessions"];
-export type SessionsRecord = Sessions & XataRecord;
+export type UserSessions = InferredTypes["user_sessions"];
+export type UserSessionsRecord = UserSessions & XataRecord;
 
 export type Offers = InferredTypes["offers"];
 export type OffersRecord = Offers & XataRecord;
@@ -224,7 +224,7 @@ export type DatabaseSchema = {
   chat_rooms: ChatRoomsRecord;
   user_roles: UserRolesRecord;
   customer_request_applications: CustomerRequestApplicationsRecord;
-  sessions: SessionsRecord;
+  user_sessions: UserSessionsRecord;
   offers: OffersRecord;
   single_offers: SingleOffersRecord;
   multi_offers: MultiOffersRecord;
