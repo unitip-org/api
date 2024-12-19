@@ -39,6 +39,8 @@ paths:
                     type: string
                   token:
                     type: string
+                  role:
+                    type: string
         400:
           content:
             application/json:
