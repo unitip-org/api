@@ -27,7 +27,7 @@ export const verifyBearerToken = async (
 
   // mencari token di database session dan mengambil role
   const query = database
-    .selectFrom("sessions as s")
+    .selectFrom("user_sessions as s")
     .select(["s.token", "s.role", "s.user"])
     .where("s.token", "=", token);
   const result = await query.executeTakeFirst();
