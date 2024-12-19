@@ -1,7 +1,7 @@
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
-import { generateRandomToken } from "@/lib/utils";
 import { compare } from "bcrypt";
+import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
 interface POSTResponse {
@@ -72,7 +72,7 @@ export async function POST(request: Request) {
         );
 
       // cek apakah user sedang memiliki session
-      const newToken = generateRandomToken(32);
+      const newToken = uuidv4();
       if (userResult.token) {
         const sessionQuery = database
           .updateTable("user_sessions")
@@ -180,7 +180,7 @@ export async function POST(request: Request) {
 
       // jika len result === 1, alias user hanya punya 1 role saja
       const firstUser = usersResult[0];
-      const newToken = generateRandomToken(32);
+      const newToken = uuidv4();
 
       // cek apakah user sedang memiliki session
       if (firstUser.token) {
