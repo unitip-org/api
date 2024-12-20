@@ -19,8 +19,10 @@ export const getApiDocs = async () => {
       },
     },
     apis: [
-      "./src/app/api/v1/**/docs.yaml",
-      "./src/app/api/v1/**/component-docs.yaml",
+      "./**/docs.yaml",
+      "./**/component-docs.yaml",
+      // "./src/app/api/v1/**/docs.yaml",
+      // "./src/app/api/v1/**/component-docs.yaml",
     ],
   });
 };
