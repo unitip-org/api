@@ -1,6 +1,7 @@
 import { authLoginPaths } from "@/app/api/v1/auth/login/docs";
 import { authLogoutPaths } from "@/app/api/v1/auth/logout/docs";
 import { authRegisterPaths } from "@/app/api/v1/auth/register/docs";
+import { approveJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/applicants/[applicant_id]/approve/docs";
 import { applyJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/apply/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { swaggerComponents } from "./component";
@@ -22,5 +23,6 @@ export const swaggerSpec = {
     // jobs
     ...jobsPaths,
     ...applyJobByIdPaths,
+    ...approveJobByIdPaths,
   },
 };

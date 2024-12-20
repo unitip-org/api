@@ -30,6 +30,13 @@ const tables = [
       { column: "customer", table: "single_jobs" },
       { column: "freelancer", table: "single_jobs" },
       { column: "freelancer", table: "single_job_applicants" },
+      { column: "freelancer", table: "multi_jobs" },
+      { column: "freelancer", table: "multi_offers" },
+      { column: "customer", table: "multi_offers" },
+      { column: "customer", table: "single_offers" },
+      { column: "freelancer", table: "multi_job_applicants" },
+      { column: "customer", table: "multi_job_followers" },
+      { column: "customer", table: "multi_jobs" },
       { column: "freelancer", table: "single_offers" },
     ],
   },
@@ -161,13 +168,56 @@ const tables = [
   {
     name: "single_offers",
     columns: [
+      { name: "customer", type: "link", link: { table: "users" } },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "status", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "available_until",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
       { name: "freelancer", type: "link", link: { table: "users" } },
-      { name: "title", type: "text" },
-      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
+      { name: "destination", type: "text", notNull: true, defaultValue: "" },
     ],
   },
-  { name: "multi_offers", columns: [] },
-  { name: "multi_offer_followers", columns: [] },
+  {
+    name: "multi_offers",
+    columns: [
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "status", type: "text", notNull: true, defaultValue: "" },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      {
+        name: "available_until",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+    ],
+    revLinks: [
+      { column: "customer", table: "multi_offer_followers" },
+      { column: "offer", table: "multi_offer_followers" },
+    ],
+  },
+  {
+    name: "multi_offer_followers",
+    columns: [
+      { name: "customer", type: "link", link: { table: "multi_offers" } },
+      { name: "offer", type: "link", link: { table: "multi_offers" } },
+      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+    ],
+  },
   {
     name: "single_jobs",
     columns: [
@@ -183,15 +233,36 @@ const tables = [
       { name: "type", type: "text", notNull: true, defaultValue: "" },
       { name: "customer", type: "link", link: { table: "users" } },
       { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
     ],
     revLinks: [{ column: "job", table: "single_job_applicants" }],
   },
   {
     name: "multi_jobs",
-    columns: [],
-    revLinks: [{ column: "job", table: "multi_job_applicants" }],
+    columns: [
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+    ],
+    revLinks: [
+      { column: "job", table: "multi_job_applicants" },
+      { column: "job", table: "multi_job_followers" },
+    ],
   },
-  { name: "multi_job_followers", columns: [] },
+  {
+    name: "multi_job_followers",
+    columns: [
+      { name: "job", type: "link", link: { table: "multi_jobs" } },
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+    ],
+  },
   {
     name: "single_job_applicants",
     columns: [
@@ -205,6 +276,7 @@ const tables = [
     columns: [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "job", type: "link", link: { table: "multi_jobs" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
     ],
   },
 ] as const;

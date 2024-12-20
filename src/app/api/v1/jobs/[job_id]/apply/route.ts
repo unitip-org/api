@@ -17,7 +17,6 @@ export async function POST(
     const json = await request.json();
     const { price } = json;
     const { job_id } = params;
-    console.log({ price, job_id });
 
     // validasi price dan parameter
     const data = z
