@@ -42,3 +42,13 @@ components:
       properties:
         message:
           type: string
+
+    PageInfo:
+      type: object
+      properties:
+        count:
+          type: number
+        page:
+          type: number
+        total_pages:
+          type: number
