@@ -1,0 +1,10 @@
+{
+  "git": {
+    "deploymentEnabled": {
+      "main": true,
+      "dev": false,
+      "dev-reni": false,
+      "ridlo-dev": false
+    }
+  }
+}
