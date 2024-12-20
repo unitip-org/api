@@ -69,7 +69,6 @@ export async function POST(
       id: result.id,
     });
   } catch (e) {
-    console.log(e);
     return APIResponse.respondWithServerError();
   }
 }
