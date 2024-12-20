@@ -1,6 +1,7 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
+import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -45,6 +46,20 @@ export async function POST(
     if (authorization.role !== "driver")
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk melakukan aksi ini!"
+      );
+
+    // validasi jika job sudah di apply
+    const checkApplyQuery = database
+      .selectFrom("single_jobs as s")
+      .select(sql<number>`count(s.id)`.as("count"))
+      .where("s.id", "=", job_id)
+      .where("s.freelancer", "=", null);
+    const checkApplyResult = await checkApplyQuery.executeTakeFirst();
+    if (!checkApplyResult) return APIResponse.respondWithServerError();
+
+    if (checkApplyResult.count === 0)
+      return APIResponse.respondWithConflict(
+        "Job sudah diambil oleh orang lain!"
       );
 
     // logika apply job

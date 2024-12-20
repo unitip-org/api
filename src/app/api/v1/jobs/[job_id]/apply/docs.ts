@@ -73,6 +73,15 @@ export const applyJobByIdPaths = {
             },
           },
         },
+        409: {
+          content: {
+            "application/json": {
+              schema: {
+                $ref: swaggerComponentRefs.ConflictError,
+              },
+            },
+          },
+        },
         500: {
           content: {
             "application/json": {
