@@ -27,6 +27,8 @@ const tables = [
       { column: "applicant", table: "customer_request_applications" },
       { column: "user", table: "user_sessions" },
       { column: "creator", table: "offers" },
+      { column: "customer", table: "single_jobs" },
+      { column: "driver", table: "single_jobs" },
     ],
   },
   {
@@ -157,7 +159,23 @@ const tables = [
   { name: "single_offers", columns: [] },
   { name: "multi_offers", columns: [] },
   { name: "multi_offer_followers", columns: [] },
-  { name: "single_jobs", columns: [] },
+  {
+    name: "single_jobs",
+    columns: [
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "type", type: "text", notNull: true, defaultValue: "" },
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "driver", type: "link", link: { table: "users" } },
+    ],
+  },
   { name: "multi_jobs", columns: [] },
   { name: "multi_job_followers", columns: [] },
 ] as const;

@@ -19,6 +19,12 @@ components:
         message:
           type: string
 
+    ForbiddenError:
+      type: object
+      properties:
+        message:
+          type: string
+
     NotFoundError:
       type: object
       properties:

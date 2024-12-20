@@ -8,12 +8,16 @@ export const APIResponse = {
   respondWithUnauthorized: () =>
     Response.json({ message: "Invalid authorization token!" }, { status: 401 }),
 
+  respondWithForbidden: (message: string) =>
+    Response.json({ message }, { status: 403 }),
+
   respondWithNotFound: (message: string) =>
     Response.json({ message }, { status: 404 }),
 
   respondWithConflict: (message: string) =>
     Response.json({ message }, { status: 409 }),
 
-  respondWithServerError: (message: string) =>
-    Response.json({ message }, { status: 500 }),
+  respondWithServerError: (
+    message: string = "Terjadi kesalahan tak terduga pada server!"
+  ) => Response.json({ message }, { status: 500 }),
 };
