@@ -28,7 +28,9 @@ const tables = [
       { column: "user", table: "user_sessions" },
       { column: "creator", table: "offers" },
       { column: "customer", table: "single_jobs" },
-      { column: "driver", table: "single_jobs" },
+      { column: "freelancer", table: "single_jobs" },
+      { column: "freelancer", table: "single_job_applicants" },
+      { column: "freelancer", table: "single_offers" },
     ],
   },
   {
@@ -156,7 +158,14 @@ const tables = [
       { name: "location", type: "text", notNull: true, defaultValue: "" },
     ],
   },
-  { name: "single_offers", columns: [] },
+  {
+    name: "single_offers",
+    columns: [
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "title", type: "text" },
+      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
+    ],
+  },
   { name: "multi_offers", columns: [] },
   { name: "multi_offer_followers", columns: [] },
   {
@@ -173,11 +182,31 @@ const tables = [
       { name: "note", type: "text", notNull: true, defaultValue: "" },
       { name: "type", type: "text", notNull: true, defaultValue: "" },
       { name: "customer", type: "link", link: { table: "users" } },
-      { name: "driver", type: "link", link: { table: "users" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+    ],
+    revLinks: [{ column: "job", table: "single_job_applicants" }],
+  },
+  {
+    name: "multi_jobs",
+    columns: [],
+    revLinks: [{ column: "job", table: "multi_job_applicants" }],
+  },
+  { name: "multi_job_followers", columns: [] },
+  {
+    name: "single_job_applicants",
+    columns: [
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "job", type: "link", link: { table: "single_jobs" } },
     ],
   },
-  { name: "multi_jobs", columns: [] },
-  { name: "multi_job_followers", columns: [] },
+  {
+    name: "multi_job_applicants",
+    columns: [
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "job", type: "link", link: { table: "multi_jobs" } },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -233,6 +262,12 @@ export type MultiJobsRecord = MultiJobs & XataRecord;
 export type MultiJobFollowers = InferredTypes["multi_job_followers"];
 export type MultiJobFollowersRecord = MultiJobFollowers & XataRecord;
 
+export type SingleJobApplicants = InferredTypes["single_job_applicants"];
+export type SingleJobApplicantsRecord = SingleJobApplicants & XataRecord;
+
+export type MultiJobApplicants = InferredTypes["multi_job_applicants"];
+export type MultiJobApplicantsRecord = MultiJobApplicants & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -250,6 +285,8 @@ export type DatabaseSchema = {
   single_jobs: SingleJobsRecord;
   multi_jobs: MultiJobsRecord;
   multi_job_followers: MultiJobFollowersRecord;
+  single_job_applicants: SingleJobApplicantsRecord;
+  multi_job_applicants: MultiJobApplicantsRecord;
 };
 
 const DatabaseClient = buildClient();
