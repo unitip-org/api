@@ -3,13 +3,13 @@
 
 import { database } from "@/lib/database";
 import {
-  DatabaseSchema,
   CustomerRequestsRecord,
+  DatabaseSchema,
   DriverOffersRecord,
   getXataClient,
 } from "@/lib/database/xata";
 
-import { Insertable, sql, Updateable } from "kysely";
+import { Insertable, Updateable } from "kysely";
 
 export type CustomerRequestInsertable = Insertable<
   DatabaseSchema["customer_requests"]
@@ -52,38 +52,39 @@ export type DriverOfferUpdateable = Updateable<DatabaseSchema["driver_offers"]>;
 
 export async function getCustomerPosts(): Promise<CustomerRequestsRecord[]> {
   try {
-    const posts = await database
-      .selectFrom("customer_requests")
-      .leftJoin(
-        database.selectFrom("users").select(["id", "name"]).as("user"),
-        "user.id",
-        "customer_requests.customerId"
-      )
-      .select([
-        "customer_requests.id",
-        "customer_requests.title",
-        "customer_requests.pickupLocation",
-        "customer_requests.dropoffLocation",
-        "customer_requests.additionalNotes",
-        "customer_requests.type",
-        "customer_requests.status",
-        "customer_requests.preferredGender",
-        "customer_requests.pickupTime",
-        "user.id as customerId",
-        "user.name as customerName",
-      ])
-      .execute();
+    return [];
+    // const posts = await database
+    //   .selectFrom("customer_requests")
+    //   .leftJoin(
+    //     database.selectFrom("users").select(["id", "name"]).as("user"),
+    //     "user.id",
+    //     "customer_requests.customerId"
+    //   )
+    //   .select([
+    //     "customer_requests.id",
+    //     "customer_requests.title",
+    //     "customer_requests.pickupLocation",
+    //     "customer_requests.dropoffLocation",
+    //     "customer_requests.additionalNotes",
+    //     "customer_requests.type",
+    //     "customer_requests.status",
+    //     "customer_requests.preferredGender",
+    //     "customer_requests.pickupTime",
+    //     "user.id as customerId",
+    //     "user.name as customerName",
+    //   ])
+    //   .execute();
 
-    // Transform hasil query agar customerId.
-    const transformedPosts = posts.map((post) => ({
-      ...post,
-      customerId: post.customerId
-        ? { id: post.customerId, name: post.customerName }
-        : null,
-    }));
+    // // Transform hasil query agar customerId.
+    // const transformedPosts = posts.map((post) => ({
+    //   ...post,
+    //   customerId: post.customerId
+    //     ? { id: post.customerId, name: post.customerName }
+    //     : null,
+    // }));
 
-    console.log("Transformed query result:", transformedPosts);
-    return transformedPosts as any;
+    // console.log("Transformed query result:", transformedPosts);
+    // return transformedPosts as any;
   } catch (error) {
     console.error("Error fetching customer posts:", error);
     return [];
