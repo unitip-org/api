@@ -191,6 +191,7 @@ export async function POST(request: Request) {
           .where("user", "=", firstUser.id as any)
           .set({
             token: newToken,
+            role: firstUser.role,
           })
           .returning("token");
         const sessionResult = await sessionQuery.executeTakeFirst();
@@ -210,6 +211,7 @@ export async function POST(request: Request) {
           .insertInto("user_sessions")
           .values({
             token: newToken,
+            role: firstUser.role,
             user: firstUser.id,
           } as any)
           .returning("token");
