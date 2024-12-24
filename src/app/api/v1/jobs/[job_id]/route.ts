@@ -14,6 +14,11 @@ interface GETResponse {
   pickup_location: string;
   created_at: string;
   updated_at: string;
+  applicants: {
+    id: string;
+    name: string;
+    price: number;
+  }[];
 }
 
 export async function GET(
@@ -70,6 +75,14 @@ export async function GET(
       if (!result)
         return APIResponse.respondWithNotFound("Job tidak ditemukan!");
 
+      // query untuk mendapatkan applicants
+      const applicantsQuery = database
+        .selectFrom("single_job_applicants as a")
+        .innerJoin("users as u", "u.id", "a.freelancer")
+        .select(["a.id", "u.name", "a.price"])
+        .where("a.job", "=", result.id as any);
+      const applicantsResult = await applicantsQuery.execute();
+
       return APIResponse.respondWithSuccess<GETResponse>({
         id: result.id,
         title: result.title,
@@ -79,6 +92,7 @@ export async function GET(
         pickup_location: result.pickup_location,
         created_at: result.created_at,
         updated_at: result.updated_at,
+        applicants: applicantsResult,
       });
     } else if (type === "jasa-titip") {
       // query ke table delivery_jobs

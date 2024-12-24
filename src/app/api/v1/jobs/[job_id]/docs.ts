@@ -35,6 +35,17 @@ export const jobByIdPaths = {
                   pickup_location: { type: "string" },
                   created_at: { type: "string" },
                   updated_at: { type: "string" },
+                  applicants: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                        price: { type: "number" },
+                      },
+                    },
+                  },
                 },
               },
             },
