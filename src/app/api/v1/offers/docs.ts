@@ -108,11 +108,7 @@ export const offersPaths = {
     },
     get: {
       tags: ["Offers"],
-      security: [
-        {
-          bearerAuth: [],
-        },
-      ],
+      security: swaggerSecurity,
       parameters: [
         {
           in: "query",
