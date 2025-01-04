@@ -30,5 +30,7 @@ export const swaggerSpec = {
 
     //offers
     ...offersPaths,
+    ...applyJobByIdPaths,
+    ...approveJobByIdPaths,
   },
 };

@@ -170,15 +170,15 @@ export async function GET(request: NextRequest) {
       .selectFrom("single_offers as so")
       .innerJoin("users as u", "u.id", "so.freelancer")
       .select([
-        sql<string>`so.id`.as("id"),
-        sql<string>`so.title`.as("title"),
-        sql<string>`so.description`.as("description"),
-        sql<string>`so.type`.as("type"),
-        sql<string>`so."available_until"`.as("available_until"),
-        sql<number>`so.price`.as("price"),
-        sql<string>`so.location`.as("location"),
-        sql<string>`so."delivery_area"`.as("delivery_area"),
-        sql<string>`u.name`.as("freelancer_name"),
+        "so.id",
+        "so.title",
+        "so.description",
+        "so.type",
+        "so.available_until",
+        "so.price",
+        "so.location",
+        "so.delivery_area",
+        "u.name as freelancer_name",
       ])
       .select(sql<string>`so."xata.createdAt"`.as("created_at"))
       .select(sql<string>`so."xata.updatedAt"`.as("updated_at"))
