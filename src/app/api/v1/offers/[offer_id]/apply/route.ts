@@ -27,17 +27,14 @@ export async function POST(
             required_error: "Catatan untuk pemesanan tidak boleh kosong!",
           })
           .min(5, "Catatan pemesanan minimal 5 karakter!"),
-        delivery: z.object({
-          id: z.string({
+        delivery: z
+          .string({
             required_error: "Tempat pengiriman pesanan tidak boleh kosong!",
-          }),
-          status: z.string({
-            required_error: "Status pengiriman pesanan tidak boleh kosong!",
-          }),
-          offer_id: z
-            .string({ required_error: "Offer ID tidak boleh kosong!" })
-            .min(1, "Offer ID tidak boleh kosong!"),
-        }),
+          })
+          .min(5, "Tempat pengiriman minimal 5 karakter!"),
+        offer_id: z
+          .string({ required_error: "Offer ID tidak boleh kosong!" })
+          .min(1, "Offer ID tidak boleh kosong!"),
       })
       .safeParse({ note, delivery, offer_id });
     if (!data.success)
@@ -57,15 +54,16 @@ export async function POST(
       );
 
     //Karena single offer jadi mau validasi jika udah ada yang ambil
-    const checkRequestQuery = database
+    const checkApplyQuery = database
       .selectFrom("single_offers as so")
       .select(sql<number>`count(so.id)`.as("count"))
       .where("so.id", "=", offer_id)
-      .where("so.customer", "=", null);
-    const checkRequestResult = await checkRequestQuery.executeTakeFirst();
-    if (!checkRequestResult) return APIResponse.respondWithServerError();
+      .where("so.customer", "is", null);
+    const checkApplyResult = await checkApplyQuery.executeTakeFirst();
 
-    if (checkRequestResult.count === 0)
+    if (!checkApplyResult) return APIResponse.respondWithServerError();
+
+    if (checkApplyResult.count === 0)
       return APIResponse.respondWithConflict(
         "Offer sudah diambil oleh orang lain!"
       );
