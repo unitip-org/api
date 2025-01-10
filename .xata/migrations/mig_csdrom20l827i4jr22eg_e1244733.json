@@ -1,0 +1,19 @@
+{
+  "id": "mig_csdrom20l827i4jr22eg",
+  "parentID": "mig_csdrofn643vtiorcojr0",
+  "checksum": "1:e12447334d2d23ac810f6cee3124f7e49839af1586e3e339424d30aeb46992c3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "to",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "chats"
+      }
+    }
+  ]
+}

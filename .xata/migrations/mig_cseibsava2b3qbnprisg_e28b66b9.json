@@ -1,0 +1,16 @@
+{
+  "id": "mig_cseibsava2b3qbnprisg",
+  "parentID": "mig_cseiaaqva2b3qbnpripg",
+  "checksum": "1:e28b66b97455956e0cfbd610c37bababae84943aa053c933a06e2cf6b1cd0363",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "preferredGender",
+          "type": "multiple"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

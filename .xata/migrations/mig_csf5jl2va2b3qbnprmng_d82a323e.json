@@ -1,0 +1,18 @@
+{
+  "id": "mig_csf5jl2va2b3qbnprmng",
+  "parentID": "mig_csf5j92va2b3qbnprmmg",
+  "checksum": "1:d82a323e7edc7737ac4258a63799ce39906dba8d47fad7a32202f15cdf96fa58",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "pickupTime",
+          "type": "datetime",
+          "notNull": true,
+          "defaultValue": "now"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

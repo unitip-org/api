@@ -1,0 +1,12 @@
+{
+  "id": "mig_ctghaslkite69dmfbup0",
+  "parentID": "mig_ctghao5kite69dmfbung",
+  "checksum": "1:03fcc3e5e6ef900640092fd0e71a2df17a1ba8ca22d285a3b73235ca961a8db6",
+  "operations": [
+    {
+      "addTable": {
+        "table": "multi_jobs"
+      }
+    }
+  ]
+}

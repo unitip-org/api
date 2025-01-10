@@ -1,0 +1,16 @@
+{
+  "id": "mig_csei9u2va2b3qbnpriog",
+  "parentID": "mig_csei9sava2b3qbnpring",
+  "checksum": "1:5094e2c20cbf4d333a1b4ed8065c9f6f83abc2a5bbd7e56ae14579cb3da7adf0",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "status",
+          "type": "multiple"
+        },
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

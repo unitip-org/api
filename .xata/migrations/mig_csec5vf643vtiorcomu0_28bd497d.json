@@ -1,0 +1,16 @@
+{
+  "id": "mig_csec5vf643vtiorcomu0",
+  "parentID": "mig_csec5s2va2b3qbnprhc0",
+  "checksum": "1:28bd497d9185b40bd605416aa9694e1e69ed51c52346fa6c926c98b29f8d1d73",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "additionalNotes",
+          "type": "text"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "mig_ctidbotkite69dmfc9cg",
+  "parentID": "mig_ctidb12mdb0b3eb7i1og",
+  "checksum": "1:7fd73e73cf410bb3e9835ecb0d5851f6080a2a05bffeb378127e70f7bd118a69",
+  "operations": [
+    {
+      "renameColumn": {
+        "newName": "pickup_location",
+        "oldName": "location",
+        "table": "single_jobs"
+      }
+    }
+  ]
+}

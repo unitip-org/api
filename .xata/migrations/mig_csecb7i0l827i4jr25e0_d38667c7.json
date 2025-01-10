@@ -1,0 +1,19 @@
+{
+  "id": "mig_csecb7i0l827i4jr25e0",
+  "parentID": "mig_csecb0iva2b3qbnprhl0",
+  "checksum": "1:d38667c79d10d71db206b1954f9638fd3fd7651c0ac3b7b8a54ad71b16cf33c8",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "driverId",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

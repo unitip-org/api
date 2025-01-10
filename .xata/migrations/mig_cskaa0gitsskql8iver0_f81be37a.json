@@ -1,0 +1,19 @@
+{
+  "id": "mig_cskaa0gitsskql8iver0",
+  "parentID": "mig_cska9q3ghk5muqatj400",
+  "checksum": "1:f81be37a9cf599a3001eada35fda2e91077b4b4869cf1ebd50df15d27b68149c",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "customer_requests",
+          "type": "link",
+          "link": {
+            "table": "customer_requests"
+          }
+        },
+        "table": "customer_request_applications"
+      }
+    }
+  ]
+}

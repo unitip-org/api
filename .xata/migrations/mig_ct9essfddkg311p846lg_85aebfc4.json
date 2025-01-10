@@ -1,0 +1,18 @@
+{
+  "id": "mig_ct9essfddkg311p846lg",
+  "parentID": "mig_ct9esovddkg311p846kg",
+  "checksum": "1:85aebfc43cbe5bb36433bb0ffd5b40a271845801f3738042281388dfa0ba82cf",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "description",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": ""
+        },
+        "table": "offers"
+      }
+    }
+  ]
+}

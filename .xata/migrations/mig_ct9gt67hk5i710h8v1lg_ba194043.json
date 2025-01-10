@@ -1,0 +1,18 @@
+{
+  "id": "mig_ct9gt67hk5i710h8v1lg",
+  "parentID": "mig_ct9essfddkg311p846lg",
+  "checksum": "1:ba194043fc7b51df0a3f02b5557f9fc2b599fdad501d9e306ecc8afc0b11c8b3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "fee",
+          "type": "int",
+          "notNull": true,
+          "defaultValue": "0"
+        },
+        "table": "offers"
+      }
+    }
+  ]
+}

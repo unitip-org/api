@@ -1,0 +1,12 @@
+{
+  "id": "mig_cska6jbghk5muqatj3r0",
+  "parentID": "mig_csfrpto284pb3q294d5g",
+  "checksum": "1:f88e0eb2f668cde12eda9f102fe0da701ff9d9c15fda9c0fb22fd984fed72afd",
+  "operations": [
+    {
+      "addTable": {
+        "table": "customer_request_applications"
+      }
+    }
+  ]
+}

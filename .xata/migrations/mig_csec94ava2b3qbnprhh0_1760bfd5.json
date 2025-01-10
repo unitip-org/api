@@ -1,0 +1,13 @@
+{
+  "id": "mig_csec94ava2b3qbnprhh0",
+  "parentID": "mig_csec8l7643vtiorcon4g",
+  "checksum": "1:1760bfd52627005f9ece13d129aacb6f5a16db13ecdd3358eed5af10e2e587c2",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "status",
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

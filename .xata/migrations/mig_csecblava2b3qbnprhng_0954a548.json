@@ -1,0 +1,18 @@
+{
+  "id": "mig_csecblava2b3qbnprhng",
+  "parentID": "mig_csecbbiva2b3qbnprhmg",
+  "checksum": "1:0954a5488f0f5a7dd77d0c743840ff2339220ce0e8a5916d450edd6f7cbf5644",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "status",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": "null"
+        },
+        "table": "job_applications"
+      }
+    }
+  ]
+}

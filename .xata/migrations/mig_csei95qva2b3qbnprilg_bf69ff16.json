@@ -1,0 +1,13 @@
+{
+  "id": "mig_csei95qva2b3qbnprilg",
+  "parentID": "mig_csei7t7643vtiorcoo80",
+  "checksum": "1:bf69ff167214f59f003d889f9f691e5501223bce0490685c60ca6832c84545ab",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "type",
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

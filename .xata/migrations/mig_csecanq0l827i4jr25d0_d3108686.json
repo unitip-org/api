@@ -1,0 +1,18 @@
+{
+  "id": "mig_csecanq0l827i4jr25d0",
+  "parentID": "mig_csecahiva2b3qbnprhk0",
+  "checksum": "1:d310868627c71771576614e2bb5a25b1f8cf736588c1176006e4b546b8838ec7",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "location",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": "null"
+        },
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

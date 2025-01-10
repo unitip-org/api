@@ -1,0 +1,13 @@
+{
+  "id": "mig_ctghbblkite69dmfbuq0",
+  "parentID": "mig_ctghb2amdb0b3eb7hopg",
+  "checksum": "1:a35ba1b9e280f5d8acd88e652c5d2090e9bd072ea80a9cce218f86c1cc80bdf3",
+  "operations": [
+    {
+      "renameTable": {
+        "newName": "multi_job_followers",
+        "oldName": "multi_jobs_followers"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "mig_ct9erifhk5i710h8v1a0",
+  "parentID": "mig_ct9epmnddkg311p846jg",
+  "checksum": "1:4f787afb6f120cd4d63c43cbd2230a8673c94c16d44aea85b4b6c5414fbe7210",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "creator",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "offers"
+      }
+    }
+  ]
+}

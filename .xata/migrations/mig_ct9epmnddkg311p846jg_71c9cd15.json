@@ -1,0 +1,12 @@
+{
+  "id": "mig_ct9epmnddkg311p846jg",
+  "parentID": "mig_ct9epafhk5i710h8v160",
+  "checksum": "1:71c9cd156a436d6292e64bdfd8206a9e5bd88e4d2186c8f4bc7511da22686e37",
+  "operations": [
+    {
+      "addTable": {
+        "table": "offers"
+      }
+    }
+  ]
+}

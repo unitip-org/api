@@ -1,0 +1,19 @@
+{
+  "id": "mig_csf5j520l827i4jr29o0",
+  "parentID": "mig_csf5ivi0l827i4jr29n0",
+  "checksum": "1:6c67a237e0e1f3b51084ae4cf4ed191bf006f6621ef76f81f7488cbbb4b695de",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "user",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "user_roles"
+      }
+    }
+  ]
+}

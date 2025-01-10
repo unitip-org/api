@@ -1,0 +1,12 @@
+{
+  "id": "mig_ctghadtkite69dmfbum0",
+  "parentID": "mig_ctgha4tkite69dmfbukg",
+  "checksum": "1:8c2bbd649c99d7cdd94d8fc475195860ad44f9b9a2d3d1593269e0234984da3f",
+  "operations": [
+    {
+      "addTable": {
+        "table": "multi_offer_followers"
+      }
+    }
+  ]
+}

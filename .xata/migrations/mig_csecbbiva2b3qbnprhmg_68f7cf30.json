@@ -1,0 +1,12 @@
+{
+  "id": "mig_csecbbiva2b3qbnprhmg",
+  "parentID": "mig_csecb7i0l827i4jr25e0",
+  "checksum": "1:68f7cf30795a70fcf211de52fefd0d129976326a33d0e5e11bbb555c71fd8043",
+  "operations": [
+    {
+      "addTable": {
+        "table": "job_applications"
+      }
+    }
+  ]
+}

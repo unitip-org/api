@@ -1,0 +1,19 @@
+{
+  "id": "mig_csec6v2va2b3qbnprhd0",
+  "parentID": "mig_csec5vf643vtiorcomu0",
+  "checksum": "1:a6893cae5ef6e88eabac45756cacebaa4e5b89fba7b7881e6ef7afc5379bc42b",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "customerId",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

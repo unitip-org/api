@@ -1,0 +1,19 @@
+{
+  "id": "mig_ctidcclkite69dmfc9gg",
+  "parentID": "mig_ctidc55kite69dmfc9fg",
+  "checksum": "1:5fd5d7edb6c6ed96ba57b9d3ef061a893c1960c36c8d40f60246a416b4ce69d7",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "customer",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "single_jobs"
+      }
+    }
+  ]
+}

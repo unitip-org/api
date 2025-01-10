@@ -1,0 +1,18 @@
+{
+  "id": "mig_csec21ava2b3qbnprh9g",
+  "parentID": "mig_csec0bv643vtiorcomrg",
+  "checksum": "1:58a96655e366cd5ac38c37d9352180ce4da4240cb9c4c45056e24703635ec1a1",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "title",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": "null"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

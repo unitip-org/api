@@ -1,0 +1,18 @@
+{
+  "id": "mig_ctidc55kite69dmfc9fg",
+  "parentID": "mig_ctidbulkite69dmfc9eg",
+  "checksum": "1:ead2e33c8be75763e107c7a7ca11613a327c851ef8a7ff372202231c1b7833aa",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "type",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": ""
+        },
+        "table": "single_jobs"
+      }
+    }
+  ]
+}

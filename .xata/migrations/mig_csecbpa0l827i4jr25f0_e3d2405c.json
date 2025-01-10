@@ -1,0 +1,19 @@
+{
+  "id": "mig_csecbpa0l827i4jr25f0",
+  "parentID": "mig_csecblava2b3qbnprhng",
+  "checksum": "1:e3d2405ced874473e2a1fcc69c4a4eb95866ad9dd667482ca9c2dd0778a5dcc3",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "driverOfferId",
+          "type": "link",
+          "link": {
+            "table": "driver_offers"
+          }
+        },
+        "table": "job_applications"
+      }
+    }
+  ]
+}

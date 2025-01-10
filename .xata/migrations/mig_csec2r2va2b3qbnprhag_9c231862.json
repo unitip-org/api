@@ -1,0 +1,18 @@
+{
+  "id": "mig_csec2r2va2b3qbnprhag",
+  "parentID": "mig_csec2in643vtiorcomsg",
+  "checksum": "1:9c231862008ed6d9d9f8f164860635d313a0d1cecedabe73aa959a3ee25ce0f5",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "droppoffLocation",
+          "type": "text",
+          "notNull": true,
+          "defaultValue": "null"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

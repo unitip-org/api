@@ -1,0 +1,16 @@
+{
+  "id": "mig_csecapn643vtiorcon6g",
+  "parentID": "mig_csecanq0l827i4jr25d0",
+  "checksum": "1:7c0087ffb36498b5e139816fd4bc020022dbcdc107439dd138d28b259e1a1c0c",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "additionalNotes",
+          "type": "text"
+        },
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

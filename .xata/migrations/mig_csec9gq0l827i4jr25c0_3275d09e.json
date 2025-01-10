@@ -1,0 +1,12 @@
+{
+  "id": "mig_csec9gq0l827i4jr25c0",
+  "parentID": "mig_csec97qva2b3qbnprhi0",
+  "checksum": "1:3275d09ee556abf60427e8f80c2e792eb77c788873dd43feb098656ddf6f5f5b",
+  "operations": [
+    {
+      "addTable": {
+        "table": "driver_offers"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "mig_ct9epafhk5i710h8v160",
+  "parentID": "mig_ct9ep6fhk5i710h8v150",
+  "checksum": "1:d7eaeab58af11f53955cb6be06c946e2bc14a5424174f83d4d0ac1357378ef75",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "user",
+          "type": "link",
+          "link": {
+            "table": "users"
+          }
+        },
+        "table": "sessions"
+      }
+    }
+  ]
+}

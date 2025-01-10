@@ -1,0 +1,16 @@
+{
+  "id": "mig_csei9fn643vtiorcoo90",
+  "parentID": "mig_csei99ava2b3qbnprimg",
+  "checksum": "1:6bb770e10af9da7a9bc4dbf05abde0f31d978c587fa55659a2626ba24f60f612",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "type",
+          "type": "multiple"
+        },
+        "table": "customer_requests"
+      }
+    }
+  ]
+}

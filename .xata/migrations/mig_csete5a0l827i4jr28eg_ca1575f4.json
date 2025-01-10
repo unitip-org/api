@@ -1,0 +1,18 @@
+{
+  "id": "mig_csete5a0l827i4jr28eg",
+  "parentID": "mig_csejjn20l827i4jr2750",
+  "checksum": "1:ca1575f402f759334ac0f5748fe1609448972d56ba1e5c73cd5a8670c709a450",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "is_deleted",
+          "type": "bool",
+          "notNull": true,
+          "defaultValue": "false"
+        },
+        "table": "chats"
+      }
+    }
+  ]
+}
