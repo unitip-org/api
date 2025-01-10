@@ -9,6 +9,12 @@ import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { offersPaths } from "@/app/api/v1/offers/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+<<<<<<< HEAD
+=======
+import { offersPaths } from "@/app/api/v1/offers/docs";
+import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
+import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
+>>>>>>> 28d5d011df45b4809f322c52a835283632821095
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -31,8 +37,13 @@ export const swaggerSpec = {
 
     //offers
     ...offersPaths,
+<<<<<<< HEAD
 
     // example
     ...examplePaths,
+=======
+    ...applyOfferByIdPaths,
+    ...acceptanceOffersByIdPaths,
+>>>>>>> 28d5d011df45b4809f322c52a835283632821095
   },
 };

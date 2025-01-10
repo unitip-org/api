@@ -90,11 +90,7 @@ export const jobsPaths = {
     },
     get: {
       tags: ["Jobs"],
-      security: [
-        {
-          BearerAuth: [],
-        },
-      ],
+      security: swaggerSecurity,
       parameters: [
         {
           in: "query",

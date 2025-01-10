@@ -141,9 +141,9 @@ interface Offer {
   price: number;
   location: string;
   delivery_area: string;
+  freelancer: OfferFreelancer;
   created_at: string;
   updated_at: string;
-  freelancer: OfferFreelancer;
 }
 
 interface GETResponse {
@@ -155,38 +155,71 @@ interface GETResponse {
   };
 }
 
-// export async function GET(request: NextRequest) {
-//   try {
-//     const authorization = await verifyBearerToken(request);
-//     if (!authorization) return APIResponse.respondWithUnauthorized();
+export async function GET(request: NextRequest) {
+  try {
+    // validasi auth token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
 
-//     // mendapatkan page and limit
-//     const searchParams = request.nextUrl.searchParams;
-//     const page = Number(searchParams.get("page") || "1");
-//     const limit = Number(searchParams.get("limit") || "10");
+    // mendapatkan page and limit
+    const searchParams = request.nextUrl.searchParams;
+    const page = Number(searchParams.get("page") || "1");
+    const limit = Number(searchParams.get("limit") || "10");
 
-//     const offersQuery = database
-//       .selectFrom("single_offers as so")
-//       .innerJoin("users as u", "u.id", "so.freelancer")
-//       .select([
-//         "so.id",
-//         "so.title",
-//         "so.description",
-//         "so.type",
-//         "so.available_until",
-//         "so.price",
-//         "so.location",
-//         "so.delivery_area",
-//         "u.name as freelancer_name",
-//       ])
-//       .select(sql<string>`so."xata.createdAt"`.as("created_at"))
-//       .select(sql<string>`so."xata.updatedAt"`.as("updated_at"))
-//       .offset((page - 1) * limit)
-//       .orderBy("created_at", "desc")
-//       .limit(limit);
+    const offersQuery = database
+      .selectFrom("single_offers as so")
+      .innerJoin("users as u", "u.id", "so.freelancer")
+      .select([
+        "so.id",
+        "so.title",
+        "so.description",
+        "so.type",
+        "so.available_until",
+        "so.price",
+        "so.location",
+        "so.delivery_area",
+        "u.name as freelancer_name",
+      ])
+      .select(sql<string>`so."xata.createdAt"`.as("created_at"))
+      .select(sql<string>`so."xata.updatedAt"`.as("updated_at"))
+      .offset((page - 1) * limit)
+      .orderBy("created_at", "desc")
+      .limit(limit);
 
-//     const offers = await offersQuery.execute();
-//   } catch (e) {
-//     return APIResponse.respondWithServerError();
-//   }
-// }
+    const offersResult = await offersQuery.execute();
+
+    // Mendapatkan total row dari table single offers
+    const queryCount = database
+      .selectFrom("single_offers as so")
+      .select(sql<number>`count(so.id)`.as("count"));
+    const resultCount = await queryCount.executeTakeFirst();
+
+    return APIResponse.respondWithSuccess<GETResponse>({
+      offers: offersResult.map(
+        (it) =>
+          <Offer>{
+            id: it.id,
+            title: it.title,
+            description: it.description,
+            type: it.type,
+            available_until: it.available_until,
+            price: it.price,
+            location: it.location,
+            delivery_area: it.delivery_area,
+            created_at: it.created_at,
+            updated_at: it.updated_at,
+            freelancer: <OfferFreelancer>{
+              name: it.freelancer_name,
+            },
+          }
+      ),
+      page_info: {
+        count: offersResult.length,
+        page: page,
+        total_pages: Math.ceil((resultCount?.count ?? 0) / limit),
+      },
+    });
+  } catch (e) {
+    return APIResponse.respondWithServerError();
+  }
+}
