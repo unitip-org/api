@@ -9,6 +9,7 @@ interface POSTResponse {
   name: string;
   email: string;
   token: string;
+  role: string;
 }
 
 export async function POST(request: Request) {
@@ -98,13 +99,17 @@ export async function POST(request: Request) {
       },
     ]);
 
-    if (result.results.length === 3)
+    if (result.results.length === 3) {
+      // Role sudah didefinisikan untuk dimasukkan
+      const role = "customer";
       return APIResponse.respondWithSuccess<POSTResponse>({
         id: newUserId,
         email: email,
         name: name,
         token: newToken,
+        role: role,
       });
+    }
 
     // old method
     /**
