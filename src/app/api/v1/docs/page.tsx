@@ -1,12 +1,13 @@
-import { getApiDocs } from "@/lib/swagger";
-import ReactSwagger from "./swagger";
+"use client";
 
-export default async function Page() {
-  const spec = await getApiDocs();
+import { swaggerSpec } from "@/lib/swagger/spec";
+import SwaggerUI from "swagger-ui-react";
+import "swagger-ui-react/swagger-ui.css";
 
+export default function Page() {
   return (
-    <section className="container">
-      <ReactSwagger spec={spec} />
+    <section className="container mx-auto dark:invert">
+      <SwaggerUI spec={swaggerSpec} />
     </section>
   );
 }
