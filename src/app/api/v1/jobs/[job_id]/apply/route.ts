@@ -51,13 +51,13 @@ export async function POST(
     // validasi jika job sudah di apply
     const checkApplyQuery = database
       .selectFrom("single_jobs as s")
-      .select(sql<number>`count(s.id)`.as("count"))
+      .selectAll()
+      // .select(sql<number>`count(s.id)`.as("count"))
       .where("s.id", "=", job_id)
-      .where("s.freelancer", "=", null);
+      .where("s.freelancer", "is", null);
     const checkApplyResult = await checkApplyQuery.executeTakeFirst();
-    if (!checkApplyResult) return APIResponse.respondWithServerError();
 
-    if (checkApplyResult.count === 0)
+    if (!checkApplyResult)
       return APIResponse.respondWithConflict(
         "Job sudah diambil oleh orang lain!"
       );
