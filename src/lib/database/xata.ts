@@ -36,7 +36,7 @@ const tables = [
       { column: "customer", table: "multi_jobs" },
       { column: "freelancer", table: "single_offers" },
       { column: "customer", table: "single_offers" },
-      { column: "customer", table: "single_offer_requests" },
+      { column: "customer", table: "single_offer_applicants" },
     ],
   },
   {
@@ -268,10 +268,10 @@ const tables = [
       },
       { name: "expired_at", type: "text" },
     ],
-    revLinks: [{ column: "offer", table: "single_offer_requests" }],
+    revLinks: [{ column: "offer", table: "single_offer_applicants" }],
   },
   {
-    name: "single_offer_requests",
+    name: "single_offer_applicants",
     columns: [
       {
         name: "pickup_location",
@@ -345,8 +345,8 @@ export type MultiJobApplicantsRecord = MultiJobApplicants & XataRecord;
 export type SingleOffers = InferredTypes["single_offers"];
 export type SingleOffersRecord = SingleOffers & XataRecord;
 
-export type SingleOfferRequests = InferredTypes["single_offer_requests"];
-export type SingleOfferRequestsRecord = SingleOfferRequests & XataRecord;
+export type SingleOfferApplicants = InferredTypes["single_offer_applicants"];
+export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
 
 export type DatabaseSchema = {
   users: UsersRecord;
@@ -365,7 +365,7 @@ export type DatabaseSchema = {
   single_job_applicants: SingleJobApplicantsRecord;
   multi_job_applicants: MultiJobApplicantsRecord;
   single_offers: SingleOffersRecord;
-  single_offer_requests: SingleOfferRequestsRecord;
+  single_offer_applicants: SingleOfferApplicantsRecord;
 };
 
 const DatabaseClient = buildClient();

@@ -71,7 +71,7 @@ export async function POST(
     //Logika apply job
     const newId = `${authorization.userId}_${offer_id}`;
     const query = database
-      .insertInto("single_offer_requests")
+      .insertInto("single_offer_applicants")
       .values({
         id: newId,
         note,
