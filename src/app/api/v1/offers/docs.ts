@@ -1,10 +1,5 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
-import { id } from "date-fns/locale";
-import { get } from "http";
-import { DessertIcon } from "lucide-react";
-import { Content } from "next/font/google";
-import { title } from "process";
 
 export const offersPaths = {
   "/api/v1/offers": {
@@ -25,25 +20,25 @@ export const offersPaths = {
                   type: "string",
                   description: "Detailed description of the offer",
                 },
-                type: {
-                  type: "string",
-                  description: "Type of the offer",
-                },
-                available_until: {
-                  type: "string",
-                  description: "Available until of the offer",
-                },
                 price: {
                   type: "number",
                   description: "Price for the offer",
                 },
-                location: {
+                type: {
                   type: "string",
-                  description: "Location of the offer",
+                  description: "Type of the offer",
+                },
+                pickup_area: {
+                  type: "string",
+                  description: "Pickup area of the offer",
                 },
                 delivery_area: {
                   type: "string",
-                  description: "Destination of the offer",
+                  description: "Delivery area of the offer",
+                },
+                available_until: {
+                  type: "string",
+                  description: "Available until of the offer",
                 },
               },
             },
@@ -150,19 +145,22 @@ export const offersPaths = {
                         description: {
                           type: "string",
                         },
+                        price: {
+                          type: "number",
+                        },
                         type: {
+                          type: "string",
+                        },
+                        pickup_area: {
+                          type: "string",
+                        },
+                        delivery_area: {
                           type: "string",
                         },
                         available_until: {
                           type: "string",
                         },
-                        price: {
-                          type: "number",
-                        },
-                        location: {
-                          type: "string",
-                        },
-                        delivery_area: {
+                        offer_status: {
                           type: "string",
                         },
                         created_at: {
