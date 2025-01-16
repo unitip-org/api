@@ -19,26 +19,24 @@ const tables = [
       { column: "to", table: "chat_messages" },
       { column: "customerId", table: "customer_requests" },
       { column: "driverId", table: "driver_offers" },
-      { column: "applicantId", table: "job_applications" },
       { column: "from_user", table: "chat_rooms" },
       { column: "to_user", table: "chat_rooms" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "applicant", table: "customer_request_applications" },
       { column: "user", table: "user_sessions" },
-      { column: "creator", table: "offers" },
       { column: "customer", table: "single_jobs" },
       { column: "freelancer", table: "single_jobs" },
       { column: "freelancer", table: "single_job_applicants" },
       { column: "freelancer", table: "multi_jobs" },
       { column: "freelancer", table: "multi_offers" },
-      { column: "customer", table: "multi_offers" },
+      { column: "customer", table: "single_offer_requests" },
       { column: "freelancer", table: "multi_job_applicants" },
       { column: "customer", table: "multi_job_followers" },
       { column: "customer", table: "multi_jobs" },
       { column: "freelancer", table: "single_offers" },
       { column: "customer", table: "single_offers" },
-      { column: "customer", table: "single_offer_requests" },
+      { column: "customer", table: "multi_offer_orders" },
     ],
   },
   {
@@ -83,7 +81,6 @@ const tables = [
       },
     ],
     revLinks: [
-      { column: "customerRequestId", table: "job_applications" },
       { column: "customer_requests", table: "customer_request_applications" },
     ],
   },
@@ -103,20 +100,6 @@ const tables = [
       { name: "driverId", type: "link", link: { table: "users" } },
       { name: "type", type: "text" },
       { name: "status", type: "text" },
-    ],
-    revLinks: [{ column: "driverOfferId", table: "job_applications" }],
-  },
-  {
-    name: "job_applications",
-    columns: [
-      { name: "status", type: "text", notNull: true, defaultValue: "null" },
-      { name: "driverOfferId", type: "link", link: { table: "driver_offers" } },
-      {
-        name: "customerRequestId",
-        type: "link",
-        link: { table: "customer_requests" },
-      },
-      { name: "applicantId", type: "link", link: { table: "users" } },
     ],
   },
   {
@@ -157,20 +140,9 @@ const tables = [
     ],
   },
   {
-    name: "offers",
-    columns: [
-      { name: "creator", type: "link", link: { table: "users" } },
-      { name: "title", type: "text", notNull: true, defaultValue: "" },
-      { name: "description", type: "text", notNull: true, defaultValue: "" },
-      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
-      { name: "location", type: "text", notNull: true, defaultValue: "" },
-    ],
-  },
-  {
     name: "multi_offers",
     columns: [
       { name: "freelancer", type: "link", link: { table: "users" } },
-      { name: "customer", type: "link", link: { table: "users" } },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
       { name: "status", type: "text", notNull: true, defaultValue: "" },
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
@@ -180,19 +152,31 @@ const tables = [
         notNull: true,
         defaultValue: "now",
       },
-      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "description", type: "text", notNull: true, defaultValue: "" },
+      { name: "location", type: "text", notNull: true, defaultValue: "" },
     ],
-    revLinks: [
-      { column: "customer", table: "multi_offer_followers" },
-      { column: "offer", table: "multi_offer_followers" },
-    ],
+    revLinks: [{ column: "offer", table: "multi_offer_orders" }],
   },
   {
-    name: "multi_offer_followers",
+    name: "multi_offer_orders",
     columns: [
-      { name: "customer", type: "link", link: { table: "multi_offers" } },
       { name: "offer", type: "link", link: { table: "multi_offers" } },
-      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "delivery_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "payment_method", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "payment_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "unpaid",
+      },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
+      { name: "customer", type: "link", link: { table: "users" } },
     ],
   },
   {
@@ -226,6 +210,7 @@ const tables = [
         notNull: true,
         defaultValue: "",
       },
+      { name: "status", type: "text", notNull: true, defaultValue: "open" },
     ],
     revLinks: [
       { column: "job", table: "multi_job_applicants" },
@@ -238,6 +223,7 @@ const tables = [
       { name: "job", type: "link", link: { table: "multi_jobs" } },
       { name: "customer", type: "link", link: { table: "users" } },
       { name: "destination", type: "text", notNull: true, defaultValue: "" },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
     ],
   },
   {
@@ -254,6 +240,7 @@ const tables = [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "job", type: "link", link: { table: "multi_jobs" } },
       { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
     ],
   },
   {
@@ -261,24 +248,60 @@ const tables = [
     columns: [
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "customer", type: "link", link: { table: "users" } },
-      { name: "price", type: "int" },
-      { name: "delivery_area", type: "text" },
-      { name: "title", type: "text" },
-      { name: "description", type: "text" },
-      { name: "type", type: "text" },
-      { name: "location", type: "text" },
-      { name: "available_until", type: "text" },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "available_until",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "delivery_area", type: "text", notNull: true, defaultValue: "" },
+      { name: "description", type: "text", notNull: true, defaultValue: "" },
+      { name: "type", type: "text", notNull: true, defaultValue: "" },
+      { name: "location", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "status",
+        type: "text",
+        notNull: true,
+        defaultValue: "available",
+      },
+      {
+        name: "payment_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "unpaid",
+      },
+      {
+        name: "accepted_request",
+        type: "link",
+        link: { table: "single_offer_requests" },
+      },
     ],
     revLinks: [{ column: "offer", table: "single_offer_requests" }],
   },
   {
     name: "single_offer_requests",
     columns: [
-      { name: "note", type: "text" },
-      { name: "delivery", type: "text" },
       { name: "offer", type: "link", link: { table: "single_offers" } },
       { name: "customer", type: "link", link: { table: "users" } },
+      { name: "status", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "payment_method", type: "text", notNull: true, defaultValue: "" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "delivery_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
     ],
+    revLinks: [{ column: "accepted_request", table: "single_offers" }],
   },
 ] as const;
 
@@ -297,9 +320,6 @@ export type CustomerRequestsRecord = CustomerRequests & XataRecord;
 export type DriverOffers = InferredTypes["driver_offers"];
 export type DriverOffersRecord = DriverOffers & XataRecord;
 
-export type JobApplications = InferredTypes["job_applications"];
-export type JobApplicationsRecord = JobApplications & XataRecord;
-
 export type ChatRooms = InferredTypes["chat_rooms"];
 export type ChatRoomsRecord = ChatRooms & XataRecord;
 
@@ -314,14 +334,11 @@ export type CustomerRequestApplicationsRecord = CustomerRequestApplications &
 export type UserSessions = InferredTypes["user_sessions"];
 export type UserSessionsRecord = UserSessions & XataRecord;
 
-export type Offers = InferredTypes["offers"];
-export type OffersRecord = Offers & XataRecord;
-
 export type MultiOffers = InferredTypes["multi_offers"];
 export type MultiOffersRecord = MultiOffers & XataRecord;
 
-export type MultiOfferFollowers = InferredTypes["multi_offer_followers"];
-export type MultiOfferFollowersRecord = MultiOfferFollowers & XataRecord;
+export type MultiOfferOrders = InferredTypes["multi_offer_orders"];
+export type MultiOfferOrdersRecord = MultiOfferOrders & XataRecord;
 
 export type SingleJobs = InferredTypes["single_jobs"];
 export type SingleJobsRecord = SingleJobs & XataRecord;
@@ -349,14 +366,12 @@ export type DatabaseSchema = {
   chat_messages: ChatMessagesRecord;
   customer_requests: CustomerRequestsRecord;
   driver_offers: DriverOffersRecord;
-  job_applications: JobApplicationsRecord;
   chat_rooms: ChatRoomsRecord;
   user_roles: UserRolesRecord;
   customer_request_applications: CustomerRequestApplicationsRecord;
   user_sessions: UserSessionsRecord;
-  offers: OffersRecord;
   multi_offers: MultiOffersRecord;
-  multi_offer_followers: MultiOfferFollowersRecord;
+  multi_offer_orders: MultiOfferOrdersRecord;
   single_jobs: SingleJobsRecord;
   multi_jobs: MultiJobsRecord;
   multi_job_followers: MultiJobFollowersRecord;

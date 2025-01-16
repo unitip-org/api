@@ -22,8 +22,6 @@ export async function POST(request: NextRequest) {
       location,
       delivery_area,
     } = json;
-
-    // validasi input dari user
     const data = z
       .object({
         title: z
@@ -70,9 +68,6 @@ export async function POST(request: NextRequest) {
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk membuat offer!"
       );
-
-    // console.log("Input JSON:", json);
-    // console.log("Validation Result:", data);
     console.log("Authorization:", authorization);
 
     if (type === "jasa-titip") {
@@ -102,6 +97,8 @@ export async function POST(request: NextRequest) {
           location,
           delivery_area,
           freelancer: authorization.userId,
+          status: "available",
+          payment_status: "unpaid",
         } as any)
         .returning("id");
 
@@ -117,10 +114,26 @@ export async function POST(request: NextRequest) {
         id: result.id,
       });
     } else if (type === "antar-jemput") {
-      /**
-       * jasa titip adalah service multiple job dan hanya dapat dibuat oleh role
-       * customer
-       */
+      const query = database
+        .insertInto("multi_offers")
+        .values({
+          title,
+          description,
+          price,
+          available_until,
+          location,
+          freelancer: authorization.userId,
+          status: "available",
+        } as any)
+        .returning("id");
+
+      const result = await query.executeTakeFirst();
+      if (!result) return APIResponse.respondWithServerError();
+
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        success: true,
+        id: result.id,
+      });
     }
     return APIResponse.respondWithServerError();
   } catch (e) {
@@ -140,7 +153,7 @@ interface Offer {
   available_until: string;
   price: number;
   location: string;
-  delivery_area: string;
+  delivery_area?: string;
   freelancer: OfferFreelancer;
   created_at: string;
   updated_at: string;
@@ -155,48 +168,103 @@ interface GETResponse {
   };
 }
 
+interface OfferResult {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  available_until: string;
+  price: number;
+  location: string;
+  delivery_area: string;
+  created_at: string;
+  updated_at: string;
+  freelancer_name: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // validasi auth token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
-
-    // mendapatkan page and limit
     const searchParams = request.nextUrl.searchParams;
     const page = Number(searchParams.get("page") || "1");
     const limit = Number(searchParams.get("limit") || "10");
+    const type = searchParams.get("type") || "all"; // all, jasa-titip, antar-jemput
+    let offersQuery;
+    let countQuery;
+    if (type === "single" || type === "all") {
+      // Query untuk single offers
+      offersQuery = database
+        .selectFrom("single_offers as so")
+        .innerJoin("users as u", "u.id", "so.freelancer")
+        .select([
+          "so.id",
+          "so.title",
+          "so.description",
+          "so.type",
+          "so.available_until",
+          "so.price",
+          "so.location",
+          "so.delivery_area",
+          "u.name as freelancer_name",
+        ])
+        .select(sql<string>`so."xata.createdAt"`.as("created_at"))
+        .select(sql<string>`so."xata.updatedAt"`.as("updated_at"));
+    }
+    if (type === "multi" || type === "all") {
+      const multiQuery = database
+        .selectFrom("multi_offers as mo")
+        .innerJoin("users as u", "u.id", "mo.freelancer")
+        .select([
+          "mo.id",
+          "mo.title",
+          "mo.description",
+          sql<string>`'antar-jemput'`.as("type"),
+          "mo.available_until",
+          "mo.price",
+          "mo.location",
+          sql<string>`''`.as("delivery_area"),
+          "u.name as freelancer_name",
+        ])
+        .select(sql<string>`mo."xata.createdAt"`.as("created_at"))
+        .select(sql<string>`mo."xata.updatedAt"`.as("updated_at"));
 
-    const offersQuery = database
-      .selectFrom("single_offers as so")
-      .innerJoin("users as u", "u.id", "so.freelancer")
-      .select([
-        "so.id",
-        "so.title",
-        "so.description",
-        "so.type",
-        "so.available_until",
-        "so.price",
-        "so.location",
-        "so.delivery_area",
-        "u.name as freelancer_name",
-      ])
-      .select(sql<string>`so."xata.createdAt"`.as("created_at"))
-      .select(sql<string>`so."xata.updatedAt"`.as("updated_at"))
+      offersQuery =
+        type === "all" ? (offersQuery as any).union(multiQuery) : multiQuery;
+      }
+    offersQuery = (offersQuery as any)
       .offset((page - 1) * limit)
       .orderBy("created_at", "desc")
       .limit(limit);
-
     const offersResult = await offersQuery.execute();
-
-    // Mendapatkan total row dari table single offers
-    const queryCount = database
-      .selectFrom("single_offers as so")
-      .select(sql<number>`count(so.id)`.as("count"));
-    const resultCount = await queryCount.executeTakeFirst();
-
+    // Count que
+    if (type === "single") {
+      countQuery = database
+        .selectFrom("single_offers")
+        .select(sql<number>`count(*)`.as("count"));
+    } else if (type === "multi") {
+      countQuery = database
+        .selectFrom("multi_offers")
+        .select(sql<number>`count(*)`.as("count"));
+    } else {
+      countQuery = database
+        .selectFrom(
+          database
+            .selectFrom("single_offers")
+            .select(sql<number>`1`.as("count"))
+            .union(
+              database
+                .selectFrom("multi_offers")
+                .select(sql<number>`1`.as("count"))
+            )
+            .as("combined")
+        )
+        .select(sql<number>`count(*)`.as("count"));
+    }
+    const resultCount = await countQuery.executeTakeFirst();
     return APIResponse.respondWithSuccess<GETResponse>({
       offers: offersResult.map(
-        (it) =>
+        (it: OfferResult) =>
           <Offer>{
             id: it.id,
             title: it.title,

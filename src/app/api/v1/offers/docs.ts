@@ -12,38 +12,49 @@ export const offersPaths = {
       tags: ["Offers"],
       security: swaggerSecurity,
       requestBody: {
+        required: true,
         content: {
           "application/json": {
             schema: {
               type: "object",
+              required: [
+                "title",
+                "type",
+                "available_until",
+                "price",
+                "location",
+              ],
               properties: {
                 title: {
                   type: "string",
-                  description: "Title of the offer",
+                  description: "Judul penawaran",
                 },
                 description: {
                   type: "string",
-                  description: "Detailed description of the offer",
+                  description: "Deskripsi penawaran",
                 },
                 type: {
                   type: "string",
-                  description: "Type of the offer",
+                  enum: ["antar-jemput", "jasa-titip"],
+                  description: "Tipe penawaran",
                 },
                 available_until: {
                   type: "string",
-                  description: "Available until of the offer",
+                  format: "date-time",
+                  description: "Waktu berakhir penawaran",
                 },
                 price: {
                   type: "number",
-                  description: "Price for the offer",
+                  minimum: 0,
+                  description: "Harga penawaran",
                 },
                 location: {
                   type: "string",
-                  description: "Location of the offer",
+                  description: "Lokasi",
                 },
                 delivery_area: {
                   type: "string",
-                  description: "Destination of the offer",
+                  description: "Area pengiriman (opsional)",
                 },
               },
             },
@@ -52,12 +63,13 @@ export const offersPaths = {
       },
       responses: {
         200: {
+          description: "Berhasil membuat penawaran",
           content: {
             "application/json": {
               schema: {
                 type: "object",
                 properties: {
-                  succes: {
+                  success: {
                     type: "boolean",
                   },
                   id: {
@@ -69,40 +81,39 @@ export const offersPaths = {
           },
         },
         400: {
+          description: "Input tidak valid",
           content: {
             "application/json": {
               schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
+                type: "object",
+                properties: {
+                  errors: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        message: {
+                          type: "string",
+                        },
+                        path: {
+                          type: "string",
+                        },
+                      },
+                    },
+                  },
+                },
               },
             },
           },
         },
         401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
+          description: "Unauthorized",
         },
         403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
+          description: "Forbidden - Role tidak memiliki akses",
         },
         500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
+          description: "Server error",
         },
       },
     },
@@ -111,26 +122,37 @@ export const offersPaths = {
       security: swaggerSecurity,
       parameters: [
         {
+          name: "page",
           in: "query",
-          name: "limit",
           schema: {
-            type: "number",
+            type: "integer",
+            default: 1,
           },
-          required: false,
-          default: 10,
+          description: "Halaman yang diminta",
         },
         {
+          name: "limit",
           in: "query",
-          name: "page",
           schema: {
-            type: "number",
+            type: "integer",
+            default: 10,
           },
-          required: false,
-          default: 1,
+          description: "Jumlah item per halaman",
+        },
+        {
+          name: "type",
+          in: "query",
+          schema: {
+            type: "string",
+            enum: ["all", "single", "multi"],
+            default: "all",
+          },
+          description: "Filter berdasarkan tipe penawaran",
         },
       ],
       responses: {
         200: {
+          description: "Daftar penawaran berhasil diambil",
           content: {
             "application/json": {
               schema: {
@@ -155,6 +177,7 @@ export const offersPaths = {
                         },
                         available_until: {
                           type: "string",
+                          format: "date-time",
                         },
                         price: {
                           type: "number",
@@ -165,12 +188,6 @@ export const offersPaths = {
                         delivery_area: {
                           type: "string",
                         },
-                        created_at: {
-                          type: "string",
-                        },
-                        updated_at: {
-                          type: "string",
-                        },
                         freelancer: {
                           type: "object",
                           properties: {
@@ -179,11 +196,30 @@ export const offersPaths = {
                             },
                           },
                         },
+                        created_at: {
+                          type: "string",
+                          format: "date-time",
+                        },
+                        updated_at: {
+                          type: "string",
+                          format: "date-time",
+                        },
                       },
                     },
                   },
                   page_info: {
-                    $ref: swaggerComponentRefs.PageInfo,
+                    type: "object",
+                    properties: {
+                      count: {
+                        type: "integer",
+                      },
+                      page: {
+                        type: "integer",
+                      },
+                      total_pages: {
+                        type: "integer",
+                      },
+                    },
                   },
                 },
               },
@@ -191,22 +227,10 @@ export const offersPaths = {
           },
         },
         401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
+          description: "Unauthorized",
         },
         500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
+          description: "Server error",
         },
       },
     },
