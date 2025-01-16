@@ -18,44 +18,41 @@ export async function POST(request: NextRequest) {
     const {
       title,
       description,
-      price,
       type,
+      available_until,
+      price,
       pickup_area,
       delivery_area,
-      available_until,
     } = json;
+
     const data = z
       .object({
         title: z
           .string({ required_error: "Judul tidak boleh kosong!" })
           .min(1, "Judul tidak boleh kosong!"),
-        description: z.string().optional(),
-        price: z
-          .number({ required_error: "Biaya tidak boleh kosong!" })
-          .min(0, "Biaya tidak boleh negatif!"),
-        type: z.enum([Order.type.AntarJemput, Order.type.JasaTitip]),
-        pickup_area: z
-          .string({ required_error: "Area pengambilan tidak boleh kosong!" })
-          .min(1, "Area pengambilan tidak boleh kosong!"),
-        delivery_area: z
-          .string({
-            required_error: "Area pengiriman tidak boleh kosong!",
-          })
-          .min(1, "Area pengiriman tidak boleh kosong!"),
+        description: z
+          .string({ required_error: "Deskripsi tidak boleh kosong!" })
+          .min(1, "Deskripsi tidak boleh kosong!"),
+        type: z.enum(["antar-jemput", "jasa-titip"]),
         available_until: z
           .string({
             required_error: "Waktu untuk penawaran tidak boleh kosong!",
           })
           .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
+        price: z
+          .number({ required_error: "Biaya tidak boleh kosong!" })
+          .min(0, "Biaya tidak boleh negatif!"),
+        pickup_area: z.string().optional(),
+        delivery_area: z.string().optional(),
       })
       .safeParse({
         title,
         description,
-        price,
         type,
+        available_until,
+        price,
         pickup_area,
         delivery_area,
-        available_until,
       });
 
     if (!data.success)
@@ -65,26 +62,22 @@ export async function POST(request: NextRequest) {
           path: it.path[0] as string,
         }))
       );
-    // validasi auth token
+
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
     // validasi role
-    if (authorization.role == Role.Customer)
+    if (authorization.role == "customer")
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk membuat offer!"
       );
-
-    // console.log("Input JSON:", json);
-    // console.log("Validation Result:", data);
-    //console.log("Authorization:", authorization);
     console.log("Authorization:", authorization);
 
-    // if (type === Order.type.JasaTitip) {
-    /**
-     * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
-     *selain customer
-     */
+    if (type === "jasa-titip") {
+      /**
+       * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
+       *selain customer
+       */
 
       const query = database
         .insertInto("single_offers")
@@ -94,20 +87,20 @@ export async function POST(request: NextRequest) {
           type,
           available_until,
           price,
-          location,
+          pickup_area,
           delivery_area,
           freelancer: authorization.userId,
-          status: "available",
-          payment_status: "unpaid",
+          offer_status: "available",
+          expired_at: null,
         } as any)
         .returning("id");
 
-    // console.log("Executing Query:", query.compile());
+      console.log("Executing Query:", query.compile());
 
-    const result = await query.executeTakeFirst();
-    console.log("Query Result:", result);
+      const result = await query.executeTakeFirst();
+      console.log("Query Result:", result);
 
-    if (!result) return APIResponse.respondWithServerError();
+      if (!result) return APIResponse.respondWithServerError();
 
       return APIResponse.respondWithSuccess<POSTResponse>({
         success: true,
@@ -121,9 +114,9 @@ export async function POST(request: NextRequest) {
           description,
           price,
           available_until,
-          location,
           freelancer: authorization.userId,
           status: "available",
+          location: delivery_area,
         } as any)
         .returning("id");
 
@@ -144,19 +137,15 @@ export async function POST(request: NextRequest) {
 interface OfferFreelancer {
   name: string;
 }
-
 interface Offer {
   id: string;
   title: string;
   description: string;
-  price: number;
   type: string;
   pickup_area: string;
   delivery_area: string;
-  available_until: string;
+  available_until: Date;
   price: number;
-  location: string;
-  delivery_area?: string;
   freelancer: OfferFreelancer;
   created_at: string;
   updated_at: string;
@@ -170,16 +159,16 @@ interface GETResponse {
     total_pages: number;
   };
 }
-
 interface OfferResult {
   id: string;
   title: string;
   description: string;
   type: string;
-  available_until: string;
+  available_until: Date;
   price: number;
-  location: string;
-  delivery_area: string;
+  delivery_area?: string;
+  pickup_area?: string;
+  location?: string;
   created_at: string;
   updated_at: string;
   freelancer_name: string;
@@ -189,15 +178,26 @@ export async function GET(request: NextRequest) {
   try {
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
+
     const searchParams = request.nextUrl.searchParams;
-    const page = Number(searchParams.get("page") || "1");
+    const page = Math.max(1, Number(searchParams.get("page") || "1"));
     const limit = Number(searchParams.get("limit") || "10");
-    const type = searchParams.get("type") || "all"; // all, jasa-titip, antar-jemput
-    let offersQuery;
-    let countQuery;
+    const type = searchParams.get("type") || "all";
+
+    if (!["all", "single", "multi"].includes(type)) {
+      return APIResponse.respondWithBadRequest([
+        {
+          message: "Invalid type parameter",
+          path: "type",
+        },
+      ]);
+    }
+
+    let offersResult: OfferResult[] = [];
+    let totalCount = 0;
+
     if (type === "single" || type === "all") {
-      // Query untuk single offers
-      offersQuery = database
+      const singleQuery = database
         .selectFrom("single_offers as so")
         .innerJoin("users as u", "u.id", "so.freelancer")
         .select([
@@ -207,13 +207,34 @@ export async function GET(request: NextRequest) {
           "so.type",
           "so.available_until",
           "so.price",
-          "so.location",
           "so.delivery_area",
+          "so.pickup_area",
           "u.name as freelancer_name",
+          sql<string>`so."xata.createdAt"`.as("created_at"),
+          sql<string>`so."xata.updatedAt"`.as("updated_at")
         ])
-        .select(sql<string>`so."xata.createdAt"`.as("created_at"))
-        .select(sql<string>`so."xata.updatedAt"`.as("updated_at"));
+        // .where("so.offer_status", "=", "waiting");
+
+      const singleCount = await database
+        .selectFrom("single_offers")
+        // .where("offer_status", "=", "waiting")
+        .select(sql<number>`count(*)`.as("count"))
+        .executeTakeFirst();
+
+      if (type === "single") {
+        offersResult = await singleQuery
+          .orderBy(sql`so."xata.createdAt"`, "desc")
+          .offset((page - 1) * limit)
+          .limit(limit)
+          .execute();
+        totalCount = singleCount?.count || 0;
+      } else {
+        const singleOffers = await singleQuery.execute();
+        offersResult = [...singleOffers];
+        totalCount = singleCount?.count || 0;
+      }
     }
+
     if (type === "multi" || type === "all") {
       const multiQuery = database
         .selectFrom("multi_offers as mo")
@@ -225,73 +246,72 @@ export async function GET(request: NextRequest) {
           sql<string>`'antar-jemput'`.as("type"),
           "mo.available_until",
           "mo.price",
-          "mo.location",
-          sql<string>`''`.as("delivery_area"),
+          "mo.location as delivery_area",
+          sql<string>`''`.as("pickup_area"),
           "u.name as freelancer_name",
+          sql<string>`mo."xata.createdAt"`.as("created_at"),
+          sql<string>`mo."xata.updatedAt"`.as("updated_at")
         ])
-        .select(sql<string>`mo."xata.createdAt"`.as("created_at"))
-        .select(sql<string>`mo."xata.updatedAt"`.as("updated_at"));
+        // .where("mo.status", "=", "waiting");
 
-      offersQuery =
-        type === "all" ? (offersQuery as any).union(multiQuery) : multiQuery;
-      }
-    offersQuery = (offersQuery as any)
-      .offset((page - 1) * limit)
-      .orderBy("created_at", "desc")
-      .limit(limit);
-    const offersResult = await offersQuery.execute();
-    // Count que
-    if (type === "single") {
-      countQuery = database
-        .selectFrom("single_offers")
-        .select(sql<number>`count(*)`.as("count"));
-    } else if (type === "multi") {
-      countQuery = database
+      const multiCount = await database
         .selectFrom("multi_offers")
-        .select(sql<number>`count(*)`.as("count"));
-    } else {
-      countQuery = database
-        .selectFrom(
-          database
-            .selectFrom("single_offers")
-            .select(sql<number>`1`.as("count"))
-            .union(
-              database
-                .selectFrom("multi_offers")
-                .select(sql<number>`1`.as("count"))
-            )
-            .as("combined")
-        )
-        .select(sql<number>`count(*)`.as("count"));
+        // .where("status", "=", "waiting")
+        .select(sql<number>`count(*)`.as("count"))
+        .executeTakeFirst();
+
+      if (type === "multi") {
+        offersResult = await multiQuery
+          .orderBy(sql`mo."xata.createdAt"`, "desc")
+          .offset((page - 1) * limit)
+          .limit(limit)
+          .execute();
+        totalCount = multiCount?.count || 0;
+      } else if (type === "all") {
+        const multiOffers = await multiQuery.execute();
+        offersResult = [...offersResult, ...multiOffers];
+        totalCount += multiCount?.count || 0;
+      }
     }
-    const resultCount = await countQuery.executeTakeFirst();
+
+    // For type "all", apply sorting and pagination after combining results
+    if (type === "all") {
+      offersResult.sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA;
+      });
+
+      offersResult = offersResult.slice(
+        (page - 1) * limit,
+        (page - 1) * limit + limit
+      );
+    }
+
     return APIResponse.respondWithSuccess<GETResponse>({
-      offers: offersResult.map(
-        (it: OfferResult) =>
-          <Offer>{
-            id: it.id,
-            title: it.title,
-            description: it.description,
-            price: it.price,
-            type: it.type,
-            pickup_area: it.pickup_area,
-            delivery_area: it.delivery_area,
-            available_until: it.available_until,
-            offer_status: it.offer_status,
-            created_at: it.created_at,
-            updated_at: it.updated_at,
-            freelancer: <OfferFreelancer>{
-              name: it.freelancer_name,
-            },
-          }
-      ),
+      offers: offersResult.map((it: OfferResult) => ({
+        id: it.id,
+        title: it.title || "",
+        description: it.description || "",
+        type: it.type || "jasa-titip",
+        pickup_area: it.pickup_area || "",
+        delivery_area: it.delivery_area || it.location || "",
+        available_until: it.available_until ? new Date(it.available_until) : new Date(),
+        price: Number(it.price) || 0,
+        created_at: it.created_at || "",
+        updated_at: it.updated_at || "",
+        freelancer: {
+          name: it.freelancer_name || "",
+        },
+      })),
       page_info: {
         count: offersResult.length,
         page: page,
-        total_pages: Math.ceil((resultCount?.count ?? 0) / limit),
+        total_pages: Math.ceil(totalCount / limit),
       },
     });
   } catch (e) {
+    console.error("GET Error:", e);
     return APIResponse.respondWithServerError();
   }
 }
