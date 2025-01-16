@@ -23,11 +23,13 @@ interface BaseOfferInput {
 interface SingleOfferInput extends BaseOfferInput {
   type: "antar-jemput";
   delivery_area: string; // area antar jemput
+  pickup_area: string; // area penjemputan
 }
 
 interface MultiOfferInput extends BaseOfferInput {
   type: "jasa-titip";
   pickup_location: string; // lokasi membeli barang
+  delivery_area: string; // area pengantaran
 }
 
 export async function POST(request: NextRequest) {
@@ -41,6 +43,7 @@ export async function POST(request: NextRequest) {
       price,
       pickup_location,
       delivery_area,
+      pickup_area,
     } = json;
 
     const baseSchema = {
@@ -67,13 +70,19 @@ export async function POST(request: NextRequest) {
         ? z.object({
             ...baseSchema,
             delivery_area: z.string({
-              required_error: "Area antar jemput tidak boleh kosong!",
+              required_error: "Area antar tidak boleh kosong!",
+            }),
+            pickup_area: z.string({
+              required_error: "Area jemput tidak boleh kosong!",
             }),
           })
         : z.object({
             ...baseSchema,
             pickup_location: z.string({
               required_error: "Lokasi pembelian barang tidak boleh kosong!",
+            }),
+            delivery_area: z.string({
+              required_error: "Area pengantaran tidak boleh kosong!",
             }),
           });
 
@@ -105,6 +114,7 @@ export async function POST(request: NextRequest) {
           available_until,
           price,
           delivery_area, // area antar jemput
+          pickup_area, // area penjemputan
           freelancer: authorization.userId,
           offer_status: "available",
           expired_at: null,
@@ -129,6 +139,7 @@ export async function POST(request: NextRequest) {
           freelancer: authorization.userId,
           status: "available",
           pickup_location, // lokasi pembelian barang
+          delivery_area, // area pengantaran
         } as any)
         .returning("id");
 
@@ -158,6 +169,7 @@ interface Offer {
   type: string;
   pickup_location?: string; // optional untuk tipe jasa-titip
   delivery_area?: string; // optional untuk tipe antar-jemput
+  pickup_area?: string; // optional untuk tipe antar-jemput
   available_until: Date;
   price: number;
   offer_status?: string;
@@ -185,6 +197,7 @@ interface OfferResult {
   price: number;
   delivery_area?: string;
   pickup_location?: string;
+  pickup_area?: string;
   offer_status?: string;
   status?: string;
   created_at: string;
@@ -226,6 +239,7 @@ export async function GET(request: NextRequest) {
           "so.available_until",
           "so.price",
           "so.delivery_area",
+          "so.pickup_area",
           "so.offer_status",
           "u.name as freelancer_name",
           sql<string>`so."xata.createdAt"`.as("created_at"),
@@ -266,6 +280,7 @@ export async function GET(request: NextRequest) {
           "mo.available_until",
           "mo.price",
           "mo.pickup_location",
+          "mo.delivery_area",
           "mo.status",
           "u.name as freelancer_name",
           sql<string>`mo."xata.createdAt"`.as("created_at"),
