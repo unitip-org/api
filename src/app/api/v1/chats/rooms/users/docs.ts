@@ -2,18 +2,18 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const chatRoomByUserIdPaths = {
-  "/api/v1/chats/rooms/users/{user_id}": {
+  "/api/v1/chats/rooms/users": {
     get: {
       tags: ["Chats"],
       security: swaggerSecurity,
-      parameters: [
-        {
-          name: "user_id",
-          in: "path",
-          required: true,
-          schema: { type: "string" },
-        },
-      ],
+      // parameters: [
+      //   {
+      //     name: "user_id",
+      //     in: "path",
+      //     required: true,
+      //     schema: { type: "string" },
+      //   },
+      // ],
       responses: {
         200: {
           content: {
@@ -27,8 +27,9 @@ export const chatRoomByUserIdPaths = {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        other_user_id: { type: "string" },
-                        other_user_name: { type: "string" },
+                        from_user_id: { type: "string" },
+                        from_user_name: { type: "string" },
+                        to_user_id: { type: "string" },
                         last_message: { type: "string" },
                         last_sent_user_id: { type: "string" },
                         updated_at: { type: "string" },
