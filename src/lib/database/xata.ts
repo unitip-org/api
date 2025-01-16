@@ -30,7 +30,7 @@ const tables = [
       { column: "freelancer", table: "single_job_applicants" },
       { column: "freelancer", table: "multi_jobs" },
       { column: "freelancer", table: "multi_offers" },
-      { column: "customer", table: "multi_offer_orders" },
+      { column: "customer", table: "multi_offer_followers" },
       { column: "freelancer", table: "multi_job_applicants" },
       { column: "customer", table: "multi_job_followers" },
       { column: "customer", table: "multi_jobs" },
@@ -153,12 +153,17 @@ const tables = [
         defaultValue: "now",
       },
       { name: "description", type: "text", notNull: true, defaultValue: "" },
-      { name: "location", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
     ],
-    revLinks: [{ column: "offer", table: "multi_offer_orders" }],
+    revLinks: [{ column: "offer", table: "multi_offer_followers" }],
   },
   {
-    name: "multi_offer_orders",
+    name: "multi_offer_followers",
     columns: [
       { name: "offer", type: "link", link: { table: "multi_offers" } },
       {
@@ -195,6 +200,7 @@ const tables = [
       { name: "customer", type: "link", link: { table: "users" } },
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "status", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [{ column: "job", table: "single_job_applicants" }],
   },
@@ -250,12 +256,6 @@ const tables = [
       { name: "customer", type: "link", link: { table: "users" } },
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
-      {
-        name: "available_until",
-        type: "text",
-        notNull: true,
-        defaultValue: "",
-      },
       { name: "delivery_area", type: "text", notNull: true, defaultValue: "" },
       { name: "description", type: "text", notNull: true, defaultValue: "" },
       { name: "type", type: "text", notNull: true, defaultValue: "" },
@@ -267,6 +267,12 @@ const tables = [
         defaultValue: "available",
       },
       { name: "expired_at", type: "text" },
+      {
+        name: "available_until",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
     ],
     revLinks: [{ column: "offer", table: "single_offer_applicants" }],
   },
@@ -324,8 +330,8 @@ export type UserSessionsRecord = UserSessions & XataRecord;
 export type MultiOffers = InferredTypes["multi_offers"];
 export type MultiOffersRecord = MultiOffers & XataRecord;
 
-export type MultiOfferOrders = InferredTypes["multi_offer_orders"];
-export type MultiOfferOrdersRecord = MultiOfferOrders & XataRecord;
+export type MultiOfferFollowers = InferredTypes["multi_offer_followers"];
+export type MultiOfferFollowersRecord = MultiOfferFollowers & XataRecord;
 
 export type SingleJobs = InferredTypes["single_jobs"];
 export type SingleJobsRecord = SingleJobs & XataRecord;
@@ -358,7 +364,7 @@ export type DatabaseSchema = {
   customer_request_applications: CustomerRequestApplicationsRecord;
   user_sessions: UserSessionsRecord;
   multi_offers: MultiOffersRecord;
-  multi_offer_orders: MultiOfferOrdersRecord;
+  multi_offer_followers: MultiOfferFollowersRecord;
   single_jobs: SingleJobsRecord;
   multi_jobs: MultiJobsRecord;
   multi_job_followers: MultiJobFollowersRecord;
