@@ -1,10 +1,5 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
-import { id } from "date-fns/locale";
-import { get } from "http";
-import { DessertIcon } from "lucide-react";
-import { Content } from "next/font/google";
-import { title } from "process";
 
 export const offersPaths = {
   "/api/v1/offers": {
@@ -38,7 +33,7 @@ export const offersPaths = {
                   enum: ["antar-jemput", "jasa-titip"],
                   description: "Tipe penawaran",
                 },
-                available_until: {
+                pickup_area: {
                   type: "string",
                   format: "date-time",
                   description: "Waktu berakhir penawaran",
@@ -52,7 +47,7 @@ export const offersPaths = {
                   type: "string",
                   description: "Lokasi",
                 },
-                delivery_area: {
+                available_until: {
                   type: "string",
                   description: "Area pengiriman (opsional)",
                 },

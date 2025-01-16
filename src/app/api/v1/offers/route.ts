@@ -1,3 +1,5 @@
+import { Order } from "@/constants/order";
+import { Role } from "@/constants/role";
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
@@ -16,11 +18,11 @@ export async function POST(request: NextRequest) {
     const {
       title,
       description,
-      type,
-      available_until,
       price,
-      location,
+      type,
+      pickup_area,
       delivery_area,
+      available_until,
     } = json;
     const data = z
       .object({
@@ -28,28 +30,32 @@ export async function POST(request: NextRequest) {
           .string({ required_error: "Judul tidak boleh kosong!" })
           .min(1, "Judul tidak boleh kosong!"),
         description: z.string().optional(),
-        type: z.enum(["antar-jemput", "jasa-titip"]),
+        price: z
+          .number({ required_error: "Biaya tidak boleh kosong!" })
+          .min(0, "Biaya tidak boleh negatif!"),
+        type: z.enum([Order.type.AntarJemput, Order.type.JasaTitip]),
+        pickup_area: z
+          .string({ required_error: "Area pengambilan tidak boleh kosong!" })
+          .min(1, "Area pengambilan tidak boleh kosong!"),
+        delivery_area: z
+          .string({
+            required_error: "Area pengiriman tidak boleh kosong!",
+          })
+          .min(1, "Area pengiriman tidak boleh kosong!"),
         available_until: z
           .string({
             required_error: "Waktu untuk penawaran tidak boleh kosong!",
           })
           .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
-        price: z
-          .number({ required_error: "Biaya tidak boleh kosong!" })
-          .min(0, "Biaya tidak boleh negatif!"),
-        location: z
-          .string({ required_error: "Lokasi tidak boleh kosong!" })
-          .min(1, "Lokasi tidak boleh kosong!"),
-        delivery_area: z.string().optional(),
       })
       .safeParse({
         title,
         description,
-        type,
-        available_until,
         price,
-        location,
+        type,
+        pickup_area,
         delivery_area,
+        available_until,
       });
 
     if (!data.success)
@@ -64,27 +70,21 @@ export async function POST(request: NextRequest) {
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
     // validasi role
-    if (authorization.role == "customer")
+    if (authorization.role == Role.Customer)
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk membuat offer!"
       );
+
+    // console.log("Input JSON:", json);
+    // console.log("Validation Result:", data);
+    //console.log("Authorization:", authorization);
     console.log("Authorization:", authorization);
 
-    if (type === "jasa-titip") {
-      /**
-       * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
-       *selain customer
-       */
-      console.log("Input Data:", {
-        title,
-        description,
-        type,
-        available_until,
-        price,
-        location,
-        delivery_area,
-        freelancer: authorization.userId,
-      });
+    // if (type === Order.type.JasaTitip) {
+    /**
+     * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
+     *selain customer
+     */
 
       const query = database
         .insertInto("single_offers")
@@ -102,12 +102,12 @@ export async function POST(request: NextRequest) {
         } as any)
         .returning("id");
 
-      console.log("Executing Query:", query.compile());
+    // console.log("Executing Query:", query.compile());
 
-      const result = await query.executeTakeFirst();
-      console.log("Query Result:", result);
+    const result = await query.executeTakeFirst();
+    console.log("Query Result:", result);
 
-      if (!result) return APIResponse.respondWithServerError();
+    if (!result) return APIResponse.respondWithServerError();
 
       return APIResponse.respondWithSuccess<POSTResponse>({
         success: true,
@@ -149,7 +149,10 @@ interface Offer {
   id: string;
   title: string;
   description: string;
+  price: number;
   type: string;
+  pickup_area: string;
+  delivery_area: string;
   available_until: string;
   price: number;
   location: string;
@@ -269,11 +272,12 @@ export async function GET(request: NextRequest) {
             id: it.id,
             title: it.title,
             description: it.description,
-            type: it.type,
-            available_until: it.available_until,
             price: it.price,
-            location: it.location,
+            type: it.type,
+            pickup_area: it.pickup_area,
             delivery_area: it.delivery_area,
+            available_until: it.available_until,
+            offer_status: it.offer_status,
             created_at: it.created_at,
             updated_at: it.updated_at,
             freelancer: <OfferFreelancer>{
