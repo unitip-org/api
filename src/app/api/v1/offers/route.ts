@@ -12,6 +12,24 @@ interface POSTResponse {
   id: string;
 }
 
+interface BaseOfferInput {
+  title: string;
+  description: string;
+  type: "antar-jemput" | "jasa-titip";
+  available_until: string;
+  price: number;
+}
+
+interface SingleOfferInput extends BaseOfferInput {
+  type: "antar-jemput";
+  delivery_area: string; // area antar jemput
+}
+
+interface MultiOfferInput extends BaseOfferInput {
+  type: "jasa-titip";
+  pickup_location: string; // lokasi membeli barang
+}
+
 export async function POST(request: NextRequest) {
   try {
     const json = await request.json();
@@ -21,39 +39,45 @@ export async function POST(request: NextRequest) {
       type,
       available_until,
       price,
-      pickup_area,
+      pickup_location,
       delivery_area,
     } = json;
 
-    const data = z
-      .object({
-        title: z
-          .string({ required_error: "Judul tidak boleh kosong!" })
-          .min(1, "Judul tidak boleh kosong!"),
-        description: z
-          .string({ required_error: "Deskripsi tidak boleh kosong!" })
-          .min(1, "Deskripsi tidak boleh kosong!"),
-        type: z.enum(["antar-jemput", "jasa-titip"]),
-        available_until: z
-          .string({
-            required_error: "Waktu untuk penawaran tidak boleh kosong!",
+    const baseSchema = {
+      title: z
+        .string({ required_error: "Judul tidak boleh kosong!" })
+        .min(1, "Judul tidak boleh kosong!"),
+      description: z
+        .string({ required_error: "Deskripsi tidak boleh kosong!" })
+        .min(1, "Deskripsi tidak boleh kosong!"),
+      type: z.enum(["antar-jemput", "jasa-titip"]),
+      available_until: z
+        .string({
+          required_error: "Waktu untuk penawaran tidak boleh kosong!",
+        })
+        .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
+      price: z
+        .number({ required_error: "Biaya tidak boleh kosong!" })
+        .min(0, "Biaya tidak boleh negatif!"),
+    };
+
+    // Schema berbeda untuk masing-masing tipe
+    const schema =
+      type === "antar-jemput"
+        ? z.object({
+            ...baseSchema,
+            delivery_area: z.string({
+              required_error: "Area antar jemput tidak boleh kosong!",
+            }),
           })
-          .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
-        price: z
-          .number({ required_error: "Biaya tidak boleh kosong!" })
-          .min(0, "Biaya tidak boleh negatif!"),
-        pickup_area: z.string().optional(),
-        delivery_area: z.string().optional(),
-      })
-      .safeParse({
-        title,
-        description,
-        type,
-        available_until,
-        price,
-        pickup_area,
-        delivery_area,
-      });
+        : z.object({
+            ...baseSchema,
+            pickup_location: z.string({
+              required_error: "Lokasi pembelian barang tidak boleh kosong!",
+            }),
+          });
+
+    const data = schema.safeParse(json);
 
     if (!data.success)
       return APIResponse.respondWithBadRequest(
@@ -66,19 +90,12 @@ export async function POST(request: NextRequest) {
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
-    // validasi role
     if (authorization.role == "customer")
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk membuat offer!"
       );
-    console.log("Authorization:", authorization);
 
-    if (type === "jasa-titip") {
-      /**
-       * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
-       *selain customer
-       */
-
+    if (type === "antar-jemput") {
       const query = database
         .insertInto("single_offers")
         .values({
@@ -87,26 +104,21 @@ export async function POST(request: NextRequest) {
           type,
           available_until,
           price,
-          pickup_area,
-          delivery_area,
+          delivery_area, // area antar jemput
           freelancer: authorization.userId,
           offer_status: "available",
           expired_at: null,
         } as any)
         .returning("id");
 
-      console.log("Executing Query:", query.compile());
-
       const result = await query.executeTakeFirst();
-      console.log("Query Result:", result);
-
       if (!result) return APIResponse.respondWithServerError();
 
       return APIResponse.respondWithSuccess<POSTResponse>({
         success: true,
         id: result.id,
       });
-    } else if (type === "antar-jemput") {
+    } else if (type === "jasa-titip") {
       const query = database
         .insertInto("multi_offers")
         .values({
@@ -116,7 +128,7 @@ export async function POST(request: NextRequest) {
           available_until,
           freelancer: authorization.userId,
           status: "available",
-          location: delivery_area,
+          pickup_location, // lokasi pembelian barang
         } as any)
         .returning("id");
 
@@ -128,6 +140,7 @@ export async function POST(request: NextRequest) {
         id: result.id,
       });
     }
+
     return APIResponse.respondWithServerError();
   } catch (e) {
     return APIResponse.respondWithServerError();
@@ -137,15 +150,18 @@ export async function POST(request: NextRequest) {
 interface OfferFreelancer {
   name: string;
 }
+
 interface Offer {
   id: string;
   title: string;
   description: string;
   type: string;
-  pickup_area: string;
-  delivery_area: string;
+  pickup_location?: string; // optional untuk tipe jasa-titip
+  delivery_area?: string; // optional untuk tipe antar-jemput
   available_until: Date;
   price: number;
+  offer_status?: string;
+  status?: string;
   freelancer: OfferFreelancer;
   created_at: string;
   updated_at: string;
@@ -159,6 +175,7 @@ interface GETResponse {
     total_pages: number;
   };
 }
+
 interface OfferResult {
   id: string;
   title: string;
@@ -167,8 +184,9 @@ interface OfferResult {
   available_until: Date;
   price: number;
   delivery_area?: string;
-  pickup_area?: string;
-  location?: string;
+  pickup_location?: string;
+  offer_status?: string;
+  status?: string;
   created_at: string;
   updated_at: string;
   freelancer_name: string;
@@ -204,20 +222,21 @@ export async function GET(request: NextRequest) {
           "so.id",
           "so.title",
           "so.description",
-          "so.type",
+          sql<string>`'antar-jemput'`.as("type"),
           "so.available_until",
           "so.price",
           "so.delivery_area",
-          "so.pickup_area",
+          "so.offer_status",
           "u.name as freelancer_name",
           sql<string>`so."xata.createdAt"`.as("created_at"),
-          sql<string>`so."xata.updatedAt"`.as("updated_at")
-        ])
-        // .where("so.offer_status", "=", "waiting");
+          sql<string>`so."xata.updatedAt"`.as("updated_at"),
+        ]);
+      // .where("so.offer_status", "=", "available");
+      // .where("so.offer_status", "=", "waiting");
 
       const singleCount = await database
         .selectFrom("single_offers")
-        // .where("offer_status", "=", "waiting")
+        // .where("offer_status", "=", "available")
         .select(sql<number>`count(*)`.as("count"))
         .executeTakeFirst();
 
@@ -243,20 +262,21 @@ export async function GET(request: NextRequest) {
           "mo.id",
           "mo.title",
           "mo.description",
-          sql<string>`'antar-jemput'`.as("type"),
+          sql<string>`'jasa-titip'`.as("type"),
           "mo.available_until",
           "mo.price",
-          "mo.location as delivery_area",
-          sql<string>`''`.as("pickup_area"),
+          "mo.pickup_location",
+          "mo.status",
           "u.name as freelancer_name",
           sql<string>`mo."xata.createdAt"`.as("created_at"),
-          sql<string>`mo."xata.updatedAt"`.as("updated_at")
-        ])
-        // .where("mo.status", "=", "waiting");
+          sql<string>`mo."xata.updatedAt"`.as("updated_at"),
+        ]);
+      // .where("mo.status", "=", "available");
+      // .where("mo.status", "=", "waiting");
 
       const multiCount = await database
         .selectFrom("multi_offers")
-        // .where("status", "=", "waiting")
+        // .where("status", "=", "available")
         .select(sql<number>`count(*)`.as("count"))
         .executeTakeFirst();
 
@@ -267,7 +287,7 @@ export async function GET(request: NextRequest) {
           .limit(limit)
           .execute();
         totalCount = multiCount?.count || 0;
-      } else if (type === "all") {
+      } else {
         const multiOffers = await multiQuery.execute();
         offersResult = [...offersResult, ...multiOffers];
         totalCount += multiCount?.count || 0;
@@ -293,11 +313,15 @@ export async function GET(request: NextRequest) {
         id: it.id,
         title: it.title || "",
         description: it.description || "",
-        type: it.type || "jasa-titip",
-        pickup_area: it.pickup_area || "",
-        delivery_area: it.delivery_area || it.location || "",
-        available_until: it.available_until ? new Date(it.available_until) : new Date(),
+        type: it.type,
+        pickup_location: it.pickup_location || "",
+        delivery_area: it.delivery_area || "",
+        available_until: it.available_until
+          ? new Date(it.available_until)
+          : new Date(),
         price: Number(it.price) || 0,
+        offer_status: it.offer_status,
+        status: it.status,
         created_at: it.created_at || "",
         updated_at: it.updated_at || "",
         freelancer: {
