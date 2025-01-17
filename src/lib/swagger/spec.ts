@@ -14,6 +14,8 @@ import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/reques
 import { offersPaths } from "@/app/api/v1/offers/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/multi/docs";
+import { applySingleOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/single/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -37,6 +39,8 @@ export const swaggerSpec = {
     //offers
     ...offersPaths,
     ...applyOfferByIdPaths,
+    ...applyMultiOfferByIdPaths,
+    ...applySingleOfferByIdPaths,
     ...acceptanceOffersByIdPaths,
 
     // example
