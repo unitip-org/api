@@ -71,7 +71,7 @@ export async function GET(
           ),
         ])
       )
-      .orderBy("created_at", "desc");
+      .orderBy("created_at", "asc");
     const result = await query.execute();
 
     return APIResponse.respondWithSuccess<GETResponse>({
