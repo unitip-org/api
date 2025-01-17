@@ -1,6 +1,7 @@
 import { authLoginPaths } from "@/app/api/v1/auth/login/docs";
 import { authLogoutPaths } from "@/app/api/v1/auth/logout/docs";
 import { authRegisterPaths } from "@/app/api/v1/auth/register/docs";
+import { chatsPaths } from "@/app/api/v1/chats/docs";
 import { chatRoomByUserIdPaths } from "@/app/api/v1/chats/rooms/users/docs";
 import { chatsByUserIdPaths } from "@/app/api/v1/chats/users/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
@@ -42,6 +43,7 @@ export const swaggerSpec = {
     ...examplePaths,
 
     // chats
+    ...chatsPaths,
     ...chatRoomByUserIdPaths,
     ...chatsByUserIdPaths,
   },
