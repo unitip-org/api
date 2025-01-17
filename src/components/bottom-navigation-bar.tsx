@@ -24,13 +24,13 @@ const menus: {
     icon: <HomeIcon className="size-6" />,
   },
   {
-    title: "Jobs",
-    href: "/jobs",
+    title: "Find Driver",
+    href: "/customer-post",
     icon: <BriefcaseIcon />,
   },
   {
-    title: "Penawaran",
-    href: "/jobs-v2",
+    title: "Open Job",
+    href: "/jobs",
     icon: <BriefcaseBusinessIcon />,
   },
   {
@@ -54,19 +54,38 @@ export default function BottomNavigation() {
       className={cn(
         "fixed bottom-0 left-0 right-0 flex justify-center pb-4 px-4 transition-transform duration-300 z-20"
       )}>
-      <nav className="bg-white border shadow-lg rounded-full overflow-hidden max-w-[480px] w-full">
+      <nav className="bg-background border shadow-lg rounded-full overflow-hidden max-w-[480px] w-full">
         <div className="grid grid-cols-5 px-4 h-16">
           {menus.map((menu, index) => (
             <Link
               key={`menuItem-${index}`}
               href={menu.href}
               className={cn(
-                "flex flex-col items-center justify-center py-2 text-muted-foreground hover:bg-muted duration-300",
-                pathname === menu.href && "text-indigo-600"
-              )}>
-              {menu.icon}
-              {pathname === menu.href && (
-                <span className="text-xs mt-1">{menu.title}</span>
+                "flex flex-col items-center justify-center py-2 text-muted-foreground hover:bg-muted duration-300 group relative",
+                pathname === menu.href && "text-indigo-600 bg-muted"
+              )}
+            >
+              <div
+                className={cn(
+                  "transition-transform duration-300",
+                  pathname !== menu.href
+                    ? "group-hover:-translate-y-1"
+                    : "-translate-y-1"
+                )}
+              >
+                {menu.icon}
+              </div>
+              {(pathname === menu.href || true) && (
+                <span
+                  className={cn(
+                    "text-xs absolute bottom-1  translate-y-1 transition-all duration-300",
+                    pathname === menu.href
+                      ? "opacity-100 translate-y-0"
+                      : "opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0"
+                  )}
+                >
+                  {menu.title}
+                </span>
               )}
             </Link>
           ))}
