@@ -2,20 +2,20 @@ import { authLoginPaths } from "@/app/api/v1/auth/login/docs";
 import { authLogoutPaths } from "@/app/api/v1/auth/logout/docs";
 import { authRegisterPaths } from "@/app/api/v1/auth/register/docs";
 import { chatsPaths } from "@/app/api/v1/chats/docs";
+import { chatMessagesFromUserIdPaths } from "@/app/api/v1/chats/messages/from/[user_id]/docs";
 import { chatRoomByUserIdPaths } from "@/app/api/v1/chats/rooms/users/docs";
-import { chatsByUserIdPaths } from "@/app/api/v1/chats/users/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
 import { approveJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/applicants/[applicant_id]/approve/docs";
 import { applyJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/apply/docs";
 import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
+import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/multi/docs";
+import { applySingleOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/single/docs";
 import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { offersPaths } from "@/app/api/v1/offers/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/multi/docs";
-import { applySingleOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/single/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -49,6 +49,6 @@ export const swaggerSpec = {
     // chats
     ...chatsPaths,
     ...chatRoomByUserIdPaths,
-    ...chatsByUserIdPaths,
+    ...chatMessagesFromUserIdPaths,
   },
 };

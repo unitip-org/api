@@ -3,6 +3,7 @@ import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
+import { z } from "zod";
 
 interface Message {
   id: "string";
@@ -17,12 +18,34 @@ interface Message {
 interface GETResponse {
   messages: Message[];
 }
-export async function GET(request: NextRequest) {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { user_id: string } }
+) {
   try {
+    // validasi request dari user
+    const { user_id: fromUserId } = params;
+    const validate = z
+      .object({
+        fromUserId: z
+          .string({ required_error: "ID pengirim tidak boleh kosong!" })
+          .min(1, "ID pengirim tidak boleh kosong!"),
+      })
+      .safeParse({ fromUserId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // validasi bearer token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
     const { userId } = authorization;
 
+    // mendapatkan semua pesan berdasarkan user id dan from user id
     const query = database
       .selectFrom("chat_messages as cm")
       .select([
@@ -35,7 +58,18 @@ export async function GET(request: NextRequest) {
       .select(sql<string>`cm."xata.createdAt"`.as("created_at"))
       .select(sql<string>`cm."xata.updatedAt"`.as("updated_at"))
       .where((qb) =>
-        qb("cm.from", "=", userId as any).or("cm.to", "=", userId as any)
+        qb.or([
+          qb("cm.from", "=", fromUserId as any).and(
+            "cm.to",
+            "=",
+            userId as any
+          ),
+          qb("cm.to", "=", fromUserId as any).and(
+            "cm.from",
+            "=",
+            userId as any
+          ),
+        ])
       )
       .orderBy("created_at", "desc");
     const result = await query.execute();
