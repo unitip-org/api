@@ -34,8 +34,6 @@ export async function POST(request: NextRequest) {
     if (!authorization) return APIResponse.respondWithUnauthorized();
     const { userId } = authorization;
 
-    console.log({ userId, toUserId, message });
-
     // simpan pesan ke database
     const result = await xata.transactions.run([
       // simpan pesan ke tabel chat_messages
