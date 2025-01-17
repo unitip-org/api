@@ -20,20 +20,20 @@ export const approveJobByIdPaths = {
           required: true,
         },
       ],
-      requestBody: {
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                price: {
-                  type: "number",
-                },
-              },
-            },
-          },
-        },
-      },
+      // requestBody: {
+      //   content: {
+      //     "application/json": {
+      //       schema: {
+      //         type: "object",
+      //         properties: {
+      //           price: {
+      //             type: "number",
+      //           },
+      //         },
+      //       },
+      //     },
+      //   },
+      // },
       responses: {
         200: {
           content: {

@@ -12,53 +12,81 @@ interface POSTResponse {
   id: string;
 }
 
+interface BaseOfferInput {
+  title: string;
+  description: string;
+  type: "antar-jemput" | "jasa-titip";
+  available_until: string;
+  price: number;
+}
+
+interface SingleOfferInput extends BaseOfferInput {
+  type: "antar-jemput";
+  delivery_area: string; // area antar jemput
+  pickup_area: string; // area penjemputan
+}
+
+interface MultiOfferInput extends BaseOfferInput {
+  type: "jasa-titip";
+  pickup_location: string; // lokasi membeli barang
+  delivery_area: string; // area pengantaran
+}
+
 export async function POST(request: NextRequest) {
   try {
     const json = await request.json();
     const {
       title,
       description,
-      price,
       type,
-      pickup_area,
-      delivery_area,
       available_until,
+      price,
+      pickup_location,
+      delivery_area,
+      pickup_area,
     } = json;
 
-    // validasi input dari user
-    const data = z
-      .object({
-        title: z
-          .string({ required_error: "Judul tidak boleh kosong!" })
-          .min(1, "Judul tidak boleh kosong!"),
-        description: z.string().optional(),
-        price: z
-          .number({ required_error: "Biaya tidak boleh kosong!" })
-          .min(0, "Biaya tidak boleh negatif!"),
-        type: z.enum([Order.type.AntarJemput, Order.type.JasaTitip]),
-        pickup_area: z
-          .string({ required_error: "Area pengambilan tidak boleh kosong!" })
-          .min(1, "Area pengambilan tidak boleh kosong!"),
-        delivery_area: z
-          .string({
-            required_error: "Area pengiriman tidak boleh kosong!",
+    const baseSchema = {
+      title: z
+        .string({ required_error: "Judul tidak boleh kosong!" })
+        .min(1, "Judul tidak boleh kosong!"),
+      description: z
+        .string({ required_error: "Deskripsi tidak boleh kosong!" })
+        .min(1, "Deskripsi tidak boleh kosong!"),
+      type: z.enum(["antar-jemput", "jasa-titip"]),
+      available_until: z
+        .string({
+          required_error: "Waktu untuk penawaran tidak boleh kosong!",
+        })
+        .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
+      price: z
+        .number({ required_error: "Biaya tidak boleh kosong!" })
+        .min(0, "Biaya tidak boleh negatif!"),
+    };
+
+    // Schema berbeda untuk masing-masing tipe
+    const schema =
+      type === "antar-jemput"
+        ? z.object({
+            ...baseSchema,
+            delivery_area: z.string({
+              required_error: "Area antar tidak boleh kosong!",
+            }),
+            pickup_area: z.string({
+              required_error: "Area jemput tidak boleh kosong!",
+            }),
           })
-          .min(1, "Area pengiriman tidak boleh kosong!"),
-        available_until: z
-          .string({
-            required_error: "Waktu untuk penawaran tidak boleh kosong!",
-          })
-          .min(1, "Waktu untuk penawaran tidak boleh kosong!"),
-      })
-      .safeParse({
-        title,
-        description,
-        price,
-        type,
-        pickup_area,
-        delivery_area,
-        available_until,
-      });
+        : z.object({
+            ...baseSchema,
+            pickup_location: z.string({
+              required_error: "Lokasi pembelian barang tidak boleh kosong!",
+            }),
+            delivery_area: z.string({
+              required_error: "Area pengantaran tidak boleh kosong!",
+            }),
+          });
+
+    const data = schema.safeParse(json);
 
     if (!data.success)
       return APIResponse.respondWithBadRequest(
@@ -67,59 +95,64 @@ export async function POST(request: NextRequest) {
           path: it.path[0] as string,
         }))
       );
-    // validasi auth token
+
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
-    // validasi role
-    if (authorization.role == Role.Customer)
+    if (authorization.role == "customer")
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk membuat offer!"
       );
 
-    // console.log("Input JSON:", json);
-    // console.log("Validation Result:", data);
-    //console.log("Authorization:", authorization);
+    if (type === "antar-jemput") {
+      const query = database
+        .insertInto("single_offers")
+        .values({
+          title,
+          description,
+          type,
+          available_until,
+          price,
+          delivery_area, // area antar jemput
+          pickup_area, // area penjemputan
+          freelancer: authorization.userId,
+          offer_status: "available",
+          expired_at: null,
+        } as any)
+        .returning("id");
 
-    // if (type === Order.type.JasaTitip) {
-    /**
-     * jasa-titip adalah service single offer dan hanya dapat dibuat oleh role
-     *selain customer
-     */
+      const result = await query.executeTakeFirst();
+      if (!result) return APIResponse.respondWithServerError();
 
-    const query = database
-      .insertInto("single_offers")
-      .values({
-        title,
-        description,
-        price,
-        type,
-        pickup_area,
-        delivery_area,
-        available_until,
-        offer_status: Order.status.Waiting,
-        freelancer: authorization.userId,
-      } as any)
-      .returning("id");
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        success: true,
+        id: result.id,
+      });
+    } else if (type === "jasa-titip") {
+      const query = database
+        .insertInto("multi_offers")
+        .values({
+          title,
+          description,
+          price,
+          available_until,
+          freelancer: authorization.userId,
+          status: "available",
+          pickup_location, // lokasi pembelian barang
+          delivery_area, // area pengantaran
+        } as any)
+        .returning("id");
 
-    // console.log("Executing Query:", query.compile());
+      const result = await query.executeTakeFirst();
+      if (!result) return APIResponse.respondWithServerError();
 
-    const result = await query.executeTakeFirst();
-    console.log("Query Result:", result);
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        success: true,
+        id: result.id,
+      });
+    }
 
-    if (!result) return APIResponse.respondWithServerError();
-
-    return APIResponse.respondWithSuccess<POSTResponse>({
-      success: true,
-      id: result.id,
-    });
-    // } else if (type === "antar-jemput") {
-    //   /**
-    //    * jasa titip adalah service multiple job dan hanya dapat dibuat oleh role
-    //    * customer
-    //    */
-    // }
-    // return APIResponse.respondWithServerError();
+    return APIResponse.respondWithServerError();
   } catch (e) {
     return APIResponse.respondWithServerError();
   }
@@ -133,12 +166,14 @@ interface Offer {
   id: string;
   title: string;
   description: string;
-  price: number;
   type: string;
-  pickup_area: string;
-  delivery_area: string;
-  available_until: string;
-  offer_status: string;
+  pickup_location?: string; // optional untuk tipe jasa-titip
+  delivery_area?: string; // optional untuk tipe antar-jemput
+  pickup_area?: string; // optional untuk tipe antar-jemput
+  available_until: Date;
+  price: number;
+  offer_status?: string;
+  status?: string;
   freelancer: OfferFreelancer;
   created_at: string;
   updated_at: string;
@@ -153,73 +188,169 @@ interface GETResponse {
   };
 }
 
+interface OfferResult {
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  available_until: Date;
+  price: number;
+  delivery_area?: string;
+  pickup_location?: string;
+  pickup_area?: string;
+  offer_status?: string;
+  status?: string;
+  created_at: string;
+  updated_at: string;
+  freelancer_name: string;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    // validasi auth token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
-    // mendapatkan page and limit
     const searchParams = request.nextUrl.searchParams;
-    const page = Number(searchParams.get("page") || "1");
+    const page = Math.max(1, Number(searchParams.get("page") || "1"));
     const limit = Number(searchParams.get("limit") || "10");
+    const type = searchParams.get("type") || "all";
 
-    const offersQuery = database
-      .selectFrom("single_offers as so")
-      .innerJoin("users as u", "u.id", "so.freelancer")
-      .select([
-        "so.id",
-        "so.title",
-        "so.description",
-        "so.price",
-        "so.type",
-        "so.pickup_area",
-        "so.delivery_area",
-        "so.available_until",
-        "so.offer_status",
-        "u.name as freelancer_name",
-      ])
-      .select(sql<string>`so."xata.createdAt"`.as("created_at"))
-      .select(sql<string>`so."xata.updatedAt"`.as("updated_at"))
-      .offset((page - 1) * limit)
-      .orderBy("created_at", "desc")
-      .limit(limit);
+    if (!["all", "single", "multi"].includes(type)) {
+      return APIResponse.respondWithBadRequest([
+        {
+          message: "Invalid type parameter",
+          path: "type",
+        },
+      ]);
+    }
 
-    const offersResult = await offersQuery.execute();
+    let offersResult: OfferResult[] = [];
+    let totalCount = 0;
 
-    // Mendapatkan total row dari table single offers
-    const queryCount = database
-      .selectFrom("single_offers as so")
-      .select(sql<number>`count(so.id)`.as("count"));
-    const resultCount = await queryCount.executeTakeFirst();
+    if (type === "single" || type === "all") {
+      const singleQuery = database
+        .selectFrom("single_offers as so")
+        .innerJoin("users as u", "u.id", "so.freelancer")
+        .select([
+          "so.id",
+          "so.title",
+          "so.description",
+          sql<string>`'antar-jemput'`.as("type"),
+          "so.available_until",
+          "so.price",
+          "so.delivery_area",
+          "so.pickup_area",
+          "so.offer_status",
+          "u.name as freelancer_name",
+          sql<string>`so."xata.createdAt"`.as("created_at"),
+          sql<string>`so."xata.updatedAt"`.as("updated_at"),
+        ]);
+      // .where("so.offer_status", "=", "available");
+      // .where("so.offer_status", "=", "waiting");
+
+      const singleCount = await database
+        .selectFrom("single_offers")
+        // .where("offer_status", "=", "available")
+        .select(sql<number>`count(*)`.as("count"))
+        .executeTakeFirst();
+
+      if (type === "single") {
+        offersResult = await singleQuery
+          .orderBy(sql`so."xata.createdAt"`, "desc")
+          .offset((page - 1) * limit)
+          .limit(limit)
+          .execute();
+        totalCount = singleCount?.count || 0;
+      } else {
+        const singleOffers = await singleQuery.execute();
+        offersResult = [...singleOffers];
+        totalCount = singleCount?.count || 0;
+      }
+    }
+
+    if (type === "multi" || type === "all") {
+      const multiQuery = database
+        .selectFrom("multi_offers as mo")
+        .innerJoin("users as u", "u.id", "mo.freelancer")
+        .select([
+          "mo.id",
+          "mo.title",
+          "mo.description",
+          sql<string>`'jasa-titip'`.as("type"),
+          "mo.available_until",
+          "mo.price",
+          "mo.pickup_location",
+          "mo.delivery_area",
+          "mo.status",
+          "u.name as freelancer_name",
+          sql<string>`mo."xata.createdAt"`.as("created_at"),
+          sql<string>`mo."xata.updatedAt"`.as("updated_at"),
+        ]);
+      // .where("mo.status", "=", "available");
+      // .where("mo.status", "=", "waiting");
+
+      const multiCount = await database
+        .selectFrom("multi_offers")
+        // .where("status", "=", "available")
+        .select(sql<number>`count(*)`.as("count"))
+        .executeTakeFirst();
+
+      if (type === "multi") {
+        offersResult = await multiQuery
+          .orderBy(sql`mo."xata.createdAt"`, "desc")
+          .offset((page - 1) * limit)
+          .limit(limit)
+          .execute();
+        totalCount = multiCount?.count || 0;
+      } else {
+        const multiOffers = await multiQuery.execute();
+        offersResult = [...offersResult, ...multiOffers];
+        totalCount += multiCount?.count || 0;
+      }
+    }
+
+    // For type "all", apply sorting and pagination after combining results
+    if (type === "all") {
+      offersResult.sort((a, b) => {
+        const dateA = new Date(a.created_at).getTime();
+        const dateB = new Date(b.created_at).getTime();
+        return dateB - dateA;
+      });
+
+      offersResult = offersResult.slice(
+        (page - 1) * limit,
+        (page - 1) * limit + limit
+      );
+    }
 
     return APIResponse.respondWithSuccess<GETResponse>({
-      offers: offersResult.map(
-        (it) =>
-          <Offer>{
-            id: it.id,
-            title: it.title,
-            description: it.description,
-            price: it.price,
-            type: it.type,
-            pickup_area: it.pickup_area,
-            delivery_area: it.delivery_area,
-            available_until: it.available_until,
-            offer_status: it.offer_status,
-            created_at: it.created_at,
-            updated_at: it.updated_at,
-            freelancer: <OfferFreelancer>{
-              name: it.freelancer_name,
-            },
-          }
-      ),
+      offers: offersResult.map((it: OfferResult) => ({
+        id: it.id,
+        title: it.title || "",
+        description: it.description || "",
+        type: it.type,
+        pickup_location: it.pickup_location || "",
+        delivery_area: it.delivery_area || "",
+        available_until: it.available_until
+          ? new Date(it.available_until)
+          : new Date(),
+        price: Number(it.price) || 0,
+        offer_status: it.offer_status,
+        status: it.status,
+        created_at: it.created_at || "",
+        updated_at: it.updated_at || "",
+        freelancer: {
+          name: it.freelancer_name || "",
+        },
+      })),
       page_info: {
         count: offersResult.length,
         page: page,
-        total_pages: Math.ceil((resultCount?.count ?? 0) / limit),
+        total_pages: Math.ceil(totalCount / limit),
       },
     });
   } catch (e) {
+    console.error("GET Error:", e);
     return APIResponse.respondWithServerError();
   }
 }

@@ -5,40 +5,51 @@ export const offersPaths = {
   "/api/v1/offers": {
     post: {
       tags: ["Offers"],
+      summary: "Membuat penawaran baru",
       security: swaggerSecurity,
       requestBody: {
+        required: true,
         content: {
           "application/json": {
             schema: {
               type: "object",
+              required: [
+                "title",
+                "description",
+                "type",
+                "available_until",
+                "price",
+              ],
               properties: {
                 title: {
                   type: "string",
-                  description: "Title of the offer",
+                  description: "Judul penawaran",
                 },
                 description: {
                   type: "string",
-                  description: "Detailed description of the offer",
-                },
-                price: {
-                  type: "number",
-                  description: "Price for the offer",
+                  description: "Deskripsi penawaran",
                 },
                 type: {
                   type: "string",
-                  description: "Type of the offer",
-                },
-                pickup_area: {
-                  type: "string",
-                  description: "Pickup area of the offer",
-                },
-                delivery_area: {
-                  type: "string",
-                  description: "Delivery area of the offer",
+                  enum: ["antar-jemput", "jasa-titip"],
+                  description: "Tipe penawaran",
                 },
                 available_until: {
                   type: "string",
-                  description: "Available until of the offer",
+                  description: "Batas waktu penawaran tersedia",
+                },
+                price: {
+                  type: "number",
+                  minimum: 0,
+                  description: "Biaya penawaran",
+                },
+                pickup_area: {
+                  type: "string",
+                  description: "Area penjemputan (opsional)",
+                },
+                delivery_area: {
+                  type: "string",
+                  description: "Area pengantaran (opsional)",
                 },
               },
             },
@@ -47,16 +58,18 @@ export const offersPaths = {
       },
       responses: {
         200: {
+          description: "Berhasil membuat penawaran",
           content: {
             "application/json": {
               schema: {
                 type: "object",
                 properties: {
-                  succes: {
+                  success: {
                     type: "boolean",
                   },
                   id: {
                     type: "string",
+                    description: "ID penawaran yang dibuat",
                   },
                 },
               },
@@ -103,29 +116,41 @@ export const offersPaths = {
     },
     get: {
       tags: ["Offers"],
+      summary: "Mendapatkan daftar penawaran",
       security: swaggerSecurity,
       parameters: [
-        {
-          in: "query",
-          name: "limit",
-          schema: {
-            type: "number",
-          },
-          required: false,
-          default: 10,
-        },
         {
           in: "query",
           name: "page",
           schema: {
             type: "number",
+            default: 1,
           },
-          required: false,
-          default: 1,
+          description: "Nomor halaman",
+        },
+        {
+          in: "query",
+          name: "limit",
+          schema: {
+            type: "number",
+            default: 10,
+          },
+          description: "Jumlah data per halaman",
+        },
+        {
+          in: "query",
+          name: "type",
+          schema: {
+            type: "string",
+            enum: ["all", "single", "multi"],
+            default: "all",
+          },
+          description: "Filter tipe penawaran",
         },
       ],
       responses: {
-        200: {
+        "200": {
+          description: "Berhasil mendapatkan daftar penawaran",
           content: {
             "application/json": {
               schema: {
@@ -145,9 +170,6 @@ export const offersPaths = {
                         description: {
                           type: "string",
                         },
-                        price: {
-                          type: "number",
-                        },
                         type: {
                           type: "string",
                         },
@@ -160,14 +182,8 @@ export const offersPaths = {
                         available_until: {
                           type: "string",
                         },
-                        offer_status: {
-                          type: "string",
-                        },
-                        created_at: {
-                          type: "string",
-                        },
-                        updated_at: {
-                          type: "string",
+                        price: {
+                          type: "number",
                         },
                         freelancer: {
                           type: "object",
@@ -176,6 +192,12 @@ export const offersPaths = {
                               type: "string",
                             },
                           },
+                        },
+                        created_at: {
+                          type: "string",
+                        },
+                        updated_at: {
+                          type: "string",
                         },
                       },
                     },
