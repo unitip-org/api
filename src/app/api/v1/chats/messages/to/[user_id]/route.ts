@@ -7,10 +7,14 @@ import { z } from "zod";
 interface POSTResponse {
   id: string;
 }
-export async function POST(request: NextRequest) {
+export async function POST(
+  request: NextRequest,
+  { params }: { params: { user_id: string } }
+) {
   try {
     // validasi request dari user
-    const { to_user_id: toUserId, message } = await request.json();
+    const { user_id: toUserId } = params;
+    const { message } = await request.json();
     const validate = z
       .object({
         toUserId: z

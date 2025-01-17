@@ -1,18 +1,25 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const chatsPaths = {
-  "/api/v1/chats": {
+export const chatMessagesToUserIdPaths = {
+  "/api/v1/chats/messages/to/{user_id}": {
     post: {
       tags: ["Chats"],
       security: swaggerSecurity,
+      parameters: [
+        {
+          in: "path",
+          name: "user_id",
+          required: true,
+          schema: { type: "string" },
+        },
+      ],
       requestBody: {
         content: {
           "application/json": {
             schema: {
               type: "object",
               properties: {
-                to_user_id: { type: "string" },
                 message: { type: "string" },
               },
             },
