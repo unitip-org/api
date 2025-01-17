@@ -14,9 +14,12 @@ export async function POST(
   try {
     // validasi request dari user
     const { user_id: toUserId } = params;
-    const { message } = await request.json();
+    const { message, id } = await request.json();
     const validate = z
       .object({
+        id: z
+          .string({ required_error: "ID pesan tidak boleh kosong!" })
+          .min(1, "ID pesan tidak boleh kosong!"),
         toUserId: z
           .string({ required_error: "ID penerima tidak boleh kosong!" })
           .min(1, "ID penerima tidak boleh kosong!"),
@@ -24,7 +27,7 @@ export async function POST(
           .string({ required_error: "Pesan tidak boleh kosong!" })
           .min(1, "Pesan tidak boleh kosong!"),
       })
-      .safeParse({ toUserId, message });
+      .safeParse({ toUserId, message, id });
     if (!validate.success)
       return APIResponse.respondWithBadRequest(
         validate.error.errors.map((it) => ({
@@ -45,11 +48,13 @@ export async function POST(
         insert: {
           table: "chat_messages",
           record: {
+            id,
             message,
             from: userId,
             to: toUserId,
             is_deleted: false,
           },
+          createOnly: true,
         },
       },
 

@@ -20,6 +20,7 @@ export const chatMessagesToUserIdPaths = {
             schema: {
               type: "object",
               properties: {
+                id: { type: "string" },
                 message: { type: "string" },
               },
             },
