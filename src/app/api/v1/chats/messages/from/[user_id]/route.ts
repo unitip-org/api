@@ -6,13 +6,13 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 interface Message {
-  id: "string";
-  from_user_id: "string";
-  to_user_id: "string";
-  message: "string";
+  id: string;
+  from_user_id: string;
+  to_user_id: string;
+  message: string;
   is_deleted: boolean;
-  created_at: "string";
-  updated_at: "string";
+  created_at: string;
+  updated_at: string;
 }
 
 interface GETResponse {
@@ -75,9 +75,18 @@ export async function GET(
     const result = await query.execute();
 
     return APIResponse.respondWithSuccess<GETResponse>({
-      messages: result as any,
+      messages: result.map((it) => ({
+        id: it.id,
+        from_user_id: it.from_user_id as any,
+        to_user_id: it.to_user_id as any,
+        message: it.message,
+        is_deleted: it.is_deleted,
+        created_at: new Date(Date.parse(it.created_at)).toISOString(),
+        updated_at: new Date(Date.parse(it.updated_at)).toISOString(),
+      })),
     });
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 }
