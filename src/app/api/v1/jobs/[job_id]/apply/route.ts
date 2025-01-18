@@ -10,6 +10,11 @@ interface POSTResponse {
   id: string;
 }
 
+interface DELETEResponse {
+  success: boolean;
+  id: string;
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: { job_id: string } }
@@ -83,6 +88,68 @@ export async function POST(
       id: result.id,
     });
   } catch (e) {
+    return APIResponse.respondWithServerError();
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { job_id: string } }
+) {
+  try {
+    const { job_id: jobId } = params;
+
+    // validasi id
+    const data = z
+      .object({
+        jobId: z
+          .string({ required_error: "Job ID tidak boleh kosong!" })
+          .min(1, "Job ID tidak boleh kosong!"),
+      })
+      .safeParse({ jobId });
+
+    if (!data.success)
+      return APIResponse.respondWithBadRequest(
+        data.error.errors.map((it) => ({
+          message: it.message,
+          path: it.path[0] as string,
+        }))
+      );
+
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // validasi role, karena hanya driver yang bisa delete apply job
+    if (authorization.role !== "driver")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk melakukan aksi ini!"
+      );
+
+    // cek apakah user pernah apply
+    const checkApplicant = database
+      .selectFrom("single_job_applicants as sja")
+      .select("sja.id")
+      .where("sja.job", "=", jobId as any)
+      .where("sja.freelancer", "=", authorization.userId as any);
+    const resultCheckApplicant = await checkApplicant.executeTakeFirst();
+
+    if (!resultCheckApplicant)
+      return APIResponse.respondWithNotFound("Pengguna tidak ditemukan!");
+
+    // delete applicant
+    const deleteApplicant = database
+      .deleteFrom("single_job_applicants")
+      .where("id", "=", resultCheckApplicant.id);
+
+    const result = await deleteApplicant.execute();
+
+    if (result)
+      return APIResponse.respondWithSuccess<DELETEResponse>({
+        success: true,
+        id: resultCheckApplicant.id,
+      });
+  } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 }

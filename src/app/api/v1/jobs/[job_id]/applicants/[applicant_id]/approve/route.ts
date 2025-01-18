@@ -5,12 +5,12 @@ import { APIResponse } from "@/lib/models/api-response";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface POSTResponse {
+interface GETResponse {
   success: boolean;
   id: string;
 }
 
-export async function POST(
+export async function GET(
   request: NextRequest,
   { params }: { params: { job_id: string; applicant_id: string } }
 ) {
@@ -97,19 +97,15 @@ export async function POST(
     ]);
     console.log(result);
 
-    return APIResponse.respondWithSuccess<POSTResponse>({
+    return APIResponse.respondWithSuccess<GETResponse>({
       success: true,
       id: "dummy",
     });
-    // validasi jika customer telah approve driver sebelumnya (customer hanya bisa approve satu freelancer)
 
     // validasi jika freelancer telah diapprove di job lain
+    // const checkJob;
 
     // validasi jika freelancer membatalkan lamaran
-
-    /* gunakan job id, dan applicant id untuk mengambil freelancer id
-    update table jobs untuk mengeset freelancer berdasarkan id (xata transaction)
-    hapus applicants yang lain (xata transaction)*/
   } catch (e) {
     console.log(e);
     return APIResponse.respondWithServerError();
