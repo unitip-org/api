@@ -22,11 +22,17 @@ export const chatRoomsPaths = {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        other_user_name: { type: "string" },
                         last_message: { type: "string" },
                         last_sent_user_id: { type: "string" },
                         created_at: { type: "string" },
                         updated_at: { type: "string" },
+                        other_user: {
+                          type: "object",
+                          properties: {
+                            id: { type: "string" },
+                            name: { type: "string" },
+                          },
+                        },
                       },
                     },
                   },

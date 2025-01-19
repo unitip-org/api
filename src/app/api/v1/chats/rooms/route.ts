@@ -3,16 +3,20 @@ import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
+import { jsonObjectFrom } from "kysely/helpers/postgres";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
 interface Room {
   id: string;
-  other_user_name: string;
   last_message: string;
   last_sent_user_id: string;
   created_at: string;
   updated_at: string;
+  other_user: {
+    id: string;
+    name: string;
+  };
 }
 
 interface GETResponse {
@@ -46,21 +50,31 @@ export async function GET(request: NextRequest) {
       .selectFrom("chat_rooms as cr")
       .innerJoin("chat_room_members as crm", "crm.room", "cr.id")
       .innerJoin("users as u", "u.id", "crm.user")
-      // subquery untuk mendapatkan nama user lain
-      .select((qb) =>
-        qb
-          .selectFrom("chat_room_members as crm2")
-          .innerJoin("users as u2", "u2.id", "crm2.user")
-          .select("u2.name")
-          .whereRef("crm2.room", "=", "cr.id")
-          .where("crm2.user", "!=", userId as any)
-          .limit(1)
-          .as("other_user_name")
-      )
-      .select([
+      .select((eb) => [
         "cr.id",
         "cr.last_message",
         "cr.last_sent_user as last_sent_user_id",
+
+        // jika ingin mendapatkan semua member dari sebuah room
+        // jsonArrayFrom(
+        //   eb
+        //     .selectFrom("chat_room_members as crm2")
+        //     .innerJoin("users as u2", "u2.id", "crm2.user")
+        //     .select(["u2.id as other_user_id", "u2.name as other_user_name"])
+        //     .whereRef("crm2.room", "=", "cr.id")
+        //     .where("crm2.user", "!=", userId as any)
+        // ).as("members"),
+
+        // query untuk mendapatkan data user lain, seperti id dan nama
+        jsonObjectFrom(
+          eb
+            .selectFrom("chat_room_members as crm2")
+            .innerJoin("users as u2", "u2.id", "crm2.user")
+            .select(["u2.id", "u2.name"])
+            .whereRef("crm2.room", "=", "cr.id")
+            .where("crm2.user", "!=", userId as any)
+            .limit(1)
+        ).as("other_user"),
       ])
       .select(sql`cr."xata.createdAt"`.as("created_at"))
       .select(sql`cr."xata.updatedAt"`.as("updated_at"))
