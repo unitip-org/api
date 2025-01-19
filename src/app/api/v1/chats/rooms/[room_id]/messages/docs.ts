@@ -2,7 +2,7 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const chatMessagesByRoomIdPaths = {
-  "/api/v1/rooms/{room_id}/messages": {
+  "/api/v1/chats/rooms/{room_id}/messages": {
     post: {
       tags: ["Chats"],
       summary: "mengirim pesan chat baru",
