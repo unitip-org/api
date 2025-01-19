@@ -1,10 +1,12 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
-import { xata } from "@/lib/database";
+import { database, xata } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
+import { convertDatetimeToISO } from "@/lib/utils";
+import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface POSTParams {
+interface Params {
   params: {
     room_id: string;
   };
@@ -19,7 +21,7 @@ interface POSTResponse {
   created_at: string;
   updated_at: string;
 }
-export const POST = async (request: NextRequest, { params }: POSTParams) => {
+export const POST = async (request: NextRequest, { params }: Params) => {
   try {
     // validasi request dari user
     const { id, message }: POSTBody = await request.json();
@@ -93,6 +95,72 @@ export const POST = async (request: NextRequest, { params }: POSTParams) => {
       message,
       created_at: currentDatetime.toISOString(),
       updated_at: currentDatetime.toISOString(),
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
+
+interface Message {
+  id: string;
+  message: string;
+  is_deleted: boolean;
+  room_id: string;
+  user_id: string;
+  created_at: string;
+  updated_at: string;
+}
+interface GETResponse {
+  messages: Message[];
+}
+export const GET = async (request: NextRequest, { params }: Params) => {
+  try {
+    // validasi request dari user
+    const { room_id: roomId } = params;
+
+    const validate = z
+      .object({
+        roomId: z
+          .string({ required_error: "ID ruangan tidak boleh kosong!" })
+          .min(1, "ID ruangan tidak boleh kosong!"),
+      })
+      .safeParse({ roomId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // mendapatkan daftar pesan berdasarkan room id dan user id
+    const query = database
+      .selectFrom("chat_messages as cm")
+      .select([
+        "cm.id",
+        "cm.message",
+        "cm.is_deleted",
+        "cm.room as room_id",
+        "cm.user as user_id",
+      ])
+      .select(sql<string>`cm."xata.createdAt"`.as("created_at"))
+      .select(sql<string>`cm."xata.updatedAt"`.as("updated_at"))
+      .where("cm.room", "=", roomId as any)
+      .orderBy("created_at", "asc");
+    const result = await query.execute();
+
+    // kembalikan response success
+    return APIResponse.respondWithSuccess<GETResponse>({
+      messages: result.map((it) => ({
+        ...(it as any),
+        created_at: convertDatetimeToISO(it.created_at),
+        updated_at: convertDatetimeToISO(it.updated_at),
+      })),
     });
   } catch (e) {
     console.log(e);

@@ -69,5 +69,70 @@ export const chatMessagesByRoomIdPaths = {
         },
       },
     },
+
+    get: {
+      tags: ["Chats"],
+      summary: "mendapatkan riwayat chat",
+      description:
+        "endpoint untuk mendapatkan riwayat chat untuk user yang terautentikasi berdasarkan room chat id",
+      security: swaggerSecurity,
+      parameters: [
+        {
+          in: "path",
+          name: "room_id",
+          required: true,
+          schema: { type: "string" },
+        },
+      ],
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  messages: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        message: { type: "string" },
+                        is_deleted: { type: "boolean" },
+                        room_id: { type: "string" },
+                        user_id: { type: "string" },
+                        created_at: { type: "string" },
+                        updated_at: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+        400: {
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.BadRequestError },
+            },
+          },
+        },
+        401: {
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.UnauthorizedError },
+            },
+          },
+        },
+        500: {
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.InternalServerError },
+            },
+          },
+        },
+      },
+    },
   },
 };
