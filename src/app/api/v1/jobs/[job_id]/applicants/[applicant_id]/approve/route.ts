@@ -51,6 +51,24 @@ export async function GET(
         "Anda tidak memiliki akses untuk melakukan aksi ini"
       );
 
+    // validasi jika freelancer membatalkan lamaran
+    const checkFreelancerApply = database
+      .selectFrom("single_job_applicants as sja")
+      .where("sja.job", "=", jobId as any)
+      .where("sja.id", "=", applicantId as any);
+    const resultFreelancerApply = await checkFreelancerApply.executeTakeFirst();
+
+    if (!resultFreelancerApply)
+      return APIResponse.respondWithNotFound("Pengguna tidak ditemukan!");
+
+    // validasi jika freelancer telah diapprove di job lain
+    // const freelancerId = database
+    //   .selectFrom("single_job_applicants as sja")
+    //   .select("sja.freelancer")
+    //   .where("sja.job", "=", jobId as any)
+    //   .where("sja.id", "=", applicantId as any);
+    // const resultFreelancerId = await freelancerId.execute();
+
     // mendapatkan semua lamaran dari driver
     const queryApplicants = database
       .selectFrom("single_job_applicants as sja")
@@ -58,16 +76,29 @@ export async function GET(
       .where("sja.job", "=", jobId as any);
     const resultApplicants = await queryApplicants.execute();
 
-    console.log(queryApplicants);
-
     // ambil lamaran yang sesuai dengan id saat ini
     const currentApplicant = resultApplicants.find(
       (it) => it.id === applicantId
     );
 
-    // validasi jika driver sudah diambil orang
+    // validasi jika job telah diambil driver lain
     if (resultApplicants.length === 0 || !currentApplicant)
-      return APIResponse.respondWithNotFound("Driver sudah ditikung orang!");
+      return APIResponse.respondWithNotFound("Driver tidak ditemukan!");
+
+    const freelancerId = currentApplicant.freelancer;
+
+    const checkFreelancerJob = database
+      .selectFrom("single_jobs as sj")
+      .selectAll()
+      .where("sj.freelancer", "=", freelancerId as any)
+      .where("sj.status", "!=", "done");
+    const resultFreelancerJob = await checkFreelancerJob.execute();
+
+    console.log(resultFreelancerJob);
+    if (resultFreelancerJob.length !== 0)
+      return APIResponse.respondWithConflict(
+        "Driver sudah mengambil job lain!"
+      );
 
     // transaksi untuk delete lamaran dan update table single jobs
     const result = await xata.transactions.run([
@@ -102,10 +133,7 @@ export async function GET(
       id: "dummy",
     });
 
-    // validasi jika freelancer telah diapprove di job lain
     // const checkJob;
-
-    // validasi jika freelancer membatalkan lamaran
   } catch (e) {
     console.log(e);
     return APIResponse.respondWithServerError();
