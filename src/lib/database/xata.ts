@@ -15,12 +15,12 @@ const tables = [
       { name: "name", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [
-      { column: "from", table: "chat_messages" },
-      { column: "to", table: "chat_messages" },
+      { column: "freelancer", table: "single_offers" },
+      { column: "customer", table: "multi_jobs" },
       { column: "customerId", table: "customer_requests" },
       { column: "driverId", table: "driver_offers" },
-      { column: "from_user", table: "chat_rooms" },
-      { column: "to_user", table: "chat_rooms" },
+      { column: "customer", table: "single_offer_applicants" },
+      { column: "customer", table: "single_offers" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "applicant", table: "customer_request_applications" },
@@ -33,24 +33,22 @@ const tables = [
       { column: "customer", table: "multi_offer_followers" },
       { column: "freelancer", table: "multi_job_applicants" },
       { column: "customer", table: "multi_job_followers" },
-      { column: "customer", table: "multi_jobs" },
-      { column: "freelancer", table: "single_offers" },
-      { column: "customer", table: "single_offers" },
-      { column: "customer", table: "single_offer_applicants" },
+      { column: "user", table: "chat_messages" },
+      { column: "user", table: "chat_room_members" },
     ],
   },
   {
     name: "chat_messages",
     columns: [
       { name: "message", type: "text", notNull: true, defaultValue: "" },
-      { name: "from", type: "link", link: { table: "users" } },
-      { name: "to", type: "link", link: { table: "users" } },
       {
         name: "is_deleted",
         type: "bool",
         notNull: true,
         defaultValue: "false",
       },
+      { name: "room", type: "link", link: { table: "chat_rooms" } },
+      { name: "user", type: "link", link: { table: "users" } },
     ],
   },
   {
@@ -106,9 +104,11 @@ const tables = [
     name: "chat_rooms",
     columns: [
       { name: "last_message", type: "text", notNull: true, defaultValue: "" },
-      { name: "from_user", type: "link", link: { table: "users" } },
-      { name: "to_user", type: "link", link: { table: "users" } },
       { name: "last_sent_user", type: "link", link: { table: "users" } },
+    ],
+    revLinks: [
+      { column: "room", table: "chat_messages" },
+      { column: "room", table: "chat_room_members" },
     ],
   },
   {
@@ -297,6 +297,13 @@ const tables = [
       { name: "customer", type: "link", link: { table: "users" } },
     ],
   },
+  {
+    name: "chat_room_members",
+    columns: [
+      { name: "room", type: "link", link: { table: "chat_rooms" } },
+      { name: "user", type: "link", link: { table: "users" } },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -355,6 +362,9 @@ export type SingleOffersRecord = SingleOffers & XataRecord;
 export type SingleOfferApplicants = InferredTypes["single_offer_applicants"];
 export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
 
+export type ChatRoomMembers = InferredTypes["chat_room_members"];
+export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -373,6 +383,7 @@ export type DatabaseSchema = {
   multi_job_applicants: MultiJobApplicantsRecord;
   single_offers: SingleOffersRecord;
   single_offer_applicants: SingleOfferApplicantsRecord;
+  chat_room_members: ChatRoomMembersRecord;
 };
 
 const DatabaseClient = buildClient();
