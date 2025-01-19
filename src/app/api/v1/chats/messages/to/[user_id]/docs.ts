@@ -1,10 +1,14 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
+/**
+ * @deprecated
+ */
 export const chatMessagesToUserIdPaths = {
   "/api/v1/chats/messages/to/{user_id}": {
     post: {
       tags: ["Chats"],
+      deprecated: true,
       security: swaggerSecurity,
       parameters: [
         {
