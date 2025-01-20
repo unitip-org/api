@@ -308,6 +308,12 @@ const tables = [
         type: "link",
         link: { table: "chat_messages" },
       },
+      {
+        name: "unread_message_count",
+        type: "int",
+        notNull: true,
+        defaultValue: "0",
+      },
     ],
   },
 ] as const;

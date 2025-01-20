@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
         "cr.id",
         "cr.last_message",
         "cr.last_sent_user as last_sent_user_id",
+        "crm.unread_message_count",
 
         // jika ingin mendapatkan semua member dari sebuah room
         // jsonArrayFrom(
