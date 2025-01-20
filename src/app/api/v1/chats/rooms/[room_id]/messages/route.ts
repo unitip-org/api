@@ -106,7 +106,7 @@ export const POST = async (request: NextRequest, { params }: Params) => {
 interface GETResponse {
   other_user: {
     id: string;
-    last_read_message: string;
+    last_read_message_id: string;
   };
   messages: {
     id: string;
@@ -151,7 +151,10 @@ export const GET = async (request: NextRequest, { params }: Params) => {
         jsonObjectFrom(
           eb
             .selectFrom("chat_room_members as crm")
-            .select(["crm.user as id", "crm.last_read_message"])
+            .select([
+              "crm.user as id",
+              "crm.last_read_message as last_read_message_id",
+            ])
             .whereRef("crm.room", "=", "cr.id")
             .where("crm.user", "!=", userId as any)
             .limit(1)

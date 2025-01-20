@@ -95,7 +95,7 @@ export const chatMessagesByRoomIdPaths = {
                     type: "object",
                     properties: {
                       id: { type: "string" },
-                      last_read_message: { type: "string" },
+                      last_read_message_id: { type: "string" },
                     },
                   },
                   messages: {
