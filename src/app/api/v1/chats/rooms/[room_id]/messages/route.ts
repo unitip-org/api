@@ -3,6 +3,7 @@ import { database, xata } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
+import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -102,17 +103,20 @@ export const POST = async (request: NextRequest, { params }: Params) => {
   }
 };
 
-interface Message {
-  id: string;
-  message: string;
-  is_deleted: boolean;
-  room_id: string;
-  user_id: string;
-  created_at: string;
-  updated_at: string;
-}
 interface GETResponse {
-  messages: Message[];
+  other_user: {
+    id: string;
+    last_read_message: string;
+  };
+  messages: {
+    id: string;
+    message: string;
+    is_deleted: boolean;
+    room_id: string;
+    user_id: string;
+    created_at: string;
+    updated_at: string;
+  }[];
 }
 export const GET = async (request: NextRequest, { params }: Params) => {
   try {
@@ -137,26 +141,62 @@ export const GET = async (request: NextRequest, { params }: Params) => {
     // verifikasi bearer token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId } = authorization;
 
     // mendapatkan daftar pesan berdasarkan room id dan user id
     const query = database
-      .selectFrom("chat_messages as cm")
-      .select([
-        "cm.id",
-        "cm.message",
-        "cm.is_deleted",
-        "cm.room as room_id",
-        "cm.user as user_id",
+      .selectFrom("chat_rooms as cr")
+      .select((eb) => [
+        // query untuk mendapatkan daftar members dan last read message id
+        jsonObjectFrom(
+          eb
+            .selectFrom("chat_room_members as crm")
+            .select(["crm.user as id", "crm.last_read_message"])
+            .whereRef("crm.room", "=", "cr.id")
+            .where("crm.user", "!=", userId as any)
+            .limit(1)
+        ).as("other_user"),
+
+        // query untuk mendapatkan daftar messages dari room
+        jsonArrayFrom(
+          eb
+            .selectFrom("chat_messages as cm")
+            .select([
+              "cm.id",
+              "cm.message",
+              "cm.is_deleted",
+              "cm.room as room_id",
+              "cm.user as user_id",
+            ])
+            .select(sql<string>`cm."xata.createdAt"`.as("created_at"))
+            .select(sql<string>`cm."xata.updatedAt"`.as("updated_at"))
+            .whereRef("cm.room", "=", "cr.id")
+            .orderBy("created_at", "asc")
+        ).as("messages"),
       ])
-      .select(sql<string>`cm."xata.createdAt"`.as("created_at"))
-      .select(sql<string>`cm."xata.updatedAt"`.as("updated_at"))
-      .where("cm.room", "=", roomId as any)
-      .orderBy("created_at", "asc");
-    const result = await query.execute();
+      .where("cr.id", "=", roomId)
+      .limit(1);
+
+    // old query
+    // const query = database
+    //   .selectFrom("chat_messages as cm")
+    //   .select((eb) => [
+    //     "cm.id",
+    //     "cm.message",
+    //     "cm.is_deleted",
+    //     "cm.room as room_id",
+    //     "cm.user as user_id",
+    //   ])
+    //   .select(sql<string>`cm."xata.createdAt"`.as("created_at"))
+    //   .select(sql<string>`cm."xata.updatedAt"`.as("updated_at"))
+    //   .where("cm.room", "=", roomId as any)
+    //   .orderBy("created_at", "asc");
+    const result = await query.executeTakeFirstOrThrow();
 
     // kembalikan response success
     return APIResponse.respondWithSuccess<GETResponse>({
-      messages: result.map((it) => ({
+      other_user: result.other_user as any,
+      messages: result.messages.map((it) => ({
         ...(it as any),
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),

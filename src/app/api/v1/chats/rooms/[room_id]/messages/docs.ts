@@ -91,6 +91,13 @@ export const chatMessagesByRoomIdPaths = {
               schema: {
                 type: "object",
                 properties: {
+                  other_user: {
+                    type: "object",
+                    properties: {
+                      id: { type: "string" },
+                      last_read_message: { type: "string" },
+                    },
+                  },
                   messages: {
                     type: "array",
                     items: {

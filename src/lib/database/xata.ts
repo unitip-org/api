@@ -50,6 +50,7 @@ const tables = [
       { name: "room", type: "link", link: { table: "chat_rooms" } },
       { name: "user", type: "link", link: { table: "users" } },
     ],
+    revLinks: [{ column: "last_read_message", table: "chat_room_members" }],
   },
   {
     name: "customer_requests",
@@ -302,6 +303,11 @@ const tables = [
     columns: [
       { name: "room", type: "link", link: { table: "chat_rooms" } },
       { name: "user", type: "link", link: { table: "users" } },
+      {
+        name: "last_read_message",
+        type: "link",
+        link: { table: "chat_messages" },
+      },
     ],
   },
 ] as const;
