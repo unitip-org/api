@@ -25,6 +25,8 @@ export const chatMessagesByRoomIdPaths = {
               properties: {
                 id: { type: "string" },
                 message: { type: "string" },
+                other_id: { type: "string" },
+                other_unread_message_count: { type: "number" },
               },
             },
           },
