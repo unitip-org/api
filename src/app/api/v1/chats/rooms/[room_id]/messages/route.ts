@@ -12,9 +12,12 @@ interface Params {
     room_id: string;
   };
 }
+
 interface POSTBody {
   id: string;
   message: string;
+  other_id: string;
+  other_unread_message_count: number;
 }
 interface POSTResponse {
   id: string;
@@ -25,7 +28,12 @@ interface POSTResponse {
 export const POST = async (request: NextRequest, { params }: Params) => {
   try {
     // validasi request dari user
-    const { id, message }: POSTBody = await request.json();
+    const {
+      id,
+      message,
+      other_id: otherId,
+      other_unread_message_count: otherUnreadMessageCount,
+    }: POSTBody = await request.json();
     const { room_id: roomId } = params;
 
     const validate = z
@@ -83,10 +91,22 @@ export const POST = async (request: NextRequest, { params }: Params) => {
           },
         },
       },
+
+      // memperbarui unread message count milik other user
+      {
+        update: {
+          table: "chat_room_members",
+          upsert: false,
+          id: `${roomId}_${otherId}`,
+          fields: {
+            unread_message_count: otherUnreadMessageCount,
+          },
+        },
+      },
     ]);
 
     // check jika terdapat error pada transaction
-    if (transactionResult.results.length !== 2)
+    if (transactionResult.results.length !== 3)
       return APIResponse.respondWithServerError();
 
     // kembalikan response success

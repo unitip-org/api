@@ -158,9 +158,9 @@ export async function POST(request: NextRequest) {
   }
 }
 
-interface OfferFreelancer {
-  name: string;
-}
+// interface OfferFreelancer {
+//   name: string;
+// }
 
 interface Offer {
   id: string;
@@ -174,7 +174,7 @@ interface Offer {
   price: number;
   offer_status?: string;
   status?: string;
-  freelancer: OfferFreelancer;
+  freelancer_name: string;
   created_at: string;
   updated_at: string;
 }
@@ -186,23 +186,6 @@ interface GETResponse {
     page: number;
     total_pages: number;
   };
-}
-
-interface OfferResult {
-  id: string;
-  title: string;
-  description: string;
-  type: string;
-  available_until: Date;
-  price: number;
-  delivery_area?: string;
-  pickup_location?: string;
-  pickup_area?: string;
-  offer_status?: string;
-  status?: string;
-  created_at: string;
-  updated_at: string;
-  freelancer_name: string;
 }
 
 export async function GET(request: NextRequest) {
@@ -224,7 +207,7 @@ export async function GET(request: NextRequest) {
       ]);
     }
 
-    let offersResult: OfferResult[] = [];
+    let offersResult: Offer[] = [];
     let totalCount = 0;
 
     if (type === "single" || type === "all") {
@@ -324,23 +307,10 @@ export async function GET(request: NextRequest) {
     }
 
     return APIResponse.respondWithSuccess<GETResponse>({
-      offers: offersResult.map((it: OfferResult) => ({
-        id: it.id,
-        title: it.title || "",
-        description: it.description || "",
-        type: it.type,
-        pickup_location: it.pickup_location || "",
-        delivery_area: it.delivery_area || "",
-        available_until: it.available_until
-          ? new Date(it.available_until)
-          : new Date(),
-        price: Number(it.price) || 0,
-        offer_status: it.offer_status,
-        status: it.status,
-        created_at: it.created_at || "",
-        updated_at: it.updated_at || "",
+      offers: offersResult.map((it) => ({
+        ...it,
         freelancer: {
-          name: it.freelancer_name || "",
+          name: it.freelancer_name,
         },
       })),
       page_info: {

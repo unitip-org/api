@@ -26,6 +26,7 @@ export const chatRoomsPaths = {
                         last_sent_user_id: { type: "string" },
                         created_at: { type: "string" },
                         updated_at: { type: "string" },
+                        unread_message_count: { type: "number" },
                         other_user: {
                           type: "object",
                           properties: {

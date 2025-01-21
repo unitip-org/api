@@ -54,7 +54,10 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
     // update last read message berdasarkan id
     const query = database
       .updateTable("chat_room_members")
-      .set({ last_read_message: lastReadMessageId as any })
+      .set({
+        last_read_message: lastReadMessageId as any,
+        unread_message_count: 0,
+      })
       .where("chat_room_members.room", "=", roomId as any)
       .where("chat_room_members.user", "=", userId as any)
       .returning("chat_room_members.id");
