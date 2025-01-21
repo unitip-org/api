@@ -10,7 +10,7 @@ interface GETResponse {
   title: string;
   destination: string;
   note: string;
-  type: string;
+  service: string;
   pickup_location: string;
   created_at: string;
   updated_at: string;
@@ -20,12 +20,6 @@ interface GETResponse {
     price: number;
   }[];
 }
-
-interface POSTResponse {
-  success: boolean;
-  id: string;
-}
-
 export async function GET(
   request: NextRequest,
   { params }: { params: { job_id: string } }
@@ -93,7 +87,7 @@ export async function GET(
         title: result.title,
         destination: result.destination,
         note: result.note,
-        type: result.service,
+        service: result.service,
         pickup_location: result.pickup_location,
         created_at: result.created_at,
         updated_at: result.updated_at,
@@ -109,6 +103,10 @@ export async function GET(
   }
 }
 
+interface POSTResponse {
+  success: boolean;
+  id: string;
+}
 export async function POST(request: NextRequest) {
   try {
     const json = await request.json();
