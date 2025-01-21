@@ -21,6 +21,11 @@ interface GETResponse {
   }[];
 }
 
+interface POSTResponse {
+  success: boolean;
+  id: string;
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { job_id: string } }
@@ -62,13 +67,13 @@ export async function GET(
           "j.title",
           "j.destination",
           "j.note",
-          "j.type",
+          "j.service",
           "j.pickup_location",
         ])
         .select(sql<string>`j."xata.createdAt"`.as("created_at"))
         .select(sql<string>`j."xata.updatedAt"`.as("updated_at"))
         .where("j.id", "=", params.job_id)
-        .where("j.type", "=", type);
+        .where("j.service", "=", type);
       const result = await query.executeTakeFirst();
 
       // check apakah job ditemukan
@@ -88,7 +93,7 @@ export async function GET(
         title: result.title,
         destination: result.destination,
         note: result.note,
-        type: result.type,
+        type: result.service,
         pickup_location: result.pickup_location,
         created_at: result.created_at,
         updated_at: result.updated_at,
@@ -100,7 +105,86 @@ export async function GET(
 
     return APIResponse.respondWithServerError();
   } catch (e) {
-    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const json = await request.json();
+    const { title, destination, note, type, pickup_location } = json;
+
+    // validasi input dari user
+    const data = z
+      .object({
+        title: z
+          .string({ required_error: "Judul tidak boleh kosong!" })
+          .min(1, "Judul tidak boleh kosong!"),
+        destination: z
+          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
+          .min(1, "Lokasi tujuan tidak boleh kosong!"),
+        note: z.string().optional(),
+        type: z.enum(["antar-jemput", "jasa-titip"]),
+        pickup_location: z
+          .string({ required_error: "Lokasi jemput tidak boleh kosong!" })
+          .min(1, "Lokasi jemput tidak boleh kosong!"),
+      })
+      .safeParse({ title, destination, note, type, pickup_location });
+    if (!data.success)
+      return APIResponse.respondWithBadRequest(
+        data.error.errors.map((it) => ({
+          message: it.message,
+          path: it.path[0] as string,
+        }))
+      );
+
+    // validasi auth token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // validasi role
+    if (authorization.role !== "customer")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk membuat job!"
+      );
+
+    // validasi type
+    if (type === "antar-jemput") {
+      /**
+       * antar jemput adalah service single job dan hanya dapat dibuat oleh role
+       * customer
+       */
+
+      const query = database
+        .insertInto("single_jobs")
+        .values({
+          title,
+          destination,
+          note,
+          type,
+          pickup_location,
+          customer: authorization.userId,
+        } as any)
+        .returning("id");
+      const result = await query.executeTakeFirst();
+
+      // validasi jika gagal insert record
+      if (!result) return APIResponse.respondWithServerError();
+
+      // berhasil insert record
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        id: result.id,
+        success: true,
+      });
+    } else if (type === "jasa-titip") {
+      /**
+       * jasa titip adalah service multiple job dan hanya dapat dibuat oleh role
+       * customer
+       */
+    }
+
+    return APIResponse.respondWithServerError();
+  } catch (e) {
     return APIResponse.respondWithServerError();
   }
 }

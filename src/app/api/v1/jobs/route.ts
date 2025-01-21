@@ -5,91 +5,6 @@ import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
-interface POSTResponse {
-  success: boolean;
-  id: string;
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const json = await request.json();
-    const { title, destination, note, type, pickup_location } = json;
-
-    // validasi input dari user
-    const data = z
-      .object({
-        title: z
-          .string({ required_error: "Judul tidak boleh kosong!" })
-          .min(1, "Judul tidak boleh kosong!"),
-        destination: z
-          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
-          .min(1, "Lokasi tujuan tidak boleh kosong!"),
-        note: z.string().optional(),
-        type: z.enum(["antar-jemput", "jasa-titip"]),
-        pickup_location: z
-          .string({ required_error: "Lokasi jemput tidak boleh kosong!" })
-          .min(1, "Lokasi jemput tidak boleh kosong!"),
-      })
-      .safeParse({ title, destination, note, type, pickup_location });
-    if (!data.success)
-      return APIResponse.respondWithBadRequest(
-        data.error.errors.map((it) => ({
-          message: it.message,
-          path: it.path[0] as string,
-        }))
-      );
-
-    // validasi auth token
-    const authorization = await verifyBearerToken(request);
-    if (!authorization) return APIResponse.respondWithUnauthorized();
-
-    // validasi role
-    if (authorization.role !== "customer")
-      return APIResponse.respondWithForbidden(
-        "Anda tidak memiliki akses untuk membuat job!"
-      );
-
-    // validasi type
-    if (type === "antar-jemput") {
-      /**
-       * antar jemput adalah service single job dan hanya dapat dibuat oleh role
-       * customer
-       */
-
-      const query = database
-        .insertInto("single_jobs")
-        .values({
-          title,
-          destination,
-          note,
-          type,
-          pickup_location,
-          customer: authorization.userId,
-        } as any)
-        .returning("id");
-      const result = await query.executeTakeFirst();
-
-      // validasi jika gagal insert record
-      if (!result) return APIResponse.respondWithServerError();
-
-      // berhasil insert record
-      return APIResponse.respondWithSuccess<POSTResponse>({
-        id: result.id,
-        success: true,
-      });
-    } else if (type === "jasa-titip") {
-      /**
-       * jasa titip adalah service multiple job dan hanya dapat dibuat oleh role
-       * customer
-       */
-    }
-
-    return APIResponse.respondWithServerError();
-  } catch (e) {
-    return APIResponse.respondWithServerError();
-  }
-}
-
 interface JobCustomer {
   name: string;
 }
@@ -98,7 +13,7 @@ interface Job {
   title: string;
   destination: string;
   note: string;
-  type: string;
+  service: string;
   pickup_location: string;
   created_at: string;
   updated_at: string;
@@ -133,7 +48,7 @@ export async function GET(request: NextRequest) {
         "sj.title",
         "sj.destination",
         "sj.note",
-        "sj.type",
+        "sj.service",
         "sj.pickup_location",
         "u.name as customer_name",
       ])
@@ -158,7 +73,7 @@ export async function GET(request: NextRequest) {
             title: it.title,
             destination: it.destination,
             note: it.note,
-            type: it.type,
+            service: it.service,
             pickup_location: it.pickup_location,
             created_at: it.created_at,
             updated_at: it.updated_at,

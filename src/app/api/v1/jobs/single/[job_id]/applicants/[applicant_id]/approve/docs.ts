@@ -2,9 +2,9 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const approveJobByIdPaths = {
-  "/api/v1/jobs/{job_id}/applicants/{applicant_id}/approve": {
+  "/api/v1/jobs/single/{job_id}/applicants/{applicant_id}/approve": {
     get: {
-      tags: ["Jobs"],
+      tags: ["Single Jobs"],
       security: swaggerSecurity,
       parameters: [
         {

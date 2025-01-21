@@ -8,9 +8,9 @@ import { chatMessagesByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/me
 import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/docs";
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
-import { approveJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/applicants/[applicant_id]/approve/docs";
-import { applyJobByIdPaths } from "@/app/api/v1/jobs/[job_id]/apply/docs";
-import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
+import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicants/[applicant_id]/approve/docs";
+import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
+import { jobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/multi/docs";

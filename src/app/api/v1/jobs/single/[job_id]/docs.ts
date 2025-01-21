@@ -1,34 +1,25 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
-import { object } from "zod";
 
-export const applyJobByIdPaths = {
-  "/api/v1/jobs/{job_id}/apply": {
-    post: {
-      tags: ["Jobs"],
+export const jobByIdPaths = {
+  "/api/v1/jobs/single/{job_id}": {
+    get: {
+      tags: ["Single Jobs"],
       security: swaggerSecurity,
       parameters: [
         {
           in: "path",
           name: "job_id",
-          schema: { type: "string" },
           required: true,
+          schema: { type: "string" },
+        },
+        {
+          in: "query",
+          name: "type",
+          required: true,
+          schema: { type: "string" },
         },
       ],
-      requestBody: {
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                price: {
-                  type: "number",
-                },
-              },
-            },
-          },
-        },
-      },
       responses: {
         200: {
           content: {
@@ -36,11 +27,24 @@ export const applyJobByIdPaths = {
               schema: {
                 type: "object",
                 properties: {
-                  success: {
-                    type: "boolean",
-                  },
-                  id: {
-                    type: "string",
+                  id: { type: "string" },
+                  title: { type: "string" },
+                  destination: { type: "string" },
+                  note: { type: "string" },
+                  service: { type: "string" },
+                  pickup_location: { type: "string" },
+                  created_at: { type: "string" },
+                  updated_at: { type: "string" },
+                  applicants: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        name: { type: "string" },
+                        price: { type: "number" },
+                      },
+                    },
                   },
                 },
               },
@@ -65,20 +69,11 @@ export const applyJobByIdPaths = {
             },
           },
         },
-        403: {
+        404: {
           content: {
             "application/json": {
               schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        409: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ConflictError,
+                $ref: swaggerComponentRefs.NotFoundError,
               },
             },
           },
@@ -94,17 +89,38 @@ export const applyJobByIdPaths = {
         },
       },
     },
-    delete: {
-      tags: ["Jobs"],
+    post: {
+      tags: ["Single Jobs"],
+      summary: "membuat single dan multi job",
+      description:
+        "single job membutuhkan kolom .... multi job membutuhkan kolom ...",
       security: swaggerSecurity,
-      parameters: [
-        {
-          in: "path",
-          name: "job_id",
-          schema: { type: "string" },
-          required: true,
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                title: {
+                  type: "string",
+                },
+                destination: {
+                  type: "string",
+                },
+                note: {
+                  type: "string",
+                },
+                type: {
+                  type: "string",
+                },
+                pickup_location: {
+                  type: "string",
+                },
+              },
+            },
+          },
         },
-      ],
+      },
       responses: {
         200: {
           content: {
