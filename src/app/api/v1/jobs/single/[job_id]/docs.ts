@@ -5,6 +5,9 @@ export const jobByIdPaths = {
   "/api/v1/jobs/single/{job_id}": {
     get: {
       tags: ["Single Jobs"],
+      summary: "medapatkan job berdasarkan id",
+      description:
+        "endpoint ini digunakan untuk mendapatkan single job berdasarkan id",
       security: swaggerSecurity,
       parameters: [
         {
@@ -89,93 +92,21 @@ export const jobByIdPaths = {
         },
       },
     },
-    post: {
+
+    patch: {
       tags: ["Single Jobs"],
-      summary: "membuat single dan multi job",
-      description:
-        "single job membutuhkan kolom .... multi job membutuhkan kolom ...",
       security: swaggerSecurity,
-      requestBody: {
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              properties: {
-                title: {
-                  type: "string",
-                },
-                destination: {
-                  type: "string",
-                },
-                note: {
-                  type: "string",
-                },
-                type: {
-                  type: "string",
-                },
-                pickup_location: {
-                  type: "string",
-                },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: {
-                    type: "boolean",
-                  },
-                  id: {
-                    type: "string",
-                  },
-                },
-              },
-            },
-          },
-        },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
-      },
+      summary: "update job berdasarkan id",
+      description:
+        "endpoint ini digunakan untuk meng-update single job berdasarkan id",
+    },
+
+    delete: {
+      tags: ["Single Jobs"],
+      security: swaggerSecurity,
+      summary: "hapus job berdasarkan id",
+      description:
+        "endpoint ini digunakan untuk menghapus single job berdasarkan id",
     },
   },
 };

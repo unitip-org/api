@@ -5,6 +5,9 @@ export const jobsPaths = {
   "/api/v1/jobs": {
     get: {
       tags: ["Jobs"],
+      summary: "mendapatkan daftar jobs",
+      description:
+        "endpoint ini digunakan untuk mendapatkan semua daftar jobs baik single maupun multi",
       security: swaggerSecurity,
       parameters: [
         {
