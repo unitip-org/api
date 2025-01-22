@@ -24,7 +24,7 @@ export const singleJobPaths = {
                 note: {
                   type: "string",
                 },
-                type: {
+                service: {
                   type: "string",
                 },
                 pickup_location: {
