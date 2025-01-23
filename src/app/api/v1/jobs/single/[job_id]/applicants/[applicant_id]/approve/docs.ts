@@ -4,6 +4,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const approveJobByIdPaths = {
   "/api/v1/jobs/single/{job_id}/applicants/{applicant_id}/approve": {
     get: {
+      deprecated: true,
       tags: ["Single Jobs"],
       security: swaggerSecurity,
       parameters: [

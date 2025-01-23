@@ -10,6 +10,8 @@ import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicants/[applicant_id]/approve/docs";
+import { approvalSingleJobApplicationByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/[application_id]/approval/docs";
+import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/docs";
 import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
 import { jobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
@@ -40,6 +42,12 @@ export const swaggerSpec = {
     ...jobByIdPaths,
     ...applyJobByIdPaths,
     ...approveJobByIdPaths,
+
+    // - single jobs
+    ...applicationBySingleJobIdPaths,
+    ...approvalSingleJobApplicationByIdPaths,
+
+    // - multi jobs
 
     //offers
     ...offersPaths,

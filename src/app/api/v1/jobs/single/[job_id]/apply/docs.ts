@@ -1,10 +1,10 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
-import { object } from "zod";
 
 export const applyJobByIdPaths = {
   "/api/v1/jobs/single/{job_id}/apply": {
     post: {
+      deprecated: true,
       tags: ["Single Jobs"],
       security: swaggerSecurity,
       parameters: [
@@ -95,6 +95,7 @@ export const applyJobByIdPaths = {
       },
     },
     delete: {
+      deprecated: true,
       tags: ["Single Jobs"],
       security: swaggerSecurity,
       parameters: [
