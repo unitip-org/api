@@ -99,6 +99,43 @@ export const jobByIdPaths = {
       summary: "update job berdasarkan id",
       description:
         "endpoint ini digunakan untuk meng-update single job berdasarkan id",
+      parameters: [
+        {
+          in: "path",
+          name: "job_id",
+          required: true,
+          schema: { type: "string" },
+        },
+      ],
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                destination: { type: "string" },
+                note: { type: "string" },
+                pickup_location: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
     },
 
     delete: {

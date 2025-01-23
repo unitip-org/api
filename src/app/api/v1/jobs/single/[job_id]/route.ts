@@ -109,7 +109,84 @@ export async function GET(
   }
 }
 
-export const PATCH = async () => {};
+interface PATCHBody {
+  title: string;
+  destination: string;
+  note: string;
+  pickup_location: string;
+}
+interface PATCHResponse {
+  id: string;
+}
+export const PATCH = async (request: NextRequest, { params }: Params) => {
+  try {
+    // verifikasi request dari user
+    const {
+      title,
+      destination,
+      note,
+      pickup_location: pickupLocation,
+    }: PATCHBody = await request.json();
+    const { job_id: jobId } = params;
+
+    const validate = z
+      .object({
+        title: z
+          .string({ required_error: "Judul pekerjaan tidak boleh kosong!" })
+          .min(1, "Judul pekerjaan tidak boleh kosong!"),
+        destination: z
+          .string({ required_error: "Tujuan pekerjaan tidak boleh kosong!" })
+          .min(1, "Tujuan pekerjaan tidak boleh kosong!"),
+        note: z.string().optional(),
+        pickupLocation: z
+          .string({ required_error: "Lokasi penjemputan tidak boleh kosong!" })
+          .min(1, "Lokasi penjemputan tidak boleh kosong!"),
+        jobId: z
+          .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
+          .min(1, "ID pekerjaan tidak boleh kosong!"),
+      })
+      .safeParse({ title, destination, note, pickupLocation, jobId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi authentication token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId, role } = authorization;
+
+    // verifikasi role
+    if (role !== "customer")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk mengubah pekerjaan ini!"
+      );
+
+    // update job di database
+    const query = database
+      .updateTable("single_jobs")
+      .set({
+        title,
+        destination,
+        note,
+        pickup_location: pickupLocation,
+      })
+      .where("id", "=", jobId)
+      .where("customer", "=", userId as any)
+      .returning(["id"]);
+    const result = await query.executeTakeFirstOrThrow();
+
+    return APIResponse.respondWithSuccess<PATCHResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
 
 interface DELETEResponse {
   id: string;
