@@ -9,6 +9,10 @@ import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/d
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
+import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
+import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
+import { multiJobByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/docs";
+import { multiJobPaths } from "@/app/api/v1/jobs/multi/docs";
 import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicants/[applicant_id]/approve/docs";
 import { approvalSingleJobApplicationByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/[application_id]/approval/docs";
 import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/docs";
@@ -48,6 +52,10 @@ export const swaggerSpec = {
     ...approvalSingleJobApplicationByIdPaths,
 
     // - multi jobs
+    ...multiJobPaths,
+    ...multiJobByIdPaths,
+    ...multiJobApplicationByIdPaths,
+    ...multiJobApplicationApprovalByIdPaths,
 
     //offers
     ...offersPaths,
