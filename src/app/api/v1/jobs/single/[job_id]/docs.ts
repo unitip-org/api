@@ -107,6 +107,28 @@ export const jobByIdPaths = {
       summary: "hapus job berdasarkan id",
       description:
         "endpoint ini digunakan untuk menghapus single job berdasarkan id",
+      parameters: [
+        {
+          in: "path",
+          name: "job_id",
+          required: true,
+          schema: { type: "string" },
+        },
+      ],
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
     },
   },
 };

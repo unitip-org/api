@@ -5,6 +5,12 @@ import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
+interface Params {
+  params: {
+    job_id: string;
+  };
+}
+
 interface GETResponse {
   id: string;
   title: string;
@@ -105,4 +111,53 @@ export async function GET(
 
 export const PATCH = async () => {};
 
-export const DELETE = async () => {};
+interface DELETEResponse {
+  id: string;
+}
+export const DELETE = async (request: NextRequest, { params }: Params) => {
+  try {
+    // verifikasi request dari user
+    const { job_id: jobId } = params;
+
+    const validate = z
+      .object({
+        jobId: z
+          .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
+          .min(1, "ID pekerjaan tidak boleh kosong!"),
+      })
+      .safeParse({ jobId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi authentication token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId, role } = authorization;
+
+    // verifikasi role
+    if (role !== "customer")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk menghapus pekerjaan ini!"
+      );
+
+    // menghapus job dari database
+    const query = database
+      .deleteFrom("single_jobs")
+      .where("id", "=", jobId)
+      .where("customer", "=", userId as any)
+      .returning(["id"]);
+    const result = await query.executeTakeFirstOrThrow();
+
+    return APIResponse.respondWithSuccess<DELETEResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
