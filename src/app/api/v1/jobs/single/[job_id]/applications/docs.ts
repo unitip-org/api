@@ -20,7 +20,11 @@ export const applicationBySingleJobIdPaths = {
           "application/json": {
             schema: {
               type: "object",
-              properties: {},
+              properties: {
+                price: {
+                  type: "number",
+                },
+              },
             },
           },
         },
