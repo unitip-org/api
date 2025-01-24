@@ -26,6 +26,9 @@ import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/reques
 import { offersPaths } from "@/app/api/v1/offers/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { singleOffersPaths } from "@/app/api/v1/offers2/single/docs";
+import { multiOffersPaths } from "@/app/api/v1/offers2/multi/docs";
+import { offers2Paths } from "@/app/api/v1/offers2/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -58,7 +61,10 @@ export const swaggerSpec = {
     ...multiJobApplicationApprovalByIdPaths,
 
     //offers
-    ...offersPaths,
+    // ...offersPaths,
+    ...offers2Paths,
+    ...singleOffersPaths,
+    ...multiOffersPaths,
     ...applyOfferByIdPaths,
     ...applyMultiOfferByIdPaths,
     ...applySingleOfferByIdPaths,
