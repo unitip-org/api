@@ -3,7 +3,6 @@ import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
-import { z } from "zod";
 
 interface JobCustomer {
   name: string;
@@ -40,23 +39,57 @@ export async function GET(request: NextRequest) {
     const page = Number(searchParams.get("page") || "1");
     const limit = Number(searchParams.get("limit") || "10");
 
+    // const jobsQuery = database
+    //   .selectFrom("single_jobs as sj")
+    //   .innerJoin("users as u", "u.id", "sj.customer")
+    //   .select([
+    //     "sj.id",
+    //     "sj.title",
+    //     "sj.destination",
+    //     "sj.note",
+    //     "sj.service",
+    //     "sj.pickup_location",
+    //     "u.name as customer_name",
+    //   ])
+    //   .select(sql<string>`sj."xata.createdAt"`.as("created_at"))
+    //   .select(sql<string>`sj."xata.updatedAt"`.as("updated_at"))
+    //   .offset((page - 1) * limit)
+    //   .orderBy("created_at", "desc")
+    //   .limit(limit);
     const jobsQuery = database
-      .selectFrom("single_jobs as sj")
-      .innerJoin("users as u", "u.id", "sj.customer")
-      .select([
-        "sj.id",
-        "sj.title",
-        "sj.destination",
-        "sj.note",
-        "sj.service",
-        "sj.pickup_location",
-        "u.name as customer_name",
-      ])
-      .select(sql<string>`sj."xata.createdAt"`.as("created_at"))
-      .select(sql<string>`sj."xata.updatedAt"`.as("updated_at"))
+      .selectFrom((qb) =>
+        qb
+          .selectFrom("single_jobs as sj")
+          .innerJoin("users as u", "u.id", "sj.customer")
+          .select("sj.id")
+          .select("sj.title")
+          .select("sj.destination")
+          .select("sj.note")
+          .select("sj.service")
+          .select("sj.pickup_location")
+          .select("u.name as customer_name")
+          .select(sql<string>`sj."xata.createdAt"`.as("created_at"))
+          .select(sql<string>`sj."xata.updatedAt"`.as("updated_at"))
+          .unionAll((qb) =>
+            qb
+              .selectFrom("multi_jobs as mj")
+              .innerJoin("users as u", "u.id", "mj.customer")
+              .select("mj.id")
+              .select("mj.title")
+              .select(sql<string>`'null'`.as("destination"))
+              .select(sql<string>`'null'`.as("note"))
+              .select(sql<string>`'null'`.as("service"))
+              .select("mj.pickup_location")
+              .select("u.name as customer_name")
+              .select(sql<string>`mj."xata.createdAt"`.as("created_at"))
+              .select(sql<string>`mj."xata.updatedAt"`.as("updated_at"))
+          )
+          .as("jobs")
+      )
+      .selectAll()
       .offset((page - 1) * limit)
-      .orderBy("created_at", "desc")
-      .limit(limit);
+      .limit(limit)
+      .orderBy("created_at", "desc");
     const jobsResult = await jobsQuery.execute();
 
     // mendapatkan total row dari table single jobs
@@ -89,6 +122,7 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 }
