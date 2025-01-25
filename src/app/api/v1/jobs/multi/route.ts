@@ -29,7 +29,7 @@ export const POST = async (request: NextRequest) => {
           .string({ required_error: "Judul tidak boleh kosong!" })
           .min(1, "Judul tidak boleh kosong!"),
         note: z.string().optional(),
-        service: z.enum(["antar-jemput"]),
+        service: z.enum(["jasa-titip"]),
         pickup_location: z
           .string({ required_error: "Lokasi jemput tidak boleh kosong!" })
           .min(1, "Lokasi jemput tidak boleh kosong!"),
@@ -58,7 +58,7 @@ export const POST = async (request: NextRequest) => {
     // query multi job
     const newUuid = v4();
     const query = database
-      .insertInto("single_jobs")
+      .insertInto("multi_jobs")
       .values({
         id: newUuid,
         title,
@@ -69,6 +69,11 @@ export const POST = async (request: NextRequest) => {
       } as any)
       .returning("id");
     const result = await query.executeTakeFirstOrThrow();
+    if (result)
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        success: true,
+        id: "dummy",
+      });
   } catch (e) {
     return APIResponse.respondWithServerError();
   }
