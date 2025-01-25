@@ -44,6 +44,9 @@ export const jobsPaths = {
                         id: {
                           type: "string",
                         },
+                        type: {
+                          type: "string",
+                        },
                         title: {
                           type: "string",
                         },
@@ -53,7 +56,7 @@ export const jobsPaths = {
                         note: {
                           type: "string",
                         },
-                        type: {
+                        service: {
                           type: "string",
                         },
                         pickup_location: {
@@ -84,24 +87,24 @@ export const jobsPaths = {
             },
           },
         },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
+        // 401: {
+        //   content: {
+        //     "application/json": {
+        //       schema: {
+        //         $ref: swaggerComponentRefs.UnauthorizedError,
+        //       },
+        //     },
+        //   },
+        // },
+        // 500: {
+        //   content: {
+        //     "application/json": {
+        //       schema: {
+        //         $ref: swaggerComponentRefs.InternalServerError,
+        //       },
+        //     },
+        //   },
+        // },
       },
     },
   },

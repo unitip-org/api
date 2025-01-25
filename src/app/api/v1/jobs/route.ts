@@ -62,6 +62,7 @@ export async function GET(request: NextRequest) {
           .selectFrom("single_jobs as sj")
           .innerJoin("users as u", "u.id", "sj.customer")
           .select("sj.id")
+          .select(sql<string>`'single'`.as("type"))
           .select("sj.title")
           .select("sj.destination")
           .select("sj.note")
@@ -75,6 +76,7 @@ export async function GET(request: NextRequest) {
               .selectFrom("multi_jobs as mj")
               .innerJoin("users as u", "u.id", "mj.customer")
               .select("mj.id")
+              .select(sql<string>`'multi'`.as("type"))
               .select("mj.title")
               .select(sql<string>`'null'`.as("destination"))
               .select(sql<string>`'null'`.as("note"))
@@ -103,6 +105,7 @@ export async function GET(request: NextRequest) {
         (it) =>
           <Job>{
             id: it.id,
+            type: it.type,
             title: it.title,
             destination: it.destination,
             note: it.note,
