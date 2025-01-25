@@ -1,4 +1,3 @@
-import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const jobByIdPaths = {
@@ -38,54 +37,19 @@ export const jobByIdPaths = {
                   pickup_location: { type: "string" },
                   created_at: { type: "string" },
                   updated_at: { type: "string" },
-                  applicants: {
+                  customer_id: { type: "string" },
+                  applications: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        name: { type: "string" },
+                        freelancer_name: { type: "string" },
                         price: { type: "number" },
                       },
                     },
                   },
                 },
-              },
-            },
-          },
-        },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        404: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.NotFoundError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
               },
             },
           },
