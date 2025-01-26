@@ -27,11 +27,11 @@ const tables = [
       { column: "user", table: "user_sessions" },
       { column: "customer", table: "single_jobs" },
       { column: "freelancer", table: "single_jobs" },
-      { column: "freelancer", table: "single_job_applicants" },
+      { column: "freelancer", table: "single_job_applications" },
       { column: "freelancer", table: "multi_jobs" },
       { column: "freelancer", table: "multi_offers" },
       { column: "customer", table: "multi_offer_followers" },
-      { column: "freelancer", table: "multi_job_applicants" },
+      { column: "freelancer", table: "multi_job_applications" },
       { column: "customer", table: "multi_job_followers" },
       { column: "user", table: "chat_messages" },
       { column: "user", table: "chat_room_members" },
@@ -204,7 +204,7 @@ const tables = [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "status", type: "text", notNull: true, defaultValue: "" },
     ],
-    revLinks: [{ column: "job", table: "single_job_applicants" }],
+    revLinks: [{ column: "job", table: "single_job_applications" }],
   },
   {
     name: "multi_jobs",
@@ -219,9 +219,11 @@ const tables = [
         defaultValue: "",
       },
       { name: "status", type: "text", notNull: true, defaultValue: "open" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "service", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [
-      { column: "job", table: "multi_job_applicants" },
+      { column: "job", table: "multi_job_applications" },
       { column: "job", table: "multi_job_followers" },
     ],
   },
@@ -235,7 +237,7 @@ const tables = [
     ],
   },
   {
-    name: "single_job_applicants",
+    name: "single_job_applications",
     columns: [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "freelancer", type: "link", link: { table: "users" } },
@@ -243,7 +245,7 @@ const tables = [
     ],
   },
   {
-    name: "multi_job_applicants",
+    name: "multi_job_applications",
     columns: [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "job", type: "link", link: { table: "multi_jobs" } },
@@ -362,11 +364,11 @@ export type MultiJobsRecord = MultiJobs & XataRecord;
 export type MultiJobFollowers = InferredTypes["multi_job_followers"];
 export type MultiJobFollowersRecord = MultiJobFollowers & XataRecord;
 
-export type SingleJobApplicants = InferredTypes["single_job_applicants"];
-export type SingleJobApplicantsRecord = SingleJobApplicants & XataRecord;
+export type SingleJobApplications = InferredTypes["single_job_applications"];
+export type SingleJobApplicationsRecord = SingleJobApplications & XataRecord;
 
-export type MultiJobApplicants = InferredTypes["multi_job_applicants"];
-export type MultiJobApplicantsRecord = MultiJobApplicants & XataRecord;
+export type MultiJobApplications = InferredTypes["multi_job_applications"];
+export type MultiJobApplicationsRecord = MultiJobApplications & XataRecord;
 
 export type SingleOffers = InferredTypes["single_offers"];
 export type SingleOffersRecord = SingleOffers & XataRecord;
@@ -391,8 +393,8 @@ export type DatabaseSchema = {
   single_jobs: SingleJobsRecord;
   multi_jobs: MultiJobsRecord;
   multi_job_followers: MultiJobFollowersRecord;
-  single_job_applicants: SingleJobApplicantsRecord;
-  multi_job_applicants: MultiJobApplicantsRecord;
+  single_job_applications: SingleJobApplicationsRecord;
+  multi_job_applications: MultiJobApplicationsRecord;
   single_offers: SingleOffersRecord;
   single_offer_applicants: SingleOfferApplicantsRecord;
   chat_room_members: ChatRoomMembersRecord;
