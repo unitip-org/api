@@ -106,6 +106,7 @@ export async function GET(request: NextRequest) {
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.name as customer_name",
       ])
+      .where("j.freelancer", "is", null)
       .limit(limit)
       .offset((page - 1) * limit)
       .orderBy("created_at", "desc");
