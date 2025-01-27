@@ -5,25 +5,21 @@ import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 
-interface JobCustomer {
-  name: string;
-}
-interface Job {
-  id: string;
-  title: string;
-  destination: string;
-  note: string;
-  service: string;
-  pickup_location: string;
-  created_at: string;
-  updated_at: string;
-  customer: JobCustomer;
-}
-
 interface GETResponse {
-  jobs: Job[];
+  jobs: {
+    id: string;
+    title: string;
+    destination: string;
+    note: string;
+    service: string;
+    pickup_location: string;
+    created_at: string;
+    updated_at: string;
+    customer: {
+      name: string;
+    };
+  }[];
 }
-
 export async function GET(request: NextRequest) {
   try {
     // validasi auth token
@@ -113,22 +109,19 @@ export async function GET(request: NextRequest) {
     const jobsResult = await jobsQuery.execute();
 
     return APIResponse.respondWithSuccess<GETResponse>({
-      jobs: jobsResult.map(
-        (it) =>
-          <Job>{
-            id: it.id,
-            title: it.title,
-            destination: it.destination,
-            note: it.note,
-            service: it.service,
-            pickup_location: it.pickup_location,
-            created_at: convertDatetimeToISO(it.created_at),
-            updated_at: convertDatetimeToISO(it.updated_at),
-            customer: <JobCustomer>{
-              name: it.customer_name,
-            },
-          }
-      ),
+      jobs: jobsResult.map((it) => ({
+        id: it.id,
+        title: it.title,
+        destination: it.destination,
+        note: it.note,
+        service: it.service,
+        pickup_location: it.pickup_location,
+        created_at: convertDatetimeToISO(it.created_at),
+        updated_at: convertDatetimeToISO(it.updated_at),
+        customer: {
+          name: it.customer_name,
+        },
+      })),
     });
   } catch (e) {
     console.log(e);
