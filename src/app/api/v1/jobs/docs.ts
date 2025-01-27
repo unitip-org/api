@@ -41,13 +41,11 @@ export const jobsPaths = {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        type: { type: "string" },
                         title: { type: "string" },
                         destination: { type: "string" },
                         note: { type: "string" },
                         service: { type: "string" },
                         pickup_location: { type: "string" },
-                        total_applications: { type: "number" },
                         created_at: { type: "string" },
                         updated_at: { type: "string" },
                         customer: {

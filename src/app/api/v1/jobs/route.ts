@@ -18,7 +18,6 @@ interface Job {
   created_at: string;
   updated_at: string;
   customer: JobCustomer;
-  total_applications: number;
 }
 
 interface GETResponse {
@@ -36,57 +35,79 @@ export async function GET(request: NextRequest) {
     const page = Number(searchParams.get("page") || "1");
     const limit = Number(searchParams.get("limit") || "10");
 
+    // const jobsQuery = database
+    //   .selectFrom((qb) =>
+    //     qb
+    //       .selectFrom("single_jobs as sj")
+    //       .innerJoin("users as u", "u.id", "sj.customer")
+    //       .select((eb) => [
+    //         "sj.id",
+    //         sql<string>`'single'`.as("type"),
+    //         "sj.title",
+    //         "sj.destination",
+    //         "sj.note",
+    //         "sj.service",
+    //         "sj.pickup_location",
+    //         "u.name as customer_name",
+    //         sql<string>`sj."xata.createdAt"`.as("created_at"),
+    //         sql<string>`sj."xata.updatedAt"`.as("updated_at"),
+    //         eb
+    //           .selectFrom("single_job_applications as sja")
+    //           .select((eb) => eb.fn.count("sja.id").as("total_applications"))
+    //           .whereRef("sja.job", "=", "sj.id")
+    //           .as("total_applications"),
+    //       ])
+    //       .unionAll((qb) =>
+    //         qb
+    //           .selectFrom("multi_jobs as mj")
+    //           .innerJoin("users as u", "u.id", "mj.customer")
+    //           .select((eb) => [
+    //             "mj.id",
+    //             sql<string>`'multi'`.as("type"),
+    //             "mj.title",
+    //             sql<string>`'null'`.as("destination"),
+    //             sql<string>`'null'`.as("note"),
+    //             sql<string>`'null'`.as("service"),
+    //             "mj.pickup_location",
+    //             "u.name as customer_name",
+    //             sql<string>`mj."xata.createdAt"`.as("created_at"),
+    //             sql<string>`mj."xata.updatedAt"`.as("updated_at"),
+    //             eb
+    //               .selectFrom("multi_job_applications as mja")
+    //               .select((eb) =>
+    //                 eb.fn.count("mja.id").as("total_applications")
+    //               )
+    //               .whereRef("mja.job", "=", "mj.id")
+    //               .as("total_applications"),
+    //           ])
+    //       )
+    //       .as("jobs")
+    //   )
+    //   .selectAll()
+    //   .offset((page - 1) * limit)
+    //   .limit(limit)
+    //   .orderBy("created_at", "desc");
+
+    /**
+     * masih kurang filter berdasarkan status, untuk role driver
+     * tampilkan hanya jobs yang masih belum diambil
+     */
     const jobsQuery = database
-      .selectFrom((qb) =>
-        qb
-          .selectFrom("single_jobs as sj")
-          .innerJoin("users as u", "u.id", "sj.customer")
-          .select((eb) => [
-            "sj.id",
-            sql<string>`'single'`.as("type"),
-            "sj.title",
-            "sj.destination",
-            "sj.note",
-            "sj.service",
-            "sj.pickup_location",
-            "u.name as customer_name",
-            sql<string>`sj."xata.createdAt"`.as("created_at"),
-            sql<string>`sj."xata.updatedAt"`.as("updated_at"),
-            eb
-              .selectFrom("single_job_applications as sja")
-              .select((eb) => eb.fn.count("sja.id").as("total_applications"))
-              .whereRef("sja.job", "=", "sj.id")
-              .as("total_applications"),
-          ])
-          .unionAll((qb) =>
-            qb
-              .selectFrom("multi_jobs as mj")
-              .innerJoin("users as u", "u.id", "mj.customer")
-              .select((eb) => [
-                "mj.id",
-                sql<string>`'multi'`.as("type"),
-                "mj.title",
-                sql<string>`'null'`.as("destination"),
-                sql<string>`'null'`.as("note"),
-                sql<string>`'null'`.as("service"),
-                "mj.pickup_location",
-                "u.name as customer_name",
-                sql<string>`mj."xata.createdAt"`.as("created_at"),
-                sql<string>`mj."xata.updatedAt"`.as("updated_at"),
-                eb
-                  .selectFrom("multi_job_applications as mja")
-                  .select((eb) =>
-                    eb.fn.count("mja.id").as("total_applications")
-                  )
-                  .whereRef("mja.job", "=", "mj.id")
-                  .as("total_applications"),
-              ])
-          )
-          .as("jobs")
-      )
-      .selectAll()
-      .offset((page - 1) * limit)
+      .selectFrom("jobs as j")
+      .innerJoin("users as u", "u.id", "j.customer")
+      .select([
+        "j.id",
+        "j.title",
+        "j.destination",
+        "j.note",
+        "j.service",
+        "j.pickup_location",
+        sql<string>`j."xata.createdAt"`.as("created_at"),
+        sql<string>`j."xata.updatedAt"`.as("updated_at"),
+        "u.name as customer_name",
+      ])
       .limit(limit)
+      .offset((page - 1) * limit)
       .orderBy("created_at", "desc");
     const jobsResult = await jobsQuery.execute();
 
@@ -95,7 +116,6 @@ export async function GET(request: NextRequest) {
         (it) =>
           <Job>{
             id: it.id,
-            type: it.type,
             title: it.title,
             destination: it.destination,
             note: it.note,
@@ -103,7 +123,6 @@ export async function GET(request: NextRequest) {
             pickup_location: it.pickup_location,
             created_at: convertDatetimeToISO(it.created_at),
             updated_at: convertDatetimeToISO(it.updated_at),
-            total_applications: it.total_applications,
             customer: <JobCustomer>{
               name: it.customer_name,
             },
