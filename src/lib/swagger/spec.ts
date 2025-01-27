@@ -8,6 +8,7 @@ import { chatMessagesByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/me
 import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/docs";
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
+import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
 import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
@@ -17,18 +18,17 @@ import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicant
 import { approvalSingleJobApplicationByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/[application_id]/approval/docs";
 import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/docs";
 import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
-import { jobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
+import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/multi/docs";
 import { applySingleOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/single/docs";
 import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
-import { offersPaths } from "@/app/api/v1/offers/docs";
+import { offers2Paths } from "@/app/api/v1/offers2/docs";
+import { multiOffersPaths } from "@/app/api/v1/offers2/multi/docs";
+import { singleOffersPaths } from "@/app/api/v1/offers2/single/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { singleOffersPaths } from "@/app/api/v1/offers2/single/docs";
-import { multiOffersPaths } from "@/app/api/v1/offers2/multi/docs";
-import { offers2Paths } from "@/app/api/v1/offers2/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -45,8 +45,9 @@ export const swaggerSpec = {
 
     // jobs
     ...jobsPaths,
-    ...singleJobPaths,
     ...jobByIdPaths,
+    ...singleJobPaths,
+    ...singleJobByIdPaths,
     ...applyJobByIdPaths,
     ...approveJobByIdPaths,
 
