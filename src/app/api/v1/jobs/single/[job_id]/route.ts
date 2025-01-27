@@ -75,7 +75,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
           sql<string>`sj."xata.updatedAt"`.as("updated_at"),
           jsonArrayFrom(
             eb
-              .selectFrom("single_job_applicants as sja")
+              .selectFrom("single_job_applications as sja")
               .innerJoin("users as u", "u.id", "sja.freelancer")
               .select(["sja.id", "u.name as freelancer_name", "sja.price"])
               .whereRef("sja.job", "=", "sj.id")

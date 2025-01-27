@@ -1,6 +1,7 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
+import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 
@@ -21,11 +22,6 @@ interface Job {
 
 interface GETResponse {
   jobs: Job[];
-  page_info: {
-    count: number;
-    page: number;
-    total_pages: number;
-  };
 }
 
 export async function GET(request: NextRequest) {
@@ -40,89 +36,99 @@ export async function GET(request: NextRequest) {
     const limit = Number(searchParams.get("limit") || "10");
 
     // const jobsQuery = database
-    //   .selectFrom("single_jobs as sj")
-    //   .innerJoin("users as u", "u.id", "sj.customer")
-    //   .select([
-    //     "sj.id",
-    //     "sj.title",
-    //     "sj.destination",
-    //     "sj.note",
-    //     "sj.service",
-    //     "sj.pickup_location",
-    //     "u.name as customer_name",
-    //   ])
-    //   .select(sql<string>`sj."xata.createdAt"`.as("created_at"))
-    //   .select(sql<string>`sj."xata.updatedAt"`.as("updated_at"))
+    //   .selectFrom((qb) =>
+    //     qb
+    //       .selectFrom("single_jobs as sj")
+    //       .innerJoin("users as u", "u.id", "sj.customer")
+    //       .select((eb) => [
+    //         "sj.id",
+    //         sql<string>`'single'`.as("type"),
+    //         "sj.title",
+    //         "sj.destination",
+    //         "sj.note",
+    //         "sj.service",
+    //         "sj.pickup_location",
+    //         "u.name as customer_name",
+    //         sql<string>`sj."xata.createdAt"`.as("created_at"),
+    //         sql<string>`sj."xata.updatedAt"`.as("updated_at"),
+    //         eb
+    //           .selectFrom("single_job_applications as sja")
+    //           .select((eb) => eb.fn.count("sja.id").as("total_applications"))
+    //           .whereRef("sja.job", "=", "sj.id")
+    //           .as("total_applications"),
+    //       ])
+    //       .unionAll((qb) =>
+    //         qb
+    //           .selectFrom("multi_jobs as mj")
+    //           .innerJoin("users as u", "u.id", "mj.customer")
+    //           .select((eb) => [
+    //             "mj.id",
+    //             sql<string>`'multi'`.as("type"),
+    //             "mj.title",
+    //             sql<string>`'null'`.as("destination"),
+    //             sql<string>`'null'`.as("note"),
+    //             sql<string>`'null'`.as("service"),
+    //             "mj.pickup_location",
+    //             "u.name as customer_name",
+    //             sql<string>`mj."xata.createdAt"`.as("created_at"),
+    //             sql<string>`mj."xata.updatedAt"`.as("updated_at"),
+    //             eb
+    //               .selectFrom("multi_job_applications as mja")
+    //               .select((eb) =>
+    //                 eb.fn.count("mja.id").as("total_applications")
+    //               )
+    //               .whereRef("mja.job", "=", "mj.id")
+    //               .as("total_applications"),
+    //           ])
+    //       )
+    //       .as("jobs")
+    //   )
+    //   .selectAll()
     //   .offset((page - 1) * limit)
-    //   .orderBy("created_at", "desc")
-    //   .limit(limit);
+    //   .limit(limit)
+    //   .orderBy("created_at", "desc");
+
+    /**
+     * masih kurang filter berdasarkan status, untuk role driver
+     * tampilkan hanya jobs yang masih belum diambil
+     */
     const jobsQuery = database
-      .selectFrom((qb) =>
-        qb
-          .selectFrom("single_jobs as sj")
-          .innerJoin("users as u", "u.id", "sj.customer")
-          .select("sj.id")
-          .select(sql<string>`'single'`.as("type"))
-          .select("sj.title")
-          .select("sj.destination")
-          .select("sj.note")
-          .select("sj.service")
-          .select("sj.pickup_location")
-          .select("u.name as customer_name")
-          .select(sql<string>`sj."xata.createdAt"`.as("created_at"))
-          .select(sql<string>`sj."xata.updatedAt"`.as("updated_at"))
-          .unionAll((qb) =>
-            qb
-              .selectFrom("multi_jobs as mj")
-              .innerJoin("users as u", "u.id", "mj.customer")
-              .select("mj.id")
-              .select(sql<string>`'multi'`.as("type"))
-              .select("mj.title")
-              .select(sql<string>`'null'`.as("destination"))
-              .select(sql<string>`'null'`.as("note"))
-              .select(sql<string>`'null'`.as("service"))
-              .select("mj.pickup_location")
-              .select("u.name as customer_name")
-              .select(sql<string>`mj."xata.createdAt"`.as("created_at"))
-              .select(sql<string>`mj."xata.updatedAt"`.as("updated_at"))
-          )
-          .as("jobs")
-      )
-      .selectAll()
-      .offset((page - 1) * limit)
+      .selectFrom("jobs as j")
+      .innerJoin("users as u", "u.id", "j.customer")
+      .select([
+        "j.id",
+        "j.title",
+        "j.destination",
+        "j.note",
+        "j.service",
+        "j.pickup_location",
+        sql<string>`j."xata.createdAt"`.as("created_at"),
+        sql<string>`j."xata.updatedAt"`.as("updated_at"),
+        "u.name as customer_name",
+      ])
+      .where("j.freelancer", "is", null)
       .limit(limit)
+      .offset((page - 1) * limit)
       .orderBy("created_at", "desc");
     const jobsResult = await jobsQuery.execute();
-
-    // mendapatkan total row dari table single jobs
-    const queryCount = database
-      .selectFrom("single_jobs as sj")
-      .select(sql<number>`count(sj.id)`.as("count"));
-    const resultCount = await queryCount.executeTakeFirst();
 
     return APIResponse.respondWithSuccess<GETResponse>({
       jobs: jobsResult.map(
         (it) =>
           <Job>{
             id: it.id,
-            type: it.type,
             title: it.title,
             destination: it.destination,
             note: it.note,
             service: it.service,
             pickup_location: it.pickup_location,
-            created_at: it.created_at,
-            updated_at: it.updated_at,
+            created_at: convertDatetimeToISO(it.created_at),
+            updated_at: convertDatetimeToISO(it.updated_at),
             customer: <JobCustomer>{
               name: it.customer_name,
             },
           }
       ),
-      page_info: {
-        count: jobsResult.length,
-        page: page,
-        total_pages: Math.ceil((resultCount?.count ?? 0) / limit),
-      },
     });
   } catch (e) {
     console.log(e);
