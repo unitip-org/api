@@ -2,6 +2,30 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const jobsPaths = {
   "/api/v1/jobs": {
+    post: {
+      tags: ["Jobs"],
+      summary: "membuat job baru",
+      description: "endpoint ini digunakan untuk membuat job baru",
+      security: swaggerSecurity,
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                destination: { type: "string" },
+                note: { type: "string" },
+                service: { type: "string" },
+                pickup_location: { type: "string" },
+                customer_id: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {},
+    },
     get: {
       tags: ["Jobs"],
       summary: "mendapatkan daftar jobs",
