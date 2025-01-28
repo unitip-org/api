@@ -16,7 +16,7 @@ interface MultiOfferInput {
   type: "jasa-titip";
   available_until: string;
   price: number;
-  pickup_location: string; // lokasi membeli barang
+  pickup_area: string; // lokasi membeli barang
   delivery_area: string; // area pengantaran
 }
 
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       price: z
         .number({ required_error: "Biaya tidak boleh kosong!" })
         .min(0, "Biaya tidak boleh negatif!"),
-      pickup_location: z.string({
+      pickup_area: z.string({
         required_error: "Lokasi pembelian barang tidak boleh kosong!",
       }),
       delivery_area: z.string({
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
       .values({
         ...json,
         freelancer: authorization.userId,
-        status: "available",
+        offer_status: "available",
       })
       .returning("id");
 
@@ -87,85 +87,83 @@ export async function POST(request: NextRequest) {
   }
 }
 
-
 interface Offer {
-    id: string;
-    title: string;
-    description: string;
-    type: string;
-    pickup_location?: string; // lokasi membeli barang
-    delivery_area?: string; // area antar jemput untuk singleoffer
-    available_until: Date;
-    price: number;
-    status?: string;
-    freelancer_name: string;
-    created_at: string;
-    updated_at: string;
-  }
-  
-  interface GETResponse {
-    offers: Offer[];
-    page_info: {
-      count: number;
-      page: number;
-      total_pages: number;
-    };
-  }
-  
-  export async function GET(request: NextRequest) {
-    try {
-      const authorization = await verifyBearerToken(request);
-      if (!authorization) return APIResponse.respondWithUnauthorized();
-  
-      const searchParams = request.nextUrl.searchParams;
-      const page = Math.max(1, Number(searchParams.get("page") || "1"));
-      const limit = Number(searchParams.get("limit") || "10");
-  
-      const multiQuery = database
-        .selectFrom("multi_offers as mo")
-        .innerJoin("users as u", "u.id", "mo.freelancer")
-        .select([
-          "mo.id",
-          "mo.title",
-          "mo.description",
-          sql<string>`'jasa-titip'`.as("type"),
-          "mo.available_until",
-          "mo.price",
-          "mo.pickup_location",
-          "mo.delivery_area",
-          "mo.status",
-          "u.name as freelancer_name",
-          sql<string>`mo."xata.createdAt"`.as("created_at"),
-          sql<string>`mo."xata.updatedAt"`.as("updated_at"),
-        ]);
-  
-      const multiCount = await database
-        .selectFrom("multi_offers")
-        .select(sql<number>`count(*)`.as("count"))
-        .executeTakeFirst();
-  
-      const offersResult = await multiQuery
-        .orderBy(sql`mo."xata.createdAt"`, "desc")
-        .offset((page - 1) * limit)
-        .limit(limit)
-        .execute();
-  
-      return APIResponse.respondWithSuccess<GETResponse>({
-        offers: offersResult.map((it) => ({
-          ...it,
-          freelancer: {
-            name: it.freelancer_name,
-          },
-        })),
-        page_info: {
-          count: offersResult.length,
-          page: page,
-          total_pages: Math.ceil(multiCount?.count || 0 / limit),
+  id: string;
+  title: string;
+  description: string;
+  type: string;
+  pickup_area?: string; // lokasi membeli barang
+  delivery_area?: string; // area antar jemput untuk singleoffer
+  available_until: Date;
+  price: number;
+  offer_status?: string;
+  freelancer_name: string;
+  created_at: string;
+  updated_at: string;
+}
+
+interface GETResponse {
+  offers: Offer[];
+  page_info: {
+    count: number;
+    page: number;
+    total_pages: number;
+  };
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    const searchParams = request.nextUrl.searchParams;
+    const page = Math.max(1, Number(searchParams.get("page") || "1"));
+    const limit = Number(searchParams.get("limit") || "10");
+
+    const multiQuery = database
+      .selectFrom("multi_offers as mo")
+      .innerJoin("users as u", "u.id", "mo.freelancer")
+      .select([
+        "mo.id",
+        "mo.title",
+        "mo.description",
+        sql<string>`'jasa-titip'`.as("type"),
+        "mo.available_until",
+        "mo.price",
+        "mo.pickup_area",
+        "mo.delivery_area",
+        "mo.offer_status",
+        "u.name as freelancer_name",
+        sql<string>`mo."xata.createdAt"`.as("created_at"),
+        sql<string>`mo."xata.updatedAt"`.as("updated_at"),
+      ]);
+
+    const multiCount = await database
+      .selectFrom("multi_offers")
+      .select(sql<number>`count(*)`.as("count"))
+      .executeTakeFirst();
+
+    const offersResult = await multiQuery
+      .orderBy(sql`mo."xata.createdAt"`, "desc")
+      .offset((page - 1) * limit)
+      .limit(limit)
+      .execute();
+
+    return APIResponse.respondWithSuccess<GETResponse>({
+      offers: offersResult.map((it) => ({
+        ...it,
+        freelancer: {
+          name: it.freelancer_name,
         },
-      });
-    } catch (e) {
-      console.error("GET Error:", e);
-      return APIResponse.respondWithServerError();
-    }
+      })),
+      page_info: {
+        count: offersResult.length,
+        page: page,
+        total_pages: Math.ceil(multiCount?.count || 0 / limit),
+      },
+    });
+  } catch (e) {
+    console.error("GET Error:", e);
+    return APIResponse.respondWithServerError();
   }
-  
+}

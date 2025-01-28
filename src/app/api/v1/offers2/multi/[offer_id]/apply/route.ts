@@ -51,7 +51,7 @@ export async function POST(
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
-    if (authorization.role !== "customer") {
+    if (authorization.role !== "driver") {
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk melakukan aksi ini!"
       );

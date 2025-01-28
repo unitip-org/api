@@ -78,47 +78,11 @@ export const singleOffersPaths = {
             },
           },
         },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
       },
     },
     get: {
       tags: ["Offers"],
-      summary: "Mendapatkan daftar penawaran multi",
+      summary: "Mendapatkan daftar penawaran single",
       security: swaggerSecurity,
       parameters: [
         {
@@ -181,42 +145,6 @@ export const singleOffersPaths = {
                     },
                   },
                 },
-              },
-            },
-          },
-        },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
               },
             },
           },

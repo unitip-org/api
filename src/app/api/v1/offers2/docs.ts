@@ -73,7 +73,7 @@ export const offers2Paths = {
                         price: {
                           type: "number",
                         },
-                        status: {
+                        offer_status: {
                           type: "string",
                           nullable: true,
                         },

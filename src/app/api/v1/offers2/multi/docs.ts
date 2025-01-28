@@ -78,47 +78,12 @@ export const multiOffersPaths = {
             },
           },
         },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
+        
       },
     },
     get: {
       tags: ["Offers"],
-      summary: "Mendapatkan daftar penawaran",
+      summary: "Mendapatkan daftar penawaran multi",
       security: swaggerSecurity,
       parameters: [
         {
@@ -180,7 +145,7 @@ export const multiOffersPaths = {
                         price: {
                           type: "number",
                         },
-                        status: {
+                        offer_status: {
                           type: "string",
                         },
                         freelancer_name: {
@@ -214,42 +179,7 @@ export const multiOffersPaths = {
             },
           },
         },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
+        
       },
     },
   },

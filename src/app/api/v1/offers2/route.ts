@@ -15,7 +15,6 @@ interface Offer {
   available_until: Date;
   price: number;
   offer_status?: string;
-  status?: string;
   freelancer_name: string;
   created_at: string;
   updated_at: string;
@@ -70,9 +69,9 @@ export async function GET(request: NextRequest) {
             sql<string>`'jasa-titip'`.as("type"),
             "mo.available_until",
             "mo.price",
-            "mo.pickup_location",
             "mo.delivery_area",
-            "mo.status",
+            "mo.pickup_area",
+            "mo.offer_status",
             "u.name as freelancer_name",
             sql<string>`mo."xata.createdAt"`.as("created_at"),
             sql<string>`mo."xata.updatedAt"`.as("updated_at"),
