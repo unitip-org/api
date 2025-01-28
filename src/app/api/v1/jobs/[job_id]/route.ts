@@ -15,10 +15,14 @@ interface Params {
 interface GETResponse {
   id: string;
   title: string;
-  destination: string;
+  destination_location: string;
+  destination_latitude?: number;
+  destination_longitude?: number;
   note: string;
   service: string;
   pickup_location: string;
+  pickup_latitude?: number;
+  pickup_longitude?: number;
   created_at: string;
   updated_at: string;
   customer: {
@@ -57,10 +61,14 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       .select([
         "j.id",
         "j.title",
-        "j.destination",
+        "j.destination_location",
+        "j.destination_latitude",
+        "j.destination_longitude",
         "j.note",
         "j.service",
         "j.pickup_location",
+        "j.pickup_latitude",
+        "j.pickup_longitude",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.id as customer_id",
@@ -77,10 +85,14 @@ export const GET = async (request: NextRequest, { params }: Params) => {
     return APIResponse.respondWithSuccess<GETResponse>({
       id: result.id,
       title: result.title,
-      destination: result.destination,
+      destination_location: result.destination_location,
+      destination_latitude: result.destination_latitude,
+      destination_longitude: result.destination_longitude,
       note: result.note,
       service: result.service,
       pickup_location: result.pickup_location,
+      pickup_latitude: result.pickup_latitude,
+      pickup_longitude: result.pickup_longitude,
       created_at: convertDatetimeToISO(result.created_at),
       updated_at: convertDatetimeToISO(result.updated_at),
       customer: {
