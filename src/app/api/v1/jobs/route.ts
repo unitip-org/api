@@ -4,6 +4,113 @@ import { APIResponse } from "@/lib/models/api-response";
 import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
+import { z } from "zod";
+
+interface POSTBody {
+  title: string;
+  destination_location: string;
+  destination_latitude: number;
+  destination_longitude: number;
+  note: string;
+  service: string;
+  pickup_location: string;
+  pickup_latitude: number;
+  pickup_longitude: number;
+}
+interface POSTResponse {
+  id: string;
+}
+export const POST = async (request: NextRequest) => {
+  try {
+    // validasi request dari user
+    const {
+      title,
+      destination_location: destinationLocation,
+      destination_latitude: destinationLatitude,
+      destination_longitude: destinationLongitude,
+      note,
+      service,
+      pickup_location: pickupLocation,
+      pickup_latitude: pickupLatitude,
+      pickup_longitude: pickupLongitude,
+    }: POSTBody = await request.json();
+
+    const validate = z
+      .object({
+        title: z
+          .string({ required_error: "Judul tidak boleh kosong!" })
+          .min(1, "Judul tidak boleh kosong!"),
+        destinationLocation: z
+          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
+          .min(1, "Lokasi tujuan tidak boleh kosong!"),
+        destinationLatitude: z.number().optional(),
+        destinationLongitude: z.number().optional(),
+        note: z.string().optional(),
+        service: z.enum(["antar-jemput", "jasa-titip"], {
+          required_error: "Jenis layanan tidak boleh kosong!",
+        }),
+        pickupLocation: z
+          .string({ required_error: "Lokasi penjemputan tidak boleh kosong!" })
+          .min(1, "Lokasi penjemputan tidak boleh kosong!"),
+        pickupLatitude: z.number().optional(),
+        pickupLongitude: z.number().optional(),
+      })
+      .safeParse({
+        title,
+        destinationLocation,
+        destinationLatitude,
+        destinationLongitude,
+        note,
+        service,
+        pickupLocation,
+        pickupLatitude,
+        pickupLongitude,
+      });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { role, userId } = authorization;
+
+    // verifikasi role user
+    if (role !== "customer")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk membuat pekerjaan!"
+      );
+
+    // membuat job baru
+    const query = database
+      .insertInto("jobs")
+      .values({
+        title,
+        pickup_location: pickupLocation,
+        note,
+        service,
+        pickup_latitude: pickupLatitude,
+        pickup_longitude: pickupLongitude,
+        destination_location: destinationLocation,
+        destination_latitude: destinationLatitude,
+        destination_longitude: destinationLongitude,
+        customer: userId,
+      } as any)
+      .returning(["id"]);
+    const result = await query.executeTakeFirstOrThrow();
+
+    return APIResponse.respondWithSuccess<POSTResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
 
 interface GETResponse {
   jobs: {
