@@ -66,7 +66,7 @@ export const jobsPaths = {
                       properties: {
                         id: { type: "string" },
                         title: { type: "string" },
-                        destination: { type: "string" },
+                        destination_location: { type: "string" },
                         note: { type: "string" },
                         service: { type: "string" },
                         pickup_location: { type: "string" },

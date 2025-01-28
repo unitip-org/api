@@ -27,10 +27,14 @@ export const jobByIdPaths = {
                 properties: {
                   id: { type: "string" },
                   title: { type: "string" },
-                  destination: { type: "string" },
+                  destination_location: { type: "string" },
+                  destination_latitude: { type: "number", format: "float" },
+                  destination_longitude: { type: "number", format: "float" },
                   note: { type: "string" },
                   service: { type: "string" },
                   pickup_location: { type: "string" },
+                  pickup_latitude: { type: "number", format: "float" },
+                  pickup_longitude: { type: "number", format: "float" },
                   created_at: { type: "string" },
                   updated_at: { type: "string" },
                   customer: {

@@ -9,7 +9,7 @@ interface GETResponse {
   jobs: {
     id: string;
     title: string;
-    destination: string;
+    destination_location: string;
     note: string;
     service: string;
     pickup_location: string;
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
       .select([
         "j.id",
         "j.title",
-        "j.destination",
+        "j.destination_location",
         "j.note",
         "j.service",
         "j.pickup_location",
@@ -112,7 +112,7 @@ export async function GET(request: NextRequest) {
       jobs: jobsResult.map((it) => ({
         id: it.id,
         title: it.title,
-        destination: it.destination,
+        destination_location: it.destination_location,
         note: it.note,
         service: it.service,
         pickup_location: it.pickup_location,
