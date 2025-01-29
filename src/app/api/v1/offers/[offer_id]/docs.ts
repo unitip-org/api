@@ -1,7 +1,7 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const detailOfferPaths = {
-  "/api/v1/offers2/{offer_id}": {
+  "/api/v1/offers/{offer_id}": {
     get: {
       tags: ["Offers"],
       summary: "Mendapatkan detail single offer",

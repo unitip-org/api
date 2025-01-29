@@ -2,7 +2,7 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const offers2Paths = {
-  "/api/v1/offers2": {
+  "/api/v1/offers": {
     get: {
       tags: ["Offers"],
       summary: "Mendapatkan daftar penawaran All",

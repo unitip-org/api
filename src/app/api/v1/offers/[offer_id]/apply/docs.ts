@@ -2,7 +2,7 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const applyOfferByIdPaths = {
-  "/api/v1/offers2/{offer_id}/apply": {
+  "/api/v1/offers/{offer_id}/apply": {
     post: {
       tags: ["Offers"],
       security: swaggerSecurity,

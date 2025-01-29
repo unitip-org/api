@@ -2,7 +2,7 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const applicantsOfferPaths = {
-  "/api/v1/offers2/{offer_id}/applicants": {
+  "/api/v1/offers/{offer_id}/applicants": {
     get: {
       tags: ["Offers"],
       summary: "Mendapatkan daftar pelamar",
