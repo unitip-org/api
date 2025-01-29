@@ -20,7 +20,7 @@ import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]
 import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
 import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
-import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
+import { applyOfferByIdPaths } from "@/app/api/v1/offers2/[offer_id]/apply/docs";
 import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { offers2Paths } from "@/app/api/v1/offers2/docs";
 import { multiOffersPaths } from "@/app/api/v1/offers2/multi/docs";
@@ -28,7 +28,8 @@ import { singleOffersPaths } from "@/app/api/v1/offers2/single/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
 import { applyMultiOfferByIdPaths } from "@/app/api/v1/offers2/multi/[offer_id]/apply/docs";
-import { applySingleOfferByIdPaths } from "@/app/api/v1/offers2/single/[offer_id]/apply/docs";
+import { applicantsOfferPaths } from "@/app/api/v1/offers2/[offer_id]/applicants/docs";
+import { detailOfferPaths } from "@/app/api/v1/offers2/[offer_id]/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -64,12 +65,14 @@ export const swaggerSpec = {
     //offers
     // ...offersPaths,
     ...offers2Paths,
-    ...singleOffersPaths,
-    ...multiOffersPaths,
+    ...detailOfferPaths,
+    // ...singleOffersPaths,
+    // ...multiOffersPaths,
     // ...applyOfferByIdPaths,
-    ...applyMultiOfferByIdPaths,
-    ...applySingleOfferByIdPaths,
-    ...acceptanceOffersByIdPaths,
+    // ...applyMultiOfferByIdPaths,
+    ...applyOfferByIdPaths,
+    ...applicantsOfferPaths,
+    // ...acceptanceOffersByIdPaths,
 
     // example
     ...examplePaths,

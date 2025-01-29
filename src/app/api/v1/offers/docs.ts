@@ -1,130 +1,20 @@
 import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const offersPaths = {
-  "/api/v1/offers": {
-    post: {
-      tags: ["Offers"],
-      summary: "Membuat penawaran baru",
-      security: swaggerSecurity,
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              required: [
-                "title",
-                "description",
-                "type",
-                "available_until",
-                "price",
-              ],
-              properties: {
-                title: {
-                  type: "string",
-                  description: "Judul penawaran",
-                },
-                description: {
-                  type: "string",
-                  description: "Deskripsi penawaran",
-                },
-                type: {
-                  type: "string",
-                  enum: ["antar-jemput", "jasa-titip"],
-                  description: "Tipe penawaran",
-                },
-                available_until: {
-                  type: "string",
-                  description: "Batas waktu penawaran tersedia",
-                },
-                price: {
-                  type: "number",
-                  minimum: 0,
-                  description: "Biaya penawaran",
-                },
-                pickup_area: {
-                  type: "string",
-                  description: "Area penjemputan (opsional)",
-                },
-                delivery_area: {
-                  type: "string",
-                  description: "Area pengantaran (opsional)",
-                },
-              },
-            },
-          },
-        },
-      },
-      responses: {
-        200: {
-          description: "Berhasil membuat penawaran",
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                properties: {
-                  success: {
-                    type: "boolean",
-                  },
-                  id: {
-                    type: "string",
-                    description: "ID penawaran yang dibuat",
-                  },
-                },
-              },
-            },
-          },
-        },
-        400: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.BadRequestError,
-              },
-            },
-          },
-        },
-        401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
-              },
-            },
-          },
-        },
-        403: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.ForbiddenError,
-              },
-            },
-          },
-        },
-        500: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
-              },
-            },
-          },
-        },
-      },
-    },
+export const offers2Paths = {
+  "/api/v1/offers2": {
     get: {
       tags: ["Offers"],
-      summary: "Mendapatkan daftar penawaran",
+      summary: "Mendapatkan daftar penawaran All",
       security: swaggerSecurity,
       parameters: [
         {
           in: "query",
           name: "page",
           schema: {
-            type: "number",
+            type: "integer",
             default: 1,
+            minimum: 1,
           },
           description: "Nomor halaman",
         },
@@ -132,25 +22,15 @@ export const offersPaths = {
           in: "query",
           name: "limit",
           schema: {
-            type: "number",
+            type: "integer",
             default: 10,
           },
           description: "Jumlah data per halaman",
         },
-        {
-          in: "query",
-          name: "type",
-          schema: {
-            type: "string",
-            enum: ["all", "single", "multi"],
-            default: "all",
-          },
-          description: "Filter tipe penawaran",
-        },
       ],
       responses: {
-        "200": {
-          description: "Berhasil mendapatkan daftar penawaran",
+        200: {
+          description: "Successful response",
           content: {
             "application/json": {
               schema: {
@@ -172,18 +52,32 @@ export const offersPaths = {
                         },
                         type: {
                           type: "string",
+                          enum: ["jasa-titip", "antar-jemput"],
                         },
                         pickup_area: {
                           type: "string",
+                          description:
+                            "Area penjemputan untuk antar-jemput atau area belanja untuk jasa-titip",
                         },
-                        delivery_area: {
+                        destination_area: {
                           type: "string",
+                          description:
+                            "Area tujuan untuk antar-jemput atau area pengantaran untuk jasa-titip",
                         },
                         available_until: {
                           type: "string",
+                          format: "date-time",
                         },
                         price: {
                           type: "number",
+                        },
+                        offer_status: {
+                          type: "string",
+                          nullable: true,
+                        },
+                        max_participants: {
+                          type: "integer",
+                          minimum: 1,
                         },
                         freelancer: {
                           type: "object",
@@ -195,15 +89,31 @@ export const offersPaths = {
                         },
                         created_at: {
                           type: "string",
+                          format: "date-time",
                         },
                         updated_at: {
                           type: "string",
+                          format: "date-time",
                         },
                       },
                     },
                   },
                   page_info: {
-                    $ref: swaggerComponentRefs.PageInfo,
+                    type: "object",
+                    properties: {
+                      count: {
+                        type: "integer",
+                        description: "Jumlah data pada halaman ini",
+                      },
+                      page: {
+                        type: "integer",
+                        description: "Halaman saat ini",
+                      },
+                      total_pages: {
+                        type: "integer",
+                        description: "Total jumlah halaman",
+                      },
+                    },
                   },
                 },
               },
@@ -211,22 +121,107 @@ export const offersPaths = {
           },
         },
         401: {
-          content: {
-            "application/json": {
-              schema: {
-                $ref: swaggerComponentRefs.UnauthorizedError,
+          description: "Unauthorized",
+        },
+        500: {
+          description: "Internal Server Error",
+        },
+      },
+    },
+    post: {
+      tags: ["Offers"],
+      summary: "Membuat penawaran baru",
+      security: swaggerSecurity,
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: [
+                "title",
+                "description",
+                "type",
+                "available_until",
+                "price",
+                "pickup_area",
+                "destination_area",
+                "max_participants",
+              ],
+              properties: {
+                title: {
+                  type: "string",
+                  minLength: 1,
+                },
+                description: {
+                  type: "string",
+                  minLength: 1,
+                },
+                type: {
+                  type: "string",
+                  enum: ["antar-jemput", "jasa-titip"],
+                },
+                available_until: {
+                  type: "string",
+                  format: "date-time",
+                },
+                price: {
+                  type: "number",
+                  minimum: 0,
+                },
+                pickup_area: {
+                  type: "string",
+                },
+                destination_area: {
+                  type: "string",
+                },
+                max_participants: {
+                  type: "integer",
+                  minimum: 1,
+                },
               },
             },
           },
         },
-        500: {
+      },
+      responses: {
+        200: {
+          description: "Successful response",
           content: {
             "application/json": {
               schema: {
-                $ref: swaggerComponentRefs.InternalServerError,
+                type: "object",
+                properties: {
+                  message: {
+                    type: "string",
+                  },
+                  data: {
+                    type: "object",
+                    properties: {
+                      succes: {
+                        type: "boolean",
+                      },
+                      id: {
+                        type: "string",
+                      },
+                    },
+                  },
+                },
               },
             },
           },
+        },
+        400: {
+          description: "Bad Request",
+        },
+        401: {
+          description: "Unauthorized",
+        },
+        403: {
+          description: "Forbidden",
+        },
+        500: {
+          description: "Internal Server Error",
         },
       },
     },
