@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
-import "./globals.css";
+// import "./globals.css";
 
-import { AuthTokenType, verifyAuthToken } from "@/lib/auth-token";
 import { Nunito } from "next/font/google";
-import NextTopLoader from "nextjs-toploader";
-import Provider from "./provider";
-import { ThemeProvider } from "./theme-provider";
 
 const nunito = Nunito({
   subsets: ["latin"],
@@ -22,22 +18,22 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  let session: AuthTokenType | undefined = undefined;
-  try {
-    session = await verifyAuthToken();
-  } catch (e) {
-    console.log("error: unauthorized");
-  }
+  // let session: AuthTokenType | undefined = undefined;
+  // try {
+  //   session = await verifyAuthToken();
+  // } catch (e) {
+  //   console.log("error: unauthorized");
+  // }
 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${nunito.className} antialiased`}>
-        <ThemeProvider defaultTheme="system" attribute="class">
+        {/* <ThemeProvider defaultTheme="system" attribute="class">
           <Provider session={session}>
-            <NextTopLoader />
-            {children}
-          </Provider>
-        </ThemeProvider>
+            <NextTopLoader /> */}
+        {children}
+        {/* </Provider>
+        </ThemeProvider> */}
       </body>
     </html>
   );
