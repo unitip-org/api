@@ -27,6 +27,7 @@ import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
+import { accountPaths } from "@/app/api/v1/accounts/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -40,6 +41,9 @@ export const swaggerSpec = {
     ...authLoginPaths,
     ...authLogoutPaths,
     ...authRegisterPaths,
+
+    // account
+    ...accountPaths,
 
     // jobs
     ...jobsPaths,

@@ -1,19 +1,25 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
+import { title } from "process";
 
-export const account = {
-  "api/v1/account": {
+export const accountPaths = {
+  "/api/v1/account": {
     patch: {
-      tags: ["Account"],
+      tags: ["Accounts"],
       security: swaggerSecurity,
       summary: "Mengedit informasi akun",
-      parameters: [
-        {
-          in: "path",
-          name: "name",
-          required: true,
-          schema: { type: "string" },
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                gender: { type: "string" },
+              },
+            },
+          },
         },
-      ],
+      },
       responses: {
         200: {
           content: {
@@ -29,7 +35,6 @@ export const account = {
                       properties: {
                         id: { type: "string" },
                         name: { type: "string" },
-                        age: { type: "number" },
                         gender: { type: "string" },
                       },
                     },
