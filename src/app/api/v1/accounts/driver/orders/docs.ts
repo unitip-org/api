@@ -20,6 +20,8 @@ export const accountDriverOrdersPaths = {
                         id: { type: "string" },
                         title: { type: "string" },
                         note: { type: "string" },
+                        created_at: { type: "string" },
+                        updated_at: { type: "string" },
                       },
                     },
                   },
