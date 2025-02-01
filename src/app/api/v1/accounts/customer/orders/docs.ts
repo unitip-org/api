@@ -1,7 +1,7 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const accountOrdersPaths = {
-  "/api/v1/accounts/orders": {
+export const accountCustomerOrdersPaths = {
+  "/api/v1/accounts/customer/orders": {
     get: {
       tags: ["Accounts"],
       security: swaggerSecurity,
