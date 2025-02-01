@@ -22,8 +22,9 @@ import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
+import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
 import { accountPaths } from "@/app/api/v1/accounts/docs";
-import { accountOrdersPaths } from "@/app/api/v1/accounts/orders/docs";
+import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
@@ -45,7 +46,8 @@ export const swaggerSpec = {
 
     // account
     ...accountPaths,
-    ...accountOrdersPaths,
+    ...accountCustomerOrdersPaths,
+    ...accountDriverOrdersPaths,
 
     // jobs
     ...jobsPaths,
