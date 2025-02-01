@@ -37,6 +37,7 @@ export const GET = async (request: NextRequest) => {
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
       ])
       .where("j.customer", "=", userId as any)
+      .where("j.status", "!=", "done")
       .orderBy("created_at", "desc");
     const result = await query.execute();
 
