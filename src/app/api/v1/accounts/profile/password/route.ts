@@ -55,6 +55,6 @@ export const PATCH = async (request: NextRequest) => {
       id: result.id,
     });
   } catch (e) {
-    return APIResponse.respondWithServerError;
+    return APIResponse.respondWithServerError();
   }
 };
