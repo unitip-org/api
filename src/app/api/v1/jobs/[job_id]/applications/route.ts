@@ -46,7 +46,10 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
     // apply job
     const query = database
       .updateTable("jobs")
-      .set({ freelancer: userId as any })
+      .set({
+        freelancer: userId as any,
+        status: "ongoing",
+      })
       .where("id", "=", jobId)
       .where("freelancer", "is", null)
       .returning("id");
@@ -102,7 +105,10 @@ export const DELETE = async (request: NextRequest, { params }: Params) => {
     // cancel job
     const query = database
       .updateTable("jobs")
-      .set({ freelancer: null as any })
+      .set({
+        freelancer: null as any,
+        status: "",
+      })
       .where("id", "=", jobId)
       .where("freelancer", "=", userId as any)
       .returning("id");
