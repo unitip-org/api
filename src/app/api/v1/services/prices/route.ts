@@ -17,14 +17,15 @@ export const GET = async () => {
     }
 
     interface Category {
-      category: string;
+      title: string;
       prices: Price[];
     }
 
     const groupedPrices = result.reduce((acc, current) => {
       const categoryIndex = acc.findIndex(
-        (it) => it.category === current.category
+        (it) => it.title === current.category
       );
+
       if (categoryIndex !== -1) {
         acc[categoryIndex].prices.push({
           title: current.title,
@@ -33,7 +34,7 @@ export const GET = async () => {
         });
       } else {
         acc.push({
-          category: current.category,
+          title: current.category,
           prices: [
             {
               title: current.title,
@@ -48,7 +49,7 @@ export const GET = async () => {
     }, <Category[]>[]);
 
     return APIResponse.respondWithSuccess({
-      prices: groupedPrices,
+      categories: groupedPrices,
     });
   } catch (e) {
     console.log(e);

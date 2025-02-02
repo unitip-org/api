@@ -9,12 +9,23 @@ export const servicePricesPaths = {
               schema: {
                 type: "object",
                 properties: {
-                  prices: {
+                  categories: {
                     type: "array",
                     items: {
                       type: "object",
                       properties: {
-                        id: { type: "string" },
+                        title: { type: "string" },
+                        prices: {
+                          type: "array",
+                          items: {
+                            type: "object",
+                            properties: {
+                              title: { type: "string" },
+                              min_price: { type: "number" },
+                              max_price: { type: "number" },
+                            },
+                          },
+                        },
                       },
                     },
                   },
