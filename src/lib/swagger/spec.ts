@@ -22,11 +22,15 @@ import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
+import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
-import { accountOrdersPaths } from "@/app/api/v1/accounts/orders/docs";
+import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
+import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
+import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
+import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
@@ -46,12 +50,15 @@ export const swaggerSpec = {
 
     // account
     ...accountPaths,
-    ...accountOrdersPaths,
+    ...accountCustomerOrdersPaths,
+    ...accountDriverOrdersPaths,
     ...editPasswordPaths,
 
     // jobs
     ...jobsPaths,
     ...jobByIdPaths,
+    ...jobApplicationsByIdPaths,
+    ...jobCompletionByIdPaths,
     ...singleJobPaths,
     ...singleJobByIdPaths,
     ...applyJobByIdPaths,
@@ -89,5 +96,8 @@ export const swaggerSpec = {
     ...readChatByRoomIdPaths,
     ...chatMessagesFromUserIdPaths,
     ...chatMessagesToUserIdPaths,
+
+    // services
+    ...servicePricesPaths,
   },
 };
