@@ -23,8 +23,10 @@ import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
-import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
+import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/orders/histories/docs";
+import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
+import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
@@ -33,7 +35,6 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -53,6 +54,7 @@ export const swaggerSpec = {
     ...accountCustomerOrdersPaths,
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
+    ...accountDriverOrderHistoriesPaths,
 
     // jobs
     ...jobsPaths,
