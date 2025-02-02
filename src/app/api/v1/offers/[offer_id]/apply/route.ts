@@ -31,18 +31,15 @@ export async function POST(
       note: z
         .string({
           required_error: "Catatan untuk pemesanan tidak boleh kosong!",
-        })
-        .min(5, "Catatan pemesanan minimal 5 karakter!"),
+        }),
       destination_location: z
         .string({
           required_error: "Lokasi tujuan tidak boleh kosong!",
-        })
-        .min(5, "Lokasi tujuan minimal 5 karakter!"),
+        }),
       pickup_location: z
         .string({
           required_error: "Lokasi penjemputan tidak boleh kosong!",
-        })
-        .min(5, "Lokasi penjemputan minimal 5 karakter!"),
+        }),
       pickup_latitude: z.number({
         required_error: "Latitude lokasi penjemputan tidak boleh kosong!",
       }),
