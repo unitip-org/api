@@ -294,6 +294,15 @@ const tables = [
       },
     ],
   },
+  {
+    name: "service_prices",
+    columns: [
+      { name: "category", type: "text", notNull: true, defaultValue: "" },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "min_price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "max_price", type: "int", notNull: true, defaultValue: "0" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -350,6 +359,9 @@ export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
 export type ChatRoomMembers = InferredTypes["chat_room_members"];
 export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
 
+export type ServicePrices = InferredTypes["service_prices"];
+export type ServicePricesRecord = ServicePrices & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -366,6 +378,7 @@ export type DatabaseSchema = {
   single_offers: SingleOffersRecord;
   single_offer_applicants: SingleOfferApplicantsRecord;
   chat_room_members: ChatRoomMembersRecord;
+  service_prices: ServicePricesRecord;
 };
 
 const DatabaseClient = buildClient();
