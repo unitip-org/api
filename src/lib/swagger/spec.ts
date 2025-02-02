@@ -9,17 +9,17 @@ import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/d
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
 import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
-import { jobsPaths } from "@/app/api/v1/jobs/docs";
-import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
-import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
-import { multiJobByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/docs";
-import { multiJobPaths } from "@/app/api/v1/jobs/multi/docs";
-import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicants/[applicant_id]/approve/docs";
-import { approvalSingleJobApplicationByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/[application_id]/approval/docs";
-import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/docs";
-import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
-import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
-import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
+// import { jobsPaths } from "@/app/api/v1/jobs/docs";
+// import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
+// import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
+// import { multiJobByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/docs";
+// import { multiJobPaths } from "@/app/api/v1/jobs/multi/docs";
+// import { approveJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applicants/[applicant_id]/approve/docs";
+// import { approvalSingleJobApplicationByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/[application_id]/approval/docs";
+// import { applicationBySingleJobIdPaths } from "@/app/api/v1/jobs/single/[job_id]/applications/docs";
+// import { applyJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/apply/docs";
+// import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
+// import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
@@ -57,24 +57,24 @@ export const swaggerSpec = {
     ...accountDriverOrderHistoriesPaths,
 
     // jobs
-    ...jobsPaths,
+    // ...jobsPaths,
     ...jobByIdPaths,
     ...jobApplicationsByIdPaths,
     ...jobCompletionByIdPaths,
-    ...singleJobPaths,
-    ...singleJobByIdPaths,
-    ...applyJobByIdPaths,
-    ...approveJobByIdPaths,
+    // ...singleJobPaths,
+    // ...singleJobByIdPaths,
+    // ...applyJobByIdPaths,
+    // ...approveJobByIdPaths,
 
     // - single jobs
-    ...applicationBySingleJobIdPaths,
-    ...approvalSingleJobApplicationByIdPaths,
+    // ...applicationBySingleJobIdPaths,
+    // ...approvalSingleJobApplicationByIdPaths,
 
     // - multi jobs
-    ...multiJobPaths,
-    ...multiJobByIdPaths,
-    ...multiJobApplicationByIdPaths,
-    ...multiJobApplicationApprovalByIdPaths,
+    // ...multiJobPaths,
+    // ...multiJobByIdPaths,
+    // ...multiJobApplicationByIdPaths,
+    // ...multiJobApplicationApprovalByIdPaths,
 
     //offers
     // ...offersPaths,
