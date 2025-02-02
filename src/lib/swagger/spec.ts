@@ -29,6 +29,7 @@ import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/application
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
+import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
 
@@ -91,5 +92,8 @@ export const swaggerSpec = {
     ...readChatByRoomIdPaths,
     ...chatMessagesFromUserIdPaths,
     ...chatMessagesToUserIdPaths,
+
+    // services
+    ...servicePricesPaths,
   },
 };
