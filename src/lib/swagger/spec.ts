@@ -22,13 +22,14 @@ import { singleJobByIdPaths } from "@/app/api/v1/jobs/single/[job_id]/docs";
 import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
-import { accountPaths } from "@/app/api/v1/accounts/docs";
+import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { accountOrdersPaths } from "@/app/api/v1/accounts/orders/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -46,6 +47,7 @@ export const swaggerSpec = {
     // account
     ...accountPaths,
     ...accountOrdersPaths,
+    ...editPasswordPaths,
 
     // jobs
     ...jobsPaths,

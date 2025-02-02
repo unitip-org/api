@@ -2,7 +2,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 import { title } from "process";
 
 export const accountPaths = {
-  "/api/v1/account": {
+  "/api/v1/accounts/profile": {
     patch: {
       tags: ["Accounts"],
       security: swaggerSecurity,
