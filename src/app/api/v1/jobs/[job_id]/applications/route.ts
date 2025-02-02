@@ -45,12 +45,17 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
 
     // apply job
     const query = database
-      .updateTable("jobs as j")
+      .updateTable("jobs")
       .set({ freelancer: userId as any })
-      .where("j.id", "=", jobId)
-      .where("j.freelancer", "is", null)
-      .returning("j.id");
-    const result = await query.executeTakeFirstOrThrow();
+      .where("id", "=", jobId)
+      .where("freelancer", "is", null)
+      .returning("id");
+    const result = await query.executeTakeFirst();
+
+    if (!result)
+      return APIResponse.respondWithConflict(
+        "Pekerjaan ini sudah diambil oleh driver lain!"
+      );
 
     return APIResponse.respondWithSuccess<PATCHResponse>({
       id: result.id,
