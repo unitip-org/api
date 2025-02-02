@@ -13,109 +13,52 @@ const tables = [
       { name: "email", type: "text", notNull: true, defaultValue: "" },
       { name: "password", type: "text", notNull: true, defaultValue: "" },
       { name: "name", type: "text", notNull: true, defaultValue: "" },
+      { name: "gender", type: "text" },
     ],
     revLinks: [
-      { column: "from", table: "chat_messages" },
-      { column: "to", table: "chat_messages" },
-      { column: "customerId", table: "customer_requests" },
-      { column: "driverId", table: "driver_offers" },
-      { column: "applicantId", table: "job_applications" },
-      { column: "from_user", table: "chat_rooms" },
-      { column: "to_user", table: "chat_rooms" },
+      { column: "freelancer", table: "single_offers" },
+      { column: "customer", table: "deprecated_multi_jobs" },
+      { column: "customer", table: "single_offer_applicants" },
+      { column: "customer", table: "single_offers" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
-      { column: "applicant", table: "customer_request_applications" },
       { column: "user", table: "user_sessions" },
-      { column: "creator", table: "offers" },
-      { column: "customer", table: "single_jobs" },
-      { column: "driver", table: "single_jobs" },
+      { column: "customer", table: "jobs" },
+      { column: "freelancer", table: "jobs" },
+      { column: "freelancer", table: "deprecated_single_job_applications" },
+      { column: "freelancer", table: "deprecated_multi_jobs" },
+      { column: "freelancer", table: "multi_offers" },
+      { column: "customer", table: "multi_offer_followers" },
+      { column: "freelancer", table: "deprecated_multi_job_applications" },
+      { column: "customer", table: "deprecated_multi_job_followers" },
+      { column: "user", table: "chat_messages" },
+      { column: "user", table: "chat_room_members" },
     ],
   },
   {
     name: "chat_messages",
     columns: [
       { name: "message", type: "text", notNull: true, defaultValue: "" },
-      { name: "from", type: "link", link: { table: "users" } },
-      { name: "to", type: "link", link: { table: "users" } },
       {
         name: "is_deleted",
         type: "bool",
         notNull: true,
         defaultValue: "false",
       },
+      { name: "room", type: "link", link: { table: "chat_rooms" } },
+      { name: "user", type: "link", link: { table: "users" } },
     ],
-  },
-  {
-    name: "customer_requests",
-    columns: [
-      {
-        name: "pickupLocation",
-        type: "text",
-        notNull: true,
-        defaultValue: "null",
-      },
-      {
-        name: "dropoffLocation",
-        type: "text",
-        notNull: true,
-        defaultValue: "null",
-      },
-      { name: "additionalNotes", type: "text" },
-      { name: "customerId", type: "link", link: { table: "users" } },
-      { name: "type", type: "text" },
-      { name: "status", type: "text" },
-      { name: "preferredGender", type: "text" },
-      {
-        name: "pickupTime",
-        type: "datetime",
-        notNull: true,
-        defaultValue: "now",
-      },
-    ],
-    revLinks: [
-      { column: "customerRequestId", table: "job_applications" },
-      { column: "customer_requests", table: "customer_request_applications" },
-    ],
-  },
-  {
-    name: "driver_offers",
-    columns: [
-      { name: "title", type: "text", notNull: true, defaultValue: "null" },
-      { name: "fee", type: "float", notNull: true, defaultValue: "0" },
-      {
-        name: "availableUntil",
-        type: "datetime",
-        notNull: true,
-        defaultValue: "now",
-      },
-      { name: "location", type: "text", notNull: true, defaultValue: "null" },
-      { name: "additionalNotes", type: "text" },
-      { name: "driverId", type: "link", link: { table: "users" } },
-      { name: "type", type: "text" },
-      { name: "status", type: "text" },
-    ],
-    revLinks: [{ column: "driverOfferId", table: "job_applications" }],
-  },
-  {
-    name: "job_applications",
-    columns: [
-      { name: "status", type: "text", notNull: true, defaultValue: "null" },
-      { name: "driverOfferId", type: "link", link: { table: "driver_offers" } },
-      {
-        name: "customerRequestId",
-        type: "link",
-        link: { table: "customer_requests" },
-      },
-      { name: "applicantId", type: "link", link: { table: "users" } },
-    ],
+    revLinks: [{ column: "last_read_message", table: "chat_room_members" }],
   },
   {
     name: "chat_rooms",
     columns: [
       { name: "last_message", type: "text", notNull: true, defaultValue: "" },
-      { name: "from_user", type: "link", link: { table: "users" } },
-      { name: "to_user", type: "link", link: { table: "users" } },
       { name: "last_sent_user", type: "link", link: { table: "users" } },
+    ],
+    revLinks: [
+      { column: "room", table: "chat_messages" },
+      { column: "room", table: "chat_room_members" },
     ],
   },
   {
@@ -123,19 +66,6 @@ const tables = [
     columns: [
       { name: "user", type: "link", link: { table: "users" } },
       { name: "role", type: "text", notNull: true, defaultValue: "" },
-    ],
-  },
-  {
-    name: "customer_request_applications",
-    columns: [
-      { name: "status", type: "text" },
-      { name: "applicant", type: "link", link: { table: "users" } },
-      {
-        name: "customer_requests",
-        type: "link",
-        link: { table: "customer_requests" },
-      },
-      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
     ],
   },
   {
@@ -147,20 +77,48 @@ const tables = [
     ],
   },
   {
-    name: "offers",
+    name: "multi_offers",
     columns: [
-      { name: "creator", type: "link", link: { table: "users" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "offer_status", type: "text", notNull: true, defaultValue: "" },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      {
+        name: "available_until",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
       { name: "description", type: "text", notNull: true, defaultValue: "" },
-      { name: "fee", type: "int", notNull: true, defaultValue: "0" },
-      { name: "location", type: "text", notNull: true, defaultValue: "" },
+      { name: "pickup_area", type: "text", notNull: true, defaultValue: "" },
+      { name: "delivery_area", type: "text", notNull: true, defaultValue: "" },
+    ],
+    revLinks: [{ column: "offer", table: "multi_offer_followers" }],
+  },
+  {
+    name: "multi_offer_followers",
+    columns: [
+      { name: "offer", type: "link", link: { table: "multi_offers" } },
+      {
+        name: "delivery_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "payment_method", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "payment_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "unpaid",
+      },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
+      { name: "customer", type: "link", link: { table: "users" } },
     ],
   },
-  { name: "single_offers", columns: [] },
-  { name: "multi_offers", columns: [] },
-  { name: "multi_offer_followers", columns: [] },
   {
-    name: "single_jobs",
+    name: "jobs",
     columns: [
       { name: "title", type: "text", notNull: true, defaultValue: "" },
       {
@@ -169,15 +127,182 @@ const tables = [
         notNull: true,
         defaultValue: "",
       },
-      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "destination_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
       { name: "note", type: "text", notNull: true, defaultValue: "" },
-      { name: "type", type: "text", notNull: true, defaultValue: "" },
+      { name: "service", type: "text", notNull: true, defaultValue: "" },
       { name: "customer", type: "link", link: { table: "users" } },
-      { name: "driver", type: "link", link: { table: "users" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "status", type: "text", notNull: true, defaultValue: "" },
+      { name: "pickup_latitude", type: "float" },
+      { name: "pickup_longitude", type: "float" },
+      { name: "destination_latitude", type: "float" },
+      { name: "destination_longitude", type: "float" },
+    ],
+    revLinks: [{ column: "job", table: "deprecated_single_job_applications" }],
+  },
+  {
+    name: "deprecated_multi_jobs",
+    columns: [
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "status", type: "text", notNull: true, defaultValue: "open" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      { name: "service", type: "text", notNull: true, defaultValue: "" },
+    ],
+    revLinks: [
+      { column: "job", table: "deprecated_multi_job_applications" },
+      { column: "job", table: "deprecated_multi_job_followers" },
     ],
   },
-  { name: "multi_jobs", columns: [] },
-  { name: "multi_job_followers", columns: [] },
+  {
+    name: "deprecated_multi_job_followers",
+    columns: [
+      { name: "job", type: "link", link: { table: "deprecated_multi_jobs" } },
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "destination", type: "text", notNull: true, defaultValue: "" },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+    ],
+  },
+  {
+    name: "deprecated_single_job_applications",
+    columns: [
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "job", type: "link", link: { table: "jobs" } },
+    ],
+  },
+  {
+    name: "deprecated_multi_job_applications",
+    columns: [
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "job", type: "link", link: { table: "deprecated_multi_jobs" } },
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "status", type: "text", notNull: true, defaultValue: "pending" },
+    ],
+  },
+  {
+    name: "single_offers",
+    columns: [
+      { name: "freelancer", type: "link", link: { table: "users" } },
+      { name: "customer", type: "link", link: { table: "users" } },
+      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "destination_area",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "description", type: "text", notNull: true, defaultValue: "" },
+      { name: "type", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "offer_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "available",
+      },
+      { name: "expired_at", type: "text" },
+      {
+        name: "available_until",
+        type: "datetime",
+        notNull: true,
+        defaultValue: "now",
+      },
+      { name: "pickup_area", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "max_participants",
+        type: "int",
+        notNull: true,
+        defaultValue: "1",
+      },
+    ],
+    revLinks: [{ column: "offer", table: "single_offer_applicants" }],
+  },
+  {
+    name: "single_offer_applicants",
+    columns: [
+      {
+        name: "pickup_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "note", type: "text", notNull: true, defaultValue: "" },
+      {
+        name: "destination_location",
+        type: "text",
+        notNull: true,
+        defaultValue: "",
+      },
+      { name: "offer", type: "link", link: { table: "single_offers" } },
+      { name: "customer", type: "link", link: { table: "users" } },
+      {
+        name: "pickup_latitude",
+        type: "float",
+        notNull: true,
+        defaultValue: "0.0",
+      },
+      {
+        name: "pickup_longitude",
+        type: "float",
+        notNull: true,
+        defaultValue: "0.0",
+      },
+      {
+        name: "destination_latitude",
+        type: "float",
+        notNull: true,
+        defaultValue: "0.0",
+      },
+      {
+        name: "destination_longitude",
+        type: "float",
+        notNull: true,
+        defaultValue: "0.0",
+      },
+    ],
+  },
+  {
+    name: "chat_room_members",
+    columns: [
+      { name: "room", type: "link", link: { table: "chat_rooms" } },
+      { name: "user", type: "link", link: { table: "users" } },
+      {
+        name: "last_read_message",
+        type: "link",
+        link: { table: "chat_messages" },
+      },
+      {
+        name: "unread_message_count",
+        type: "int",
+        notNull: true,
+        defaultValue: "0",
+      },
+    ],
+  },
+  {
+    name: "service_prices",
+    columns: [
+      { name: "category", type: "text", notNull: true, defaultValue: "" },
+      { name: "title", type: "text", notNull: true, defaultValue: "" },
+      { name: "min_price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "max_price", type: "int", notNull: true, defaultValue: "0" },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -189,34 +314,14 @@ export type UsersRecord = Users & XataRecord;
 export type ChatMessages = InferredTypes["chat_messages"];
 export type ChatMessagesRecord = ChatMessages & XataRecord;
 
-export type CustomerRequests = InferredTypes["customer_requests"];
-export type CustomerRequestsRecord = CustomerRequests & XataRecord;
-
-export type DriverOffers = InferredTypes["driver_offers"];
-export type DriverOffersRecord = DriverOffers & XataRecord;
-
-export type JobApplications = InferredTypes["job_applications"];
-export type JobApplicationsRecord = JobApplications & XataRecord;
-
 export type ChatRooms = InferredTypes["chat_rooms"];
 export type ChatRoomsRecord = ChatRooms & XataRecord;
 
 export type UserRoles = InferredTypes["user_roles"];
 export type UserRolesRecord = UserRoles & XataRecord;
 
-export type CustomerRequestApplications =
-  InferredTypes["customer_request_applications"];
-export type CustomerRequestApplicationsRecord = CustomerRequestApplications &
-  XataRecord;
-
 export type UserSessions = InferredTypes["user_sessions"];
 export type UserSessionsRecord = UserSessions & XataRecord;
-
-export type Offers = InferredTypes["offers"];
-export type OffersRecord = Offers & XataRecord;
-
-export type SingleOffers = InferredTypes["single_offers"];
-export type SingleOffersRecord = SingleOffers & XataRecord;
 
 export type MultiOffers = InferredTypes["multi_offers"];
 export type MultiOffersRecord = MultiOffers & XataRecord;
@@ -224,32 +329,56 @@ export type MultiOffersRecord = MultiOffers & XataRecord;
 export type MultiOfferFollowers = InferredTypes["multi_offer_followers"];
 export type MultiOfferFollowersRecord = MultiOfferFollowers & XataRecord;
 
-export type SingleJobs = InferredTypes["single_jobs"];
-export type SingleJobsRecord = SingleJobs & XataRecord;
+export type Jobs = InferredTypes["jobs"];
+export type JobsRecord = Jobs & XataRecord;
 
-export type MultiJobs = InferredTypes["multi_jobs"];
-export type MultiJobsRecord = MultiJobs & XataRecord;
+export type DeprecatedMultiJobs = InferredTypes["deprecated_multi_jobs"];
+export type DeprecatedMultiJobsRecord = DeprecatedMultiJobs & XataRecord;
 
-export type MultiJobFollowers = InferredTypes["multi_job_followers"];
-export type MultiJobFollowersRecord = MultiJobFollowers & XataRecord;
+export type DeprecatedMultiJobFollowers =
+  InferredTypes["deprecated_multi_job_followers"];
+export type DeprecatedMultiJobFollowersRecord = DeprecatedMultiJobFollowers &
+  XataRecord;
+
+export type DeprecatedSingleJobApplications =
+  InferredTypes["deprecated_single_job_applications"];
+export type DeprecatedSingleJobApplicationsRecord =
+  DeprecatedSingleJobApplications & XataRecord;
+
+export type DeprecatedMultiJobApplications =
+  InferredTypes["deprecated_multi_job_applications"];
+export type DeprecatedMultiJobApplicationsRecord =
+  DeprecatedMultiJobApplications & XataRecord;
+
+export type SingleOffers = InferredTypes["single_offers"];
+export type SingleOffersRecord = SingleOffers & XataRecord;
+
+export type SingleOfferApplicants = InferredTypes["single_offer_applicants"];
+export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
+
+export type ChatRoomMembers = InferredTypes["chat_room_members"];
+export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
+
+export type ServicePrices = InferredTypes["service_prices"];
+export type ServicePricesRecord = ServicePrices & XataRecord;
 
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
-  customer_requests: CustomerRequestsRecord;
-  driver_offers: DriverOffersRecord;
-  job_applications: JobApplicationsRecord;
   chat_rooms: ChatRoomsRecord;
   user_roles: UserRolesRecord;
-  customer_request_applications: CustomerRequestApplicationsRecord;
   user_sessions: UserSessionsRecord;
-  offers: OffersRecord;
-  single_offers: SingleOffersRecord;
   multi_offers: MultiOffersRecord;
   multi_offer_followers: MultiOfferFollowersRecord;
-  single_jobs: SingleJobsRecord;
-  multi_jobs: MultiJobsRecord;
-  multi_job_followers: MultiJobFollowersRecord;
+  jobs: JobsRecord;
+  deprecated_multi_jobs: DeprecatedMultiJobsRecord;
+  deprecated_multi_job_followers: DeprecatedMultiJobFollowersRecord;
+  deprecated_single_job_applications: DeprecatedSingleJobApplicationsRecord;
+  deprecated_multi_job_applications: DeprecatedMultiJobApplicationsRecord;
+  single_offers: SingleOffersRecord;
+  single_offer_applicants: SingleOfferApplicantsRecord;
+  chat_room_members: ChatRoomMembersRecord;
+  service_prices: ServicePricesRecord;
 };
 
 const DatabaseClient = buildClient();
