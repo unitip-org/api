@@ -1,0 +1,41 @@
+import { swaggerSecurity } from "@/lib/swagger/security";
+
+export const accountCustomerOrderHistoriesPaths = {
+  "/api/v1/accounts/customer/orders/histories": {
+    get: {
+      tags: ["Accounts"],
+      security: swaggerSecurity,
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  orders: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        title: { type: "string" },
+                        created_at: { type: "string" },
+                        updated_at: { type: "string" },
+                        driver: {
+                          type: "object",
+                          properties: {
+                            name: { type: "string" },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
