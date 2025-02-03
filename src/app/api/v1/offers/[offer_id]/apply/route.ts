@@ -186,7 +186,7 @@ export async function DELETE(
     // cancel offer aplicant, atau cancel dari customer
     const result = await database
       .deleteFrom("single_offer_applicants")
-      .where("customer", "=", authorization.userId as any)
+      .where("customer", "=", userId as any)
       .where("offer", "=", offerId as any)
       .returning("id")
       .executeTakeFirstOrThrow();

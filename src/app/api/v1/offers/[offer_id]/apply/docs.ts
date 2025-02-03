@@ -80,7 +80,7 @@ export const applyOfferByIdPaths = {
                 type: "object",
                 properties: {
                   success: {
-                    type: "boolean",
+                    type: "string",
                   },
                   id: {
                     type: "string",
