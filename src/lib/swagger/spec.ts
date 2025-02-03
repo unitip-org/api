@@ -28,6 +28,7 @@ import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/do
 import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/orders/histories/docs";
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
+import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
 import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
@@ -36,7 +37,6 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -57,11 +57,8 @@ export const swaggerSpec = {
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
     ...accountDriverOrderHistoriesPaths,
-<<<<<<< HEAD
     ...accountCustomerOrderHistoriesPaths,
-=======
     ...changeRolePaths,
->>>>>>> fd17438654cb3a2a076d75d322a3936fa0f64627
 
     // jobs
     ...jobsPaths,
