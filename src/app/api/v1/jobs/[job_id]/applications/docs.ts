@@ -11,6 +11,39 @@ const parameters = [
 
 export const jobApplicationsByIdPaths = {
   "/api/v1/jobs/{job_id}/applications": {
+    post: {
+      tags: ["Jobs"],
+      summary: "mengajukan penawaran aplikasi job",
+      security: swaggerSecurity,
+      parameters,
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                price: { type: "number" },
+                bid_note: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     patch: {
       tags: ["Jobs"],
       security: swaggerSecurity,

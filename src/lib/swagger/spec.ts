@@ -7,7 +7,7 @@ import { chatMessagesToUserIdPaths } from "@/app/api/v1/chats/messages/to/[user_
 import { chatMessagesByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/messages/docs";
 import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/docs";
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
-import { examplePaths } from "@/app/api/v1/example/docs";
+// import { examplePaths } from "@/app/api/v1/example/docs";
 import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 // import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
@@ -29,6 +29,7 @@ import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/o
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
+import { jobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
 import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
@@ -64,6 +65,7 @@ export const swaggerSpec = {
     ...jobsPaths,
     ...jobByIdPaths,
     ...jobApplicationsByIdPaths,
+    ...jobApplicationApprovalByIdPaths,
     ...jobCompletionByIdPaths,
     // ...singleJobPaths,
     // ...singleJobByIdPaths,
@@ -93,7 +95,7 @@ export const swaggerSpec = {
     // ...acceptanceOffersByIdPaths,
 
     // example
-    ...examplePaths,
+    // ...examplePaths,
 
     // chats
     ...chatsPaths,
