@@ -57,6 +57,10 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
       .where("ja.id", "=", applicationId);
     const applicationResult = await applicationQuery.executeTakeFirstOrThrow();
 
+    /**
+     * update ke dapan, belum ada logika untuk cancel application
+     * dari driver lainnya
+     */
     const query = database
       .updateTable("jobs")
       .set({
