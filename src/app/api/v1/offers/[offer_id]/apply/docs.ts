@@ -117,9 +117,39 @@ export const applyOfferByIdPaths = {
               schema: {
                 type: "object",
                 properties: {
-                  success: {
-                    type: "boolean",
-                  },
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    patch: {
+      tags: ["Offers"],
+      security: swaggerSecurity,
+      summary: "Update application oleh Customer",
+      description: "Update application yang sudah di-apply",
+      parameters: [
+        {
+          name: "offer_id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "ID dari offer yang ingin di-update",
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successfully updated application",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
                 },
               },
             },
