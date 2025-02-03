@@ -9,7 +9,7 @@ const parameters = [
   },
 ];
 
-export const jobApplicationsByIdPaths = {
+export const jobsIdApplicationsPaths = {
   "/api/v1/jobs/{job_id}/applications": {
     post: {
       tags: ["Jobs"],
