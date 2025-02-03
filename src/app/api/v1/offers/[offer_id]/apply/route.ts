@@ -28,18 +28,15 @@ export async function POST(
     const { offer_id } = params;
 
     const schema = z.object({
-      note: z
-        .string({
-          required_error: "Catatan untuk pemesanan tidak boleh kosong!",
-        }),
-      destination_location: z
-        .string({
-          required_error: "Lokasi tujuan tidak boleh kosong!",
-        }),
-      pickup_location: z
-        .string({
-          required_error: "Lokasi penjemputan tidak boleh kosong!",
-        }),
+      note: z.string({
+        required_error: "Catatan untuk pemesanan tidak boleh kosong!",
+      }),
+      destination_location: z.string({
+        required_error: "Lokasi tujuan tidak boleh kosong!",
+      }),
+      pickup_location: z.string({
+        required_error: "Lokasi penjemputan tidak boleh kosong!",
+      }),
       pickup_latitude: z.number({
         required_error: "Latitude lokasi penjemputan tidak boleh kosong!",
       }),
@@ -78,6 +75,7 @@ export async function POST(
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
+    // verifikasi role user
     if (authorization.role !== "customer") {
       return APIResponse.respondWithForbidden(
         "Anda tidak memiliki akses untuk melakukan aksi ini!"
@@ -144,6 +142,65 @@ export async function POST(
     });
   } catch (e) {
     console.error(e);
+    return APIResponse.respondWithServerError();
+  }
+}
+
+interface DELETEResponse {
+  id: string;
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { offer_id: string } }
+) {
+  try {
+    // verifikasi request user
+    const { offer_id: offerId } = params;
+    const validate = z
+      .object({
+        offerId: z
+          .string({ required_error: "ID penawaran tidak boleh kosong!" })
+          .min(1, "ID penawaran tidak boleh kosong!"),
+      })
+      .safeParse({ offerId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId, role } = authorization;
+
+    // verifikasi role user
+    if (role !== "customer")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk melakukan aksi ini!"
+      );
+
+    // cancel offer aplicant, atau cancel dari customer
+    const result = await database
+      .deleteFrom("single_offer_applicants")
+      .where("customer", "=", authorization.userId as any)
+      .where("offer", "=", offerId as any)
+      .returning("id")
+      .executeTakeFirstOrThrow();
+
+    if (!result) {
+      return APIResponse.respondWithConflict(
+        "Tidak ada data yang dihapus karena tidak ada aplikasi yang ditemukan."
+      );
+    }
+    return APIResponse.respondWithSuccess<DELETEResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 }
