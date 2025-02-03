@@ -93,5 +93,39 @@ export const applyOfferByIdPaths = {
         },
       },
     },
+    delete: {
+      tags: ["Offers"],
+      security: swaggerSecurity,
+      summary: "Cancel application oleh Customer",
+      description: "Cancel application yang sudah di-apply",
+      parameters: [
+        {
+          name: "offer_id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "ID dari offer yang ingin di-cancel",
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successfully canceled application",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  success: {
+                    type: "boolean",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
