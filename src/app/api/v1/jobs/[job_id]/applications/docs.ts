@@ -45,6 +45,7 @@ export const jobApplicationsByIdPaths = {
       },
     },
     patch: {
+      deprecated: true,
       tags: ["Jobs"],
       security: swaggerSecurity,
       parameters,
