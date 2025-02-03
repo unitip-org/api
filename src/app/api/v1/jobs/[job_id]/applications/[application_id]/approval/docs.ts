@@ -1,15 +1,37 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const jobApplicationApprovalByIdPaths = {
+const parameters = [
+  {
+    in: "path",
+    name: "job_id",
+    required: true,
+    schema: { type: "string" },
+  },
+  {
+    in: "path",
+    name: "application_id",
+    required: true,
+    schema: { type: "string" },
+  },
+];
+
+export const jobsIdApplicationsIdApproval = {
   "/api/v1/jobs/{job_id}/applications/{application_id}/approval": {
     patch: {
       tags: ["Jobs"],
+      summary: "menerima salah satu lamaran pekerjaan dari driver",
       security: swaggerSecurity,
+      parameters,
       responses: {
         200: {
           content: {
             "application/json": {
-              schema: {},
+              schema: {
+                type: "object",
+                properties: {
+                  id: { type: "string" },
+                },
+              },
             },
           },
         },

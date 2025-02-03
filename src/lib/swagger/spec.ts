@@ -29,7 +29,7 @@ import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/o
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
-import { jobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
+import { jobsIdApplicationsIdApproval } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
 import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
 import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
@@ -67,7 +67,7 @@ export const swaggerSpec = {
     ...jobByIdPaths,
     ...jobsIdApplicationsPaths,
     ...jobsIdApplicationsIdPaths,
-    ...jobApplicationApprovalByIdPaths,
+    ...jobsIdApplicationsIdApproval,
     ...jobCompletionByIdPaths,
     // ...singleJobPaths,
     // ...singleJobByIdPaths,
