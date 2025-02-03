@@ -8,7 +8,7 @@ import { chatMessagesByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/me
 import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/docs";
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 // import { examplePaths } from "@/app/api/v1/example/docs";
-import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
+import { jobsIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 // import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
 // import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
@@ -29,10 +29,10 @@ import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/o
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
-import { jobsIdApplicationsIdApproval } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
+import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
 import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
 import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
-import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
+import { jobsIdCompletionPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
@@ -64,11 +64,11 @@ export const swaggerSpec = {
 
     // jobs
     ...jobsPaths,
-    ...jobByIdPaths,
+    ...jobsIdPaths,
     ...jobsIdApplicationsPaths,
     ...jobsIdApplicationsIdPaths,
-    ...jobsIdApplicationsIdApproval,
-    ...jobCompletionByIdPaths,
+    ...jobsIdApplicationsIdApprovalPaths,
+    ...jobsIdCompletionPaths,
     // ...singleJobPaths,
     // ...singleJobByIdPaths,
     // ...applyJobByIdPaths,

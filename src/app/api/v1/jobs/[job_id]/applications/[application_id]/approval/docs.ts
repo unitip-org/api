@@ -15,7 +15,7 @@ const parameters = [
   },
 ];
 
-export const jobsIdApplicationsIdApproval = {
+export const jobsIdApplicationsIdApprovalPaths = {
   "/api/v1/jobs/{job_id}/applications/{application_id}/approval": {
     patch: {
       tags: ["Jobs"],
