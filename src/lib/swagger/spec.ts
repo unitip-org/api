@@ -9,7 +9,7 @@ import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/d
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
 import { examplePaths } from "@/app/api/v1/example/docs";
 import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
-// import { jobsPaths } from "@/app/api/v1/jobs/docs";
+import { jobsPaths } from "@/app/api/v1/jobs/docs";
 // import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
 // import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
 // import { multiJobByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/docs";
@@ -35,6 +35,7 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -55,9 +56,10 @@ export const swaggerSpec = {
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
     ...accountDriverOrderHistoriesPaths,
+    ...changeRolePaths,
 
     // jobs
-    // ...jobsPaths,
+    ...jobsPaths,
     ...jobByIdPaths,
     ...jobApplicationsByIdPaths,
     ...jobCompletionByIdPaths,
