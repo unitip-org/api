@@ -65,6 +65,7 @@ export const jobApplicationsByIdPaths = {
       },
     },
     delete: {
+      deprecated: true,
       tags: ["Jobs"],
       security: swaggerSecurity,
       parameters,
