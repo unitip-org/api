@@ -1,6 +1,8 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
+import { convertDatetimeToISO } from "@/lib/utils";
+import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -109,6 +111,71 @@ export const POST = async (request: NextRequest, { params }: Params) => {
 
     return APIResponse.respondWithSuccess<POSTResponse>({
       id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
+
+interface GETResponse {
+  applications: {
+    id: string;
+    price: number;
+    bid_note: string;
+    created_at: string;
+    updated_at: string;
+    driver_name: string;
+  }[];
+}
+export const GET = async (request: NextRequest, { params }: Params) => {
+  try {
+    // verifikasi request user
+    const { job_id: jobId } = params;
+    const validate = z
+      .object({
+        jobId: z
+          .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
+          .min(1, "ID pekerjaan tidak boleh kosong!"),
+      })
+      .safeParse({ jobId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // mendapatkan daftar applications
+    const query = database
+      .selectFrom("job_applications as ja")
+      .innerJoin("users as u", "u.id", "ja.freelancer")
+      .select([
+        "ja.id",
+        "ja.price",
+        "ja.bid_note",
+        sql<string>`ja."xata.createdAt"`.as("created_at"),
+        sql<string>`ja."xata.updatedAt"`.as("updated_at"),
+        "u.name as driver_name",
+      ])
+      .where("ja.id", "=", jobId)
+      .orderBy("ja.price asc");
+    const result = await query.execute();
+
+    return APIResponse.respondWithSuccess<GETResponse>({
+      applications: result.map((it) => ({
+        id: it.id,
+        price: it.price,
+        bid_note: it.bid_note,
+        created_at: convertDatetimeToISO(it.created_at),
+        updated_at: convertDatetimeToISO(it.updated_at),
+        driver_name: it.driver_name,
+      })),
     });
   } catch (e) {
     console.log(e);
