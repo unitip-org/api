@@ -16,6 +16,7 @@ interface POSTBody {
   pickup_location: string;
   pickup_latitude: number;
   pickup_longitude: number;
+  expected_price: number;
 }
 interface POSTResponse {
   id: string;
@@ -33,6 +34,7 @@ export const POST = async (request: NextRequest) => {
       pickup_location: pickupLocation,
       pickup_latitude: pickupLatitude,
       pickup_longitude: pickupLongitude,
+      expected_price: expectedPrice,
     }: POSTBody = await request.json();
 
     const validate = z
@@ -54,6 +56,11 @@ export const POST = async (request: NextRequest) => {
           .min(1, "Lokasi penjemputan tidak boleh kosong!"),
         pickupLatitude: z.number().optional(),
         pickupLongitude: z.number().optional(),
+        expectedPrice: z
+          .number({
+            required_error: "Harga yang diharapkan tidak boleh kosong!",
+          })
+          .min(0, "Harga yang diharapkan tidak boleh kurang dari 0!"),
       })
       .safeParse({
         title,
@@ -65,6 +72,7 @@ export const POST = async (request: NextRequest) => {
         pickupLocation,
         pickupLatitude,
         pickupLongitude,
+        expectedPrice,
       });
     if (!validate.success)
       return APIResponse.respondWithBadRequest(
@@ -99,6 +107,7 @@ export const POST = async (request: NextRequest) => {
         destination_latitude: destinationLatitude,
         destination_longitude: destinationLongitude,
         customer: userId,
+        expected_price: expectedPrice,
       } as any)
       .returning(["id"]);
     const result = await query.executeTakeFirstOrThrow();

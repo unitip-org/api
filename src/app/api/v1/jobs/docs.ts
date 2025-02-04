@@ -25,6 +25,7 @@ export const jobsPaths = {
                 pickup_location: { type: "string" },
                 pickup_latitude: { type: "number", format: "float" },
                 pickup_longitude: { type: "number", format: "float" },
+                expected_price: { type: "number" },
               },
             },
           },
