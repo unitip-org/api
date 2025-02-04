@@ -104,7 +104,7 @@ export const POST = async (request: NextRequest, { params }: Params) => {
         price,
         bid_note: bidNote,
         freelancer: userId,
-        job_id: jobId,
+        job: jobId,
       } as any)
       .returning("id");
     const result = await query.executeTakeFirstOrThrow();
