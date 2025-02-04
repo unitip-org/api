@@ -39,13 +39,13 @@ export async function GET(request: NextRequest) {
 
     // Hitung total data
     const totalCount = await database
-      .selectFrom("single_offers")
+      .selectFrom("offers")
       .select(sql<number>`count(*)`.as("count"))
       .executeTakeFirst();
 
     // Ambil data dengan pagination
     const offers = await database
-      .selectFrom("single_offers as so")
+      .selectFrom("offers as so")
       .innerJoin("users as u", "u.id", "so.freelancer")
       .select([
         "so.id",
@@ -139,7 +139,7 @@ export async function POST(request: NextRequest) {
       );
 
     const result = await database
-      .insertInto("single_offers")
+      .insertInto("offers")
       .values({
         ...json,
         freelancer: authorization.userId,

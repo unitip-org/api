@@ -16,10 +16,10 @@ const tables = [
       { name: "gender", type: "text" },
     ],
     revLinks: [
-      { column: "freelancer", table: "single_offers" },
+      { column: "freelancer", table: "offers" },
       { column: "customer", table: "deprecated_multi_jobs" },
-      { column: "customer", table: "single_offer_applicants" },
-      { column: "customer", table: "single_offers" },
+      { column: "customer", table: "offer_applicants" },
+      { column: "customer", table: "offers" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "user", table: "user_sessions" },
@@ -197,7 +197,7 @@ const tables = [
     ],
   },
   {
-    name: "single_offers",
+    name: "offers",
     columns: [
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "customer", type: "link", link: { table: "users" } },
@@ -232,10 +232,10 @@ const tables = [
         defaultValue: "1",
       },
     ],
-    revLinks: [{ column: "offer", table: "single_offer_applicants" }],
+    revLinks: [{ column: "offer", table: "offer_applicants" }],
   },
   {
-    name: "single_offer_applicants",
+    name: "offer_applicants",
     columns: [
       {
         name: "pickup_location",
@@ -250,7 +250,7 @@ const tables = [
         notNull: true,
         defaultValue: "",
       },
-      { name: "offer", type: "link", link: { table: "single_offers" } },
+      { name: "offer", type: "link", link: { table: "offers" } },
       { name: "customer", type: "link", link: { table: "users" } },
       {
         name: "pickup_latitude",
@@ -276,6 +276,13 @@ const tables = [
         notNull: true,
         defaultValue: "0.0",
       },
+      {
+        name: "applicant_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "pending",
+      },
+      { name: "final_price", type: "int", notNull: true, defaultValue: "0" },
     ],
   },
   {
@@ -350,11 +357,11 @@ export type DeprecatedMultiJobApplications =
 export type DeprecatedMultiJobApplicationsRecord =
   DeprecatedMultiJobApplications & XataRecord;
 
-export type SingleOffers = InferredTypes["single_offers"];
-export type SingleOffersRecord = SingleOffers & XataRecord;
+export type Offers = InferredTypes["offers"];
+export type OffersRecord = Offers & XataRecord;
 
-export type SingleOfferApplicants = InferredTypes["single_offer_applicants"];
-export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
+export type OfferApplicants = InferredTypes["offer_applicants"];
+export type OfferApplicantsRecord = OfferApplicants & XataRecord;
 
 export type ChatRoomMembers = InferredTypes["chat_room_members"];
 export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
@@ -375,8 +382,8 @@ export type DatabaseSchema = {
   deprecated_multi_job_followers: DeprecatedMultiJobFollowersRecord;
   job_applications: JobApplicationsRecord;
   deprecated_multi_job_applications: DeprecatedMultiJobApplicationsRecord;
-  single_offers: SingleOffersRecord;
-  single_offer_applicants: SingleOfferApplicantsRecord;
+  offers: OffersRecord;
+  offer_applicants: OfferApplicantsRecord;
   chat_room_members: ChatRoomMembersRecord;
   service_prices: ServicePricesRecord;
 };
