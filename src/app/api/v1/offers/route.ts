@@ -145,7 +145,6 @@ export async function POST(request: NextRequest) {
         ...json,
         freelancer: authorization.userId,
         offer_status: OfferStatus.AVAILABLE,
-        expired_at: null,
       })
       // .returningAll()
       .returning("id")
