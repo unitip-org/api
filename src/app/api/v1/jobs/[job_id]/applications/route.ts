@@ -125,7 +125,9 @@ interface GETResponse {
     bid_note: string;
     created_at: string;
     updated_at: string;
-    driver_name: string;
+    driver: {
+      name: string;
+    };
   }[];
 }
 export const GET = async (request: NextRequest, { params }: Params) => {
@@ -174,7 +176,9 @@ export const GET = async (request: NextRequest, { params }: Params) => {
         bid_note: it.bid_note,
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),
-        driver_name: it.driver_name,
+        driver: {
+          name: it.driver_name,
+        },
       })),
     });
   } catch (e) {

@@ -66,7 +66,12 @@ export const jobsIdApplicationsPaths = {
                         bid_note: { type: "string" },
                         created_at: { type: "string" },
                         updated_at: { type: "string" },
-                        driver_name: { type: "string" },
+                        driver: {
+                          type: "object",
+                          properties: {
+                            name: { type: "string" },
+                          },
+                        },
                       },
                     },
                   },
