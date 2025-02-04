@@ -133,7 +133,6 @@ export async function POST(
       .updateTable("offers")
       .set({
         offer_status: "on_progress",
-        customer: authorization.userId as any,
       })
       .where("id", "=", offer_id)
       .execute();
