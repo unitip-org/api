@@ -165,7 +165,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
         sql<string>`ja."xata.updatedAt"`.as("updated_at"),
         "u.name as driver_name",
       ])
-      .where("ja.id", "=", jobId)
+      .where("ja.job", "=", jobId as any)
       .orderBy("ja.price asc");
     const result = await query.execute();
 
