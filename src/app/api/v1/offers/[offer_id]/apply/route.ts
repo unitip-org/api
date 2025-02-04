@@ -198,7 +198,6 @@ export async function DELETE(
         .updateTable("offers")
         .set({
           offer_status: "available",
-          customer: userId as any,
         })
         .where("id", "=", offerId)
         .executeTakeFirst();
@@ -225,7 +224,6 @@ export async function DELETE(
       .updateTable("offers")
       .set({
         offer_status: "on_progress",
-        customer: authorization.userId as any,
       })
       .where("id", "=", offerId)
       .execute();
