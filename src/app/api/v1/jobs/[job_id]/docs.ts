@@ -1,6 +1,6 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const jobByIdPaths = {
+export const jobsIdPaths = {
   "/api/v1/jobs/{job_id}": {
     get: {
       tags: ["Jobs"],

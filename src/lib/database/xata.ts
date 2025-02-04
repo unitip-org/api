@@ -25,7 +25,7 @@ const tables = [
       { column: "user", table: "user_sessions" },
       { column: "customer", table: "jobs" },
       { column: "freelancer", table: "jobs" },
-      { column: "freelancer", table: "deprecated_single_job_applications" },
+      { column: "freelancer", table: "job_applications" },
       { column: "freelancer", table: "deprecated_multi_jobs" },
       { column: "freelancer", table: "multi_offers" },
       { column: "customer", table: "multi_offer_followers" },
@@ -143,8 +143,9 @@ const tables = [
       { name: "pickup_longitude", type: "float" },
       { name: "destination_latitude", type: "float" },
       { name: "destination_longitude", type: "float" },
+      { name: "expected_price", type: "int", notNull: true, defaultValue: "0" },
     ],
-    revLinks: [{ column: "job", table: "deprecated_single_job_applications" }],
+    revLinks: [{ column: "job", table: "job_applications" }],
   },
   {
     name: "deprecated_multi_jobs",
@@ -178,11 +179,12 @@ const tables = [
     ],
   },
   {
-    name: "deprecated_single_job_applications",
+    name: "job_applications",
     columns: [
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "job", type: "link", link: { table: "jobs" } },
+      { name: "bid_note", type: "text", notNull: true, defaultValue: "" },
     ],
   },
   {
@@ -340,10 +342,8 @@ export type DeprecatedMultiJobFollowers =
 export type DeprecatedMultiJobFollowersRecord = DeprecatedMultiJobFollowers &
   XataRecord;
 
-export type DeprecatedSingleJobApplications =
-  InferredTypes["deprecated_single_job_applications"];
-export type DeprecatedSingleJobApplicationsRecord =
-  DeprecatedSingleJobApplications & XataRecord;
+export type JobApplications = InferredTypes["job_applications"];
+export type JobApplicationsRecord = JobApplications & XataRecord;
 
 export type DeprecatedMultiJobApplications =
   InferredTypes["deprecated_multi_job_applications"];
@@ -373,7 +373,7 @@ export type DatabaseSchema = {
   jobs: JobsRecord;
   deprecated_multi_jobs: DeprecatedMultiJobsRecord;
   deprecated_multi_job_followers: DeprecatedMultiJobFollowersRecord;
-  deprecated_single_job_applications: DeprecatedSingleJobApplicationsRecord;
+  job_applications: JobApplicationsRecord;
   deprecated_multi_job_applications: DeprecatedMultiJobApplicationsRecord;
   single_offers: SingleOffersRecord;
   single_offer_applicants: SingleOfferApplicantsRecord;

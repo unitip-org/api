@@ -7,8 +7,8 @@ import { chatMessagesToUserIdPaths } from "@/app/api/v1/chats/messages/to/[user_
 import { chatMessagesByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/messages/docs";
 import { readChatByRoomIdPaths } from "@/app/api/v1/chats/rooms/[room_id]/read/docs";
 import { chatRoomsPaths } from "@/app/api/v1/chats/rooms/docs";
-import { examplePaths } from "@/app/api/v1/example/docs";
-import { jobByIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
+// import { examplePaths } from "@/app/api/v1/example/docs";
+import { jobsIdPaths } from "@/app/api/v1/jobs/[job_id]/docs";
 import { jobsPaths } from "@/app/api/v1/jobs/docs";
 // import { multiJobApplicationApprovalByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/[application_id]/approval/docs";
 // import { multiJobApplicationByIdPaths } from "@/app/api/v1/jobs/multi/[job_id]/applications/docs";
@@ -23,19 +23,22 @@ import { jobsPaths } from "@/app/api/v1/jobs/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
+import { accountCustomerOrderHistoriesPaths } from "@/app/api/v1/accounts/customer/orders/histories/docs";
 import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
 import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/orders/histories/docs";
 import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
-import { jobApplicationsByIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
-import { jobCompletionByIdPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
+import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
+import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
+import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
+import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
+import { jobsIdCompletionPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -56,13 +59,16 @@ export const swaggerSpec = {
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
     ...accountDriverOrderHistoriesPaths,
+    ...accountCustomerOrderHistoriesPaths,
     ...changeRolePaths,
 
     // jobs
     ...jobsPaths,
-    ...jobByIdPaths,
-    ...jobApplicationsByIdPaths,
-    ...jobCompletionByIdPaths,
+    ...jobsIdPaths,
+    ...jobsIdApplicationsPaths,
+    ...jobsIdApplicationsIdPaths,
+    ...jobsIdApplicationsIdApprovalPaths,
+    ...jobsIdCompletionPaths,
     // ...singleJobPaths,
     // ...singleJobByIdPaths,
     // ...applyJobByIdPaths,
@@ -91,7 +97,7 @@ export const swaggerSpec = {
     // ...acceptanceOffersByIdPaths,
 
     // example
-    ...examplePaths,
+    // ...examplePaths,
 
     // chats
     ...chatsPaths,
