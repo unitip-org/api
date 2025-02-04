@@ -217,7 +217,6 @@ const tables = [
         notNull: true,
         defaultValue: "available",
       },
-      { name: "expired_at", type: "text" },
       {
         name: "available_until",
         type: "datetime",
