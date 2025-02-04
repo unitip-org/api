@@ -19,7 +19,7 @@ const tables = [
       { column: "freelancer", table: "offers" },
       { column: "customer", table: "deprecated_multi_jobs" },
       { column: "customer", table: "offer_applicants" },
-      { column: "customer", table: "offers" },
+      { column: "user", table: "chat_room_members" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "user", table: "user_sessions" },
@@ -32,7 +32,6 @@ const tables = [
       { column: "freelancer", table: "deprecated_multi_job_applications" },
       { column: "customer", table: "deprecated_multi_job_followers" },
       { column: "user", table: "chat_messages" },
-      { column: "user", table: "chat_room_members" },
     ],
   },
   {
@@ -200,7 +199,6 @@ const tables = [
     name: "offers",
     columns: [
       { name: "freelancer", type: "link", link: { table: "users" } },
-      { name: "customer", type: "link", link: { table: "users" } },
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
       {
