@@ -58,7 +58,7 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
     const applicationResult = await applicationQuery.executeTakeFirstOrThrow();
 
     /**
-     * update ke dapan, belum ada logika untuk cancel application
+     * update ke depan, belum ada logika untuk cancel application
      * dari driver lainnya
      */
     const query = database
@@ -68,6 +68,8 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
         status: "ongoing",
         freelancer: applicationResult.freelancer,
       })
+      .where("id", "=", jobId)
+      .where("freelancer", "is", null)
       .returning("id");
     const result = await query.executeTakeFirstOrThrow();
 
