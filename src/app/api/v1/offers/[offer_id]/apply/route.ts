@@ -83,7 +83,7 @@ export async function POST(
     }
 
     const singleOffer = await database
-      .selectFrom("single_offers")
+      .selectFrom("offers")
       .select(["id", "offer_status"])
       .where("id", "=", offer_id)
       .where("offer_status", "=", "available")
@@ -97,7 +97,7 @@ export async function POST(
     }
 
     const existingApplication = await database
-      .selectFrom("single_offer_applicants")
+      .selectFrom("offer_applicants")
       .select("id")
       .where("customer", "=", authorization.userId as any)
       .where("offer", "=", offer_id as any)
@@ -110,8 +110,9 @@ export async function POST(
     }
 
     const result = await database
-      .insertInto("single_offer_applicants")
+      .insertInto("offer_applicants")
       .values({
+        applicant_status: ApplicantStatus.PENDING,
         note,
         pickup_location,
         destination_location,
@@ -128,7 +129,7 @@ export async function POST(
     if (!result) return APIResponse.respondWithServerError();
 
     await database
-      .updateTable("single_offers")
+      .updateTable("offers")
       .set({
         offer_status: "on_progress",
         customer: authorization.userId as any,
@@ -186,8 +187,8 @@ export async function DELETE(
 
     // cancel offer aplicant, atau cancel dari customer
     const result = await database
-      .deleteFrom("single_offer_applicants")
-      .where("customer", "=", userId as any)
+      .deleteFrom("offer_applicants")
+      .where("customer", "=", authorization.userId as any)
       .where("offer", "=", offerId as any)
       .returning("id")
       .executeTakeFirstOrThrow();
@@ -305,7 +306,7 @@ export async function PATCH(
     }
     // Fetch the existing offer application from the database
     const existingApplication = await database
-      .selectFrom("single_offer_applicants")
+      .selectFrom("offer_applicants")
       .where("offer", "=", offerId as any)
       .where("customer", "=", userId as any)
       .select([
@@ -325,7 +326,7 @@ export async function PATCH(
 
     // Update the offer application with the new data
     const result = await database
-      .updateTable("single_offer_applicants")
+      .updateTable("offer_applicants")
       .set({
         note,
         destination_location,

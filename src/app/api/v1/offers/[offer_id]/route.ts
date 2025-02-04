@@ -14,7 +14,7 @@ export async function GET(
     if (!authorization) return APIResponse.respondWithUnauthorized();
 
     const offer = await database
-      .selectFrom("single_offers as so")
+      .selectFrom("offers as so")
       .innerJoin("users as u", "u.id", "so.freelancer")
       .select([
         "so.id",
@@ -39,13 +39,13 @@ export async function GET(
     }
 
     const applicantsCount = await database
-      .selectFrom("single_offer_applicants")
+      .selectFrom("offer_applicants")
       .where("offer", "=", params.offer_id as any)
       .select(sql`count(*)`.as("count"))
       .executeTakeFirst();
 
     const hasApplied = await database
-      .selectFrom("single_offer_applicants")
+      .selectFrom("offer_applicants")
       .where("offer", "=", params.offer_id as any)
       .where("customer", "=", authorization.userId as any)
       .select("id")
