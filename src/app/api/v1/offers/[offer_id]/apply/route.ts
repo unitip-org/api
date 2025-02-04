@@ -4,6 +4,7 @@ import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { ApplicantStatus } from "@/constants/constants";
 
 interface POSTResponse {
   success: boolean;

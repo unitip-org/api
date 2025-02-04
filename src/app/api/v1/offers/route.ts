@@ -1,3 +1,4 @@
+import { OfferStatus } from "@/constants/constants";
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
@@ -143,7 +144,7 @@ export async function POST(request: NextRequest) {
       .values({
         ...json,
         freelancer: authorization.userId,
-        offer_status: "available",
+        offer_status: OfferStatus.AVAILABLE,
         expired_at: null,
       })
       // .returningAll()
