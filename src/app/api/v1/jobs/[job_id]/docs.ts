@@ -3,6 +3,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const jobsIdPaths = {
   "/api/v1/jobs/{job_id}": {
     get: {
+      operationId: "getJob",
       tags: ["Jobs"],
       security: swaggerSecurity,
       summary: "mendapatkan detail job berdasarkan id",

@@ -1,4 +1,3 @@
-import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const applyOfferByIdPaths = {
@@ -118,7 +117,7 @@ export const applyOfferByIdPaths = {
                 type: "object",
                 properties: {
                   success: {
-                    type: "Boolean",
+                    type: "boolean",
                   },
                   id: {
                     type: "string",

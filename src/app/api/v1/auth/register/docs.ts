@@ -3,6 +3,7 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 export const authRegisterPaths = {
   "/api/v1/auth/register": {
     post: {
+      operationId: "register",
       tags: ["Auth"],
       requestBody: {
         content: {
@@ -31,6 +32,7 @@ export const authRegisterPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["id", "name", "email", "token", "role"],
                 properties: {
                   id: {
                     type: "string",
