@@ -41,6 +41,7 @@ export const authLoginPaths = {
                   "email",
                   "token",
                   "role",
+                  "gender",
                 ],
                 properties: {
                   need_role: {
@@ -65,6 +66,9 @@ export const authLoginPaths = {
                     type: "string",
                   },
                   role: {
+                    type: "string",
+                  },
+                  gender: {
                     type: "string",
                   },
                 },

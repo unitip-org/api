@@ -12,6 +12,7 @@ interface POSTResponse {
   email: string;
   token: string;
   role: string;
+  gender: string;
 }
 
 export async function POST(request: Request) {
@@ -56,6 +57,7 @@ export async function POST(request: Request) {
           "u.email",
           "u.password",
           "ur.role",
+          "u.gender",
           "s.token",
         ])
         .where("u.email", "=", email)
@@ -93,6 +95,7 @@ export async function POST(request: Request) {
             email: userResult.email,
             token: sessionResult.token,
             role: userResult.role,
+            gender: userResult.gender,
           });
       } else {
         const sessionQuery = database
@@ -114,6 +117,7 @@ export async function POST(request: Request) {
             email: userResult.email,
             token: sessionResult.token,
             role: userResult.role,
+            gender: userResult.gender,
           });
       }
     } else {
@@ -153,6 +157,7 @@ export async function POST(request: Request) {
           "u.email",
           "u.password",
           "ur.role",
+          "u.gender",
           "s.token",
         ])
         .where("u.email", "=", email);
@@ -178,6 +183,7 @@ export async function POST(request: Request) {
           email: "",
           token: "",
           role: "",
+          gender: "",
         });
 
       // jika len result === 1, alias user hanya punya 1 role saja
@@ -205,6 +211,7 @@ export async function POST(request: Request) {
             email: firstUser.email,
             token: sessionResult.token,
             role: firstUser.role,
+            gender: firstUser.gender,
           });
       } else {
         const sessionQuery = database
@@ -226,6 +233,7 @@ export async function POST(request: Request) {
             email: firstUser.email,
             token: sessionResult.token,
             role: firstUser.role,
+            gender: firstUser.gender,
           });
       }
     }

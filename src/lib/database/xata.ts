@@ -13,7 +13,7 @@ const tables = [
       { name: "email", type: "text", notNull: true, defaultValue: "" },
       { name: "password", type: "text", notNull: true, defaultValue: "" },
       { name: "name", type: "text", notNull: true, defaultValue: "" },
-      { name: "gender", type: "text" },
+      { name: "gender", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [
       { column: "freelancer", table: "offers" },
