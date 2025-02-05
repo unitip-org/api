@@ -26,7 +26,7 @@ import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/order
 import { accountCustomerOrderHistoriesPaths } from "@/app/api/v1/accounts/customer/orders/histories/docs";
 import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
 import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/orders/histories/docs";
-import { accountPaths } from "@/app/api/v1/accounts/profile/docs";
+import { accountsProfilePaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
 import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
@@ -54,7 +54,7 @@ export const swaggerSpec = {
     ...authRegisterPaths,
 
     // account
-    ...accountPaths,
+    ...accountsProfilePaths,
     ...accountCustomerOrdersPaths,
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
