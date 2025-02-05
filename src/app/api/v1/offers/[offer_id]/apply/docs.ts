@@ -80,7 +80,7 @@ export const applyOfferByIdPaths = {
                 type: "object",
                 properties: {
                   success: {
-                    type: "boolean",
+                    type: "string",
                   },
                   id: {
                     type: "string",
@@ -118,7 +118,101 @@ export const applyOfferByIdPaths = {
                 type: "object",
                 properties: {
                   success: {
+                    type: "Boolean",
+                  },
+                  id: {
+                    type: "string",
+                    description: "ID of the deleted application",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    patch: {
+      tags: ["Offers"],
+      security: swaggerSecurity,
+      summary: "Update application oleh Customer",
+      description: "Update application yang sudah di-apply",
+      parameters: [
+        {
+          name: "offer_id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "ID dari offer yang ingin di-update",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: [
+                "note",
+                "destination_location",
+                "pickup_location",
+                "pickup_latitude",
+                "pickup_longitude",
+                "destination_latitude",
+                "destination_longitude",
+              ],
+              properties: {
+                note: {
+                  type: "string",
+                  minLength: 5,
+                  description: "Note for the order",
+                },
+                destination_location: {
+                  type: "string",
+                  minLength: 5,
+                  description: "Destination location",
+                },
+                pickup_location: {
+                  type: "string",
+                  minLength: 5,
+                  description: "Pickup location",
+                },
+                pickup_latitude: {
+                  type: "number",
+                  description: "Latitude of pickup location",
+                },
+                pickup_longitude: {
+                  type: "number",
+                  description: "Longitude of pickup location",
+                },
+                destination_latitude: {
+                  type: "number",
+                  description: "Latitude of destination location",
+                },
+                destination_longitude: {
+                  type: "number",
+                  description: "Longitude of destination location",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Successfully updated application",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  success: {
                     type: "boolean",
+                  },
+                  id: {
+                    type: "string",
+                    description: "ID of the update application",
                   },
                 },
               },
