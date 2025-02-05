@@ -4,6 +4,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const authLogoutPaths = {
   "/api/v1/auth/logout": {
     delete: {
+      operationId: "logout",
       tags: ["Auth"],
       security: swaggerSecurity,
       responses: {
@@ -12,6 +13,7 @@ export const authLogoutPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["success", "message"],
                 properties: {
                   success: {
                     type: "boolean",

@@ -3,8 +3,10 @@ import { swaggerComponentRefs } from "@/lib/swagger/component";
 export const authLoginPaths = {
   "/api/v1/auth/login": {
     post: {
+      operationId: "login",
       tags: ["Auth"],
       requestBody: {
+        required: true,
         content: {
           "application/json": {
             schema: {
@@ -31,6 +33,15 @@ export const authLoginPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: [
+                  "need_role",
+                  "roles",
+                  "id",
+                  "name",
+                  "email",
+                  "token",
+                  "role",
+                ],
                 properties: {
                   need_role: {
                     type: "boolean",
