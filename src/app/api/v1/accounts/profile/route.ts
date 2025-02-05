@@ -4,6 +4,43 @@ import { APIResponse } from "@/lib/models/api-response";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
+interface GETResponse {
+  id: string;
+  name: string;
+  email: string;
+  token: string;
+  role: string;
+  gender: string;
+}
+
+export const GET = async (request: NextRequest) => {
+  try {
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { token } = authorization;
+
+    const query = database
+      .selectFrom("user_sessions as us")
+      .innerJoin("users as u", "u.id", "us.user")
+      .select(["u.id", "u.name", "u.email", "us.token", "us.role", "u.gender"])
+      .where("us.token", "=", token);
+
+    const result = await query.executeTakeFirstOrThrow();
+
+    return APIResponse.respondWithSuccess<GETResponse>({
+      id: result.id,
+      name: result.name,
+      email: result.email,
+      role: result.role,
+      token: result.token,
+      gender: result.gender,
+    });
+  } catch (e) {
+    return APIResponse.respondWithServerError();
+  }
+};
+
 interface PATCHBody {
   name: string;
   gender: string;
