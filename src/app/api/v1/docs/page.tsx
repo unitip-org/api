@@ -11,7 +11,7 @@ export default function Page() {
         spec={swaggerSpec}
         displayOperationId
         displayRequestDuration
-        defaultModelRendering="example"
+        defaultModelRendering="model"
         persistAuthorization
         defaultModelExpandDepth={10}
       />
