@@ -68,6 +68,11 @@ export async function GET(request: NextRequest) {
       .orderBy("created_at", "desc")
       .execute();
 
+    console.log(
+      "GET offers",
+      offers.forEach((it) => console.log(it))
+    );
+
     return APIResponse.respondWithSuccess<GETResponse>({
       offers: offers.map((it) => ({
         ...it,

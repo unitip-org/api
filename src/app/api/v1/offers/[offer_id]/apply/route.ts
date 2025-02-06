@@ -185,10 +185,31 @@ export async function DELETE(
         "Anda tidak memiliki akses untuk melakukan aksi ini!"
       );
 
+    // Jenis Offer saat ini
+    const offerType = await database
+      .selectFrom("offers")
+      .where("id", "=", offerId as any)
+      .select("type")
+      .executeTakeFirst();
+
+    // Kondisi jika anjem maka langsung berubah ke available
+    if (offerType?.type === "antar-jemput") {
+      const updateResult = await database
+        .updateTable("offers")
+        .set({
+          offer_status: "available",
+        })
+        .where("id", "=", offerId)
+        .executeTakeFirst();
+
+      if (!updateResult) {
+        return APIResponse.respondWithConflict("Gagal membatalkan aplikasi.");
+      }
+    }
     // cancel offer aplicant, atau cancel dari customer
     const result = await database
       .deleteFrom("offer_applicants")
-      .where("customer", "=", authorization.userId as any)
+      .where("customer", "=", userId as any)
       .where("offer", "=", offerId as any)
       .returning("id")
       .executeTakeFirstOrThrow();
@@ -198,6 +219,15 @@ export async function DELETE(
         "Tidak ada data yang dihapus karena tidak ada aplikasi yang ditemukan."
       );
     }
+
+    await database
+      .updateTable("offers")
+      .set({
+        offer_status: "on_progress",
+      })
+      .where("id", "=", offerId)
+      .execute();
+
     return APIResponse.respondWithSuccess<DELETEResponse>({
       success: true,
       id: result.id,
