@@ -3,7 +3,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const accountCustomerOrderHistoriesPaths = {
   "/api/v1/accounts/customer/orders/histories": {
     get: {
-      tags: ["Accounts"],
+      tags: ["Account"],
       security: swaggerSecurity,
       responses: {
         200: {

@@ -4,7 +4,7 @@ import { Item } from "@radix-ui/react-accordion";
 export const changeRolePaths = {
   "/api/v1/accounts/profile/role": {
     get: {
-      tags: ["Accounts"],
+      tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mendapatkan semua peran akun terkait",
       responses: {
@@ -28,7 +28,7 @@ export const changeRolePaths = {
       },
     },
     patch: {
-      tags: ["Accounts"],
+      tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mengubah peran",
       requestBody: {

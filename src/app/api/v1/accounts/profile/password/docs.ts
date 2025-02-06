@@ -3,7 +3,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const editPasswordPaths = {
   "/api/v1/accounts/profile/password": {
     patch: {
-      tags: ["Accounts"],
+      tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mengubah password",
       requestBody: {
