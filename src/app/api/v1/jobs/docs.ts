@@ -3,7 +3,8 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const jobsPaths = {
   "/api/v1/jobs": {
     post: {
-      tags: ["Jobs"],
+      operationId: "createJob",
+      tags: ["Job"],
       summary: "membuat job baru",
       description: "endpoint ini digunakan untuk membuat job baru",
       security: swaggerSecurity,
@@ -34,7 +35,8 @@ export const jobsPaths = {
       responses: {},
     },
     get: {
-      tags: ["Jobs"],
+      operationId: "getAllJobs",
+      tags: ["Job"],
       summary: "mendapatkan daftar jobs",
       description:
         "endpoint ini digunakan untuk mendapatkan semua daftar jobs baik single maupun multi",

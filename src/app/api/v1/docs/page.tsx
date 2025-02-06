@@ -13,6 +13,7 @@ export default function Page() {
         displayRequestDuration
         defaultModelRendering="model"
         persistAuthorization
+        defaultModelExpandDepth={10}
       />
     </section>
   );
