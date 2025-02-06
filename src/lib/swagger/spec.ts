@@ -24,6 +24,7 @@ import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
 import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
 import { accountCustomerOrderHistoriesPaths } from "@/app/api/v1/accounts/customer/orders/histories/docs";
+import { accountsDriverDashboardPaths } from "@/app/api/v1/accounts/driver/dashboard/docs";
 import { accountDriverOrdersPaths } from "@/app/api/v1/accounts/driver/orders/docs";
 import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/orders/histories/docs";
 import { accountsProfilePaths } from "@/app/api/v1/accounts/profile/docs";
@@ -56,6 +57,7 @@ export const swaggerSpec = {
     // account
     ...accountsProfilePaths,
     ...accountCustomerOrdersPaths,
+    ...accountsDriverDashboardPaths,
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
     ...accountDriverOrderHistoriesPaths,
