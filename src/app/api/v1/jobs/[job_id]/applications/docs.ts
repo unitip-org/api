@@ -12,7 +12,8 @@ const parameters = [
 export const jobsIdApplicationsPaths = {
   "/api/v1/jobs/{job_id}/applications": {
     post: {
-      tags: ["Jobs"],
+      operationId: "createJobApplication",
+      tags: ["Job"],
       summary: "mengajukan penawaran aplikasi job",
       security: swaggerSecurity,
       parameters,
@@ -45,7 +46,8 @@ export const jobsIdApplicationsPaths = {
       },
     },
     get: {
-      tags: ["Jobs"],
+      operationId: "getAllJobApplications",
+      tags: ["Job"],
       summary: "mendapatkan daftar lamaran pekerjaan dari driver",
       security: swaggerSecurity,
       parameters,
