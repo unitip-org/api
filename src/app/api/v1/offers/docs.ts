@@ -4,30 +4,53 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const offers2Paths = {
   "/api/v1/offers": {
     get: {
+      operationId: "get all offers",
       tags: ["Offers"],
       summary: "Mendapatkan daftar penawaran All",
       security: swaggerSecurity,
-      parameters: [
-        {
-          in: "query",
-          name: "page",
-          schema: {
-            type: "integer",
-            default: 1,
-            minimum: 1,
+      // parameters: [
+      //   {
+      //     in: "query",
+      //     name: "page",
+      //     schema: {
+      //       type: "integer",
+      //       default: 1,
+      //       minimum: 1,
+      //     },
+      //     description: "Nomor halaman",
+      //   },
+      //   {
+      //     in: "query",
+      //     name: "limit",
+      //     schema: {
+      //       type: "integer",
+      //       default: 10,
+      //     },
+      //     description: "Jumlah data per halaman",
+      //   },
+      // ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["page", "limit"],
+              properties: {
+                page: {
+                  type: "integer",
+                  default: 1,
+                  minimum: 1,
+                },
+                limit: {
+                  type: "integer",
+                  default: 10,
+                },
+              },
+            },
           },
-          description: "Nomor halaman",
         },
-        {
-          in: "query",
-          name: "limit",
-          schema: {
-            type: "integer",
-            default: 10,
-          },
-          description: "Jumlah data per halaman",
-        },
-      ],
+      },
       responses: {
         200: {
           description: "Successful response",
@@ -35,11 +58,27 @@ export const offers2Paths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["offers", "page_info"],
                 properties: {
                   offers: {
                     type: "array",
                     items: {
                       type: "object",
+                      required: [
+                        "id",
+                        "title",
+                        "description",
+                        "type",
+                        "pickup_area",
+                        "destination_area",
+                        "available_until",
+                        "price",
+                        "offer_status",
+                        "max_participants",
+                        "freelancer",
+                        "created_at",
+                        "updated_at",
+                      ],
                       properties: {
                         id: {
                           type: "string",
@@ -81,6 +120,7 @@ export const offers2Paths = {
                         },
                         freelancer: {
                           type: "object",
+                          requred: ["name"],
                           properties: {
                             name: {
                               type: "string",
@@ -100,6 +140,7 @@ export const offers2Paths = {
                   },
                   page_info: {
                     type: "object",
+                    required: ["count", "page", "total_pages"],
                     properties: {
                       count: {
                         type: "integer",
@@ -129,6 +170,7 @@ export const offers2Paths = {
       },
     },
     post: {
+      operationId: "create offer",
       tags: ["Offers"],
       summary: "Membuat penawaran baru",
       security: swaggerSecurity,
@@ -191,12 +233,14 @@ export const offers2Paths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["message", "data"],
                 properties: {
                   message: {
                     type: "string",
                   },
                   data: {
                     type: "object",
+                    required: ["success", "id"],
                     properties: {
                       succes: {
                         type: "boolean",
