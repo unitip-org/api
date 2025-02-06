@@ -40,6 +40,7 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { detailApplicantOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/applicants/[applicant_id]/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -95,6 +96,7 @@ export const swaggerSpec = {
     // ...applyOfferByIdPaths,
     // ...applyMultiOfferByIdPaths,
     ...applyOfferByIdPaths,
+    ...detailApplicantOfferByIdPaths,
     ...applicantsOfferPaths,
     // ...acceptanceOffersByIdPaths,
 

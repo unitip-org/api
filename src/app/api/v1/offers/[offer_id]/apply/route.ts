@@ -129,13 +129,13 @@ export async function POST(
 
     if (!result) return APIResponse.respondWithServerError();
 
-    await database
-      .updateTable("offers")
-      .set({
-        offer_status: "on_progress",
-      })
-      .where("id", "=", offer_id)
-      .execute();
+    // await database
+    //   .updateTable("offers")
+    //   .set({
+    //     offer_status: "on_progress",
+    //   })
+    //   .where("id", "=", offer_id)
+    //   .execute();
 
     return APIResponse.respondWithSuccess<POSTResponse>({
       success: true,
