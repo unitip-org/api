@@ -34,6 +34,7 @@ import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/ap
 import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
 import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobsIdCompletionPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
+import { jobsIdCustomerPaths } from "@/app/api/v1/jobs/[job_id]/customer/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
@@ -67,6 +68,7 @@ export const swaggerSpec = {
     // jobs
     ...jobsPaths,
     ...jobsIdPaths,
+    ...jobsIdCustomerPaths,
     ...jobsIdApplicationsPaths,
     ...jobsIdApplicationsIdPaths,
     ...jobsIdApplicationsIdApprovalPaths,
