@@ -22,6 +22,7 @@ export const jobsIdCustomerPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["id", "title", "note", "applications"],
                 properties: {
                   id: { type: "string" },
                   title: { type: "string" },
@@ -30,12 +31,14 @@ export const jobsIdCustomerPaths = {
                     type: "array",
                     items: {
                       type: "object",
+                      required: ["id", "bid_price", "bid_note", "driver"],
                       properties: {
                         id: { type: "string" },
                         bid_price: { type: "integer" },
                         bid_note: { type: "string" },
                         driver: {
                           type: "object",
+                          required: ["name"],
                           properties: {
                             name: { type: "string" },
                           },
