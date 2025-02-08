@@ -88,5 +88,66 @@ export const detailApplicantOfferByIdPaths = {
         },
       },
     },
+    patch: {
+      tags: ["Offers"],
+      security: swaggerSecurity,
+      summary: "Update status pelamar",
+      description: "Mengupdate status pelamar",
+      parameters: [
+        {
+          name: "offer_id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "ID dari offer yang ingin dilihat pelamarnya",
+        },
+        {
+          name: "applicant_id",
+          in: "path",
+          required: true,
+          schema: {
+            type: "string",
+          },
+          description: "ID dari offer_applicants yang ingin dilihat detailnya",
+        },
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                status: {
+                  type: "string",
+                },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          description: "Successful response",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  success: {
+                    type: "boolean",
+                  },
+                  message: {
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
