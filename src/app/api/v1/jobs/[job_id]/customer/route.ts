@@ -1,7 +1,7 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
-import { jsonArrayFrom } from "kysely/helpers/postgres";
+import { jsonArrayFrom, jsonObjectFrom } from "kysely/helpers/postgres";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -15,6 +15,7 @@ interface GETResponse {
   id: string;
   title: string;
   note: string;
+  price: number;
   status: string;
   applications: {
     id: string;
@@ -24,6 +25,10 @@ interface GETResponse {
       name: string;
     };
   }[];
+  driver?: {
+    id: string;
+    name: string;
+  };
 }
 export const GET = async (request: NextRequest, { params }: Params) => {
   try {
@@ -62,6 +67,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
         "j.id",
         "j.title",
         "j.note",
+        "j.price",
         "j.status",
         jsonArrayFrom(
           eb
@@ -74,7 +80,13 @@ export const GET = async (request: NextRequest, { params }: Params) => {
               "u.name as driver_name",
             ])
             .whereRef("ja.job", "=", "j.id")
-        ).as("applicatins"),
+        ).as("applications"),
+        jsonObjectFrom(
+          eb
+            .selectFrom("users as u")
+            .select(["u.id", "u.name"])
+            .whereRef("u.id", "=", "j.freelancer")
+        ).as("driver"),
       ])
       .where("j.id", "=", jobId);
     const result = await query.executeTakeFirst();
@@ -88,8 +100,9 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       id: result.id,
       title: result.title,
       note: result.note,
+      price: result.price,
       status: result.status,
-      applications: result.applicatins.map((it) => ({
+      applications: result.applications.map((it) => ({
         id: it.id,
         bid_price: it.bid_price,
         bid_note: it.bid_note,
@@ -97,6 +110,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
           name: it.driver_name,
         },
       })),
+      driver: result.driver || undefined,
     });
   } catch (e) {
     console.log(e);

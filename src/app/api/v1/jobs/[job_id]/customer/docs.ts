@@ -22,11 +22,19 @@ export const jobsIdCustomerPaths = {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["id", "title", "note", "applications"],
+                required: [
+                  "id",
+                  "title",
+                  "note",
+                  "price",
+                  "status",
+                  "applications",
+                ],
                 properties: {
                   id: { type: "string" },
                   title: { type: "string" },
                   note: { type: "string" },
+                  price: { type: "integer" },
                   status: {
                     type: "string",
                     enum: ["", "ongoing", "done"],
@@ -49,6 +57,14 @@ export const jobsIdCustomerPaths = {
                           },
                         },
                       },
+                    },
+                  },
+                  driver: {
+                    type: "object",
+                    required: ["id", "name"],
+                    properties: {
+                      id: { type: "string" },
+                      name: { type: "string" },
                     },
                   },
                 },
