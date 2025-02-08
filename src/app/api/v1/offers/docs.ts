@@ -8,49 +8,27 @@ export const offers2Paths = {
       tags: ["Offers"],
       summary: "Mendapatkan daftar penawaran All",
       security: swaggerSecurity,
-      // parameters: [
-      //   {
-      //     in: "query",
-      //     name: "page",
-      //     schema: {
-      //       type: "integer",
-      //       default: 1,
-      //       minimum: 1,
-      //     },
-      //     description: "Nomor halaman",
-      //   },
-      //   {
-      //     in: "query",
-      //     name: "limit",
-      //     schema: {
-      //       type: "integer",
-      //       default: 10,
-      //     },
-      //     description: "Jumlah data per halaman",
-      //   },
-      // ],
-      requestBody: {
-        required: true,
-        content: {
-          "application/json": {
-            schema: {
-              type: "object",
-              required: ["page", "limit"],
-              properties: {
-                page: {
-                  type: "integer",
-                  default: 1,
-                  minimum: 1,
-                },
-                limit: {
-                  type: "integer",
-                  default: 10,
-                },
-              },
-            },
+      parameters: [
+        {
+          in: "query",
+          name: "page",
+          schema: {
+            type: "integer",
+            default: 1,
+            minimum: 1,
           },
+          description: "Nomor halaman",
         },
-      },
+        {
+          in: "query",
+          name: "limit",
+          schema: {
+            type: "integer",
+            default: 10,
+          },
+          description: "Jumlah data per halaman",
+        },
+      ],
       responses: {
         200: {
           description: "Successful response",
@@ -122,6 +100,9 @@ export const offers2Paths = {
                           type: "object",
                           requred: ["name"],
                           properties: {
+                            id: {
+                              type: "string",
+                            },
                             name: {
                               type: "string",
                             },

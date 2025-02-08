@@ -15,10 +15,15 @@ interface Offer {
   available_until: Date;
   price: number;
   offer_status?: string;
-  freelancer_name: string;
   max_participants: number;
   created_at: string;
   updated_at: string;
+  freelancer: Freelancer;
+}
+
+interface Freelancer {
+  id: string;
+  name: string;
 }
 interface GETResponse {
   offers: Offer[];
@@ -59,6 +64,7 @@ export async function GET(request: NextRequest) {
         "so.pickup_area",
         "so.offer_status",
         "so.max_participants",
+        "u.id as freelancer_id",
         "u.name as freelancer_name",
         sql<string>`so."xata.createdAt"`.as("created_at"),
         sql<string>`so."xata.updatedAt"`.as("updated_at"),
@@ -77,6 +83,7 @@ export async function GET(request: NextRequest) {
       offers: offers.map((it) => ({
         ...it,
         freelancer: {
+          id: it.freelancer_id,
           name: it.freelancer_name,
         },
       })),
