@@ -1,11 +1,21 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
+const parameters = [
+  {
+    in: "path",
+    name: "job_id",
+    required: true,
+    schema: { type: "string" },
+  },
+];
+
 export const jobsIdCustomerPaths = {
   "/api/v1/jobs/{job_id}/customer": {
     get: {
       operationId: "getJobForCustomer",
       tags: ["Job"],
       security: swaggerSecurity,
+      parameters,
       responses: {
         200: {
           content: {
@@ -20,6 +30,17 @@ export const jobsIdCustomerPaths = {
                     type: "array",
                     items: {
                       type: "object",
+                      properties: {
+                        id: { type: "string" },
+                        bid_price: { type: "integer" },
+                        bid_note: { type: "string" },
+                        driver: {
+                          type: "object",
+                          properties: {
+                            name: { type: "string" },
+                          },
+                        },
+                      },
                     },
                   },
                 },
