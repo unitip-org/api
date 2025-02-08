@@ -22,8 +22,9 @@ export const jobsIdApplicationsPaths = {
           "application/json": {
             schema: {
               type: "object",
+              required: ["price", "bid_note"],
               properties: {
-                price: { type: "number" },
+                price: { type: "integer" },
                 bid_note: { type: "string" },
               },
             },
