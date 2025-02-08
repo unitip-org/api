@@ -3,6 +3,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const jobsIdPaths = {
   "/api/v1/jobs/{job_id}": {
     get: {
+      deprecated: true,
       operationId: "getJob",
       tags: ["Job"],
       security: swaggerSecurity,

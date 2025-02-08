@@ -9,10 +9,10 @@ const parameters = [
   },
 ];
 
-export const jobsIdCustomerPaths = {
-  "/api/v1/jobs/{job_id}/customer": {
+export const jobsIdDriverPaths = {
+  "/api/v1/jobs/{job_id}/driver": {
     get: {
-      operationId: "getJobForCustomer",
+      operationId: "getJobForDriver",
       tags: ["Job"],
       security: swaggerSecurity,
       parameters,
@@ -22,49 +22,25 @@ export const jobsIdCustomerPaths = {
             "application/json": {
               schema: {
                 type: "object",
-                required: [
-                  "id",
-                  "title",
-                  "note",
-                  "price",
-                  "status",
-                  "applications",
-                ],
                 properties: {
                   id: { type: "string" },
                   title: { type: "string" },
                   note: { type: "string" },
-                  price: { type: "integer" },
-                  status: {
-                    type: "string",
-                    enum: ["", "ongoing", "done"],
-                    "x-enum-varnames": ["Initial", "Ongoing", "Done"],
-                  },
                   applications: {
                     type: "array",
                     items: {
                       type: "object",
-                      required: ["id", "bid_price", "bid_note", "driver"],
                       properties: {
                         id: { type: "string" },
-                        bid_price: { type: "integer" },
+                        price: { type: "integer" },
                         bid_note: { type: "string" },
                         driver: {
                           type: "object",
-                          required: ["name"],
                           properties: {
                             name: { type: "string" },
                           },
                         },
                       },
-                    },
-                  },
-                  driver: {
-                    type: "object",
-                    required: ["id", "name"],
-                    properties: {
-                      id: { type: "string" },
-                      name: { type: "string" },
                     },
                   },
                 },

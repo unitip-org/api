@@ -35,13 +35,14 @@ import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applicatio
 import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
 import { jobsIdCompletionPaths } from "@/app/api/v1/jobs/[job_id]/completion/docs";
 import { jobsIdCustomerPaths } from "@/app/api/v1/jobs/[job_id]/customer/docs";
+import { jobsIdDriverPaths } from "@/app/api/v1/jobs/[job_id]/driver/docs";
+import { detailApplicantOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/applicants/[applicant_id]/docs";
 import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/docs";
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { detailApplicantOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/applicants/[applicant_id]/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -70,6 +71,7 @@ export const swaggerSpec = {
     ...jobsPaths,
     ...jobsIdPaths,
     ...jobsIdCustomerPaths,
+    ...jobsIdDriverPaths,
     ...jobsIdApplicationsPaths,
     ...jobsIdApplicationsIdPaths,
     ...jobsIdApplicationsIdApprovalPaths,
