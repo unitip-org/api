@@ -15,6 +15,7 @@ interface GETResponse {
   id: string;
   title: string;
   note: string;
+  status: string;
   applications: {
     id: string;
     bid_price: number;
@@ -61,6 +62,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
         "j.id",
         "j.title",
         "j.note",
+        "j.status",
         jsonArrayFrom(
           eb
             .selectFrom("job_applications as ja")
@@ -86,6 +88,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       id: result.id,
       title: result.title,
       note: result.note,
+      status: result.status,
       applications: result.applicatins.map((it) => ({
         id: it.id,
         bid_price: it.bid_price,

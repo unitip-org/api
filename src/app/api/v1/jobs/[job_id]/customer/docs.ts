@@ -27,6 +27,11 @@ export const jobsIdCustomerPaths = {
                   id: { type: "string" },
                   title: { type: "string" },
                   note: { type: "string" },
+                  status: {
+                    type: "string",
+                    enum: ["", "ongoing", "done"],
+                    "x-enum-varnames": ["Initial", "Ongoing", "Done"],
+                  },
                   applications: {
                     type: "array",
                     items: {
