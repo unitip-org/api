@@ -1,5 +1,5 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
-import { database } from "@/lib/database";
+import { database, xata } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
@@ -126,60 +126,50 @@ export async function POST(
       );
     }
 
-    // const result = await database
-    //   .insertInto("offer_applicants")
-    //   .values({
-    //     applicant_status: ApplicantStatus.PENDING,
-    //     note,
-    //     pickup_location,
-    //     destination_location,
-    //     pickup_latitude,
-    //     pickup_longitude,
-    //     destination_latitude,
-    //     destination_longitude,
-    //     customer: authorization.userId,
-    //     offer: offer_id,
-    //   } as any)
-    //   .returning("id")
-    //   .executeTakeFirst();
-
-    const result = await database.transaction().execute(async (trx) => {
+    const result = await xata.transactions.run([
       // Insert aplikasi baru
-      const newApplication = await trx
-        .insertInto("offer_applicants")
-        .values({
-          applicant_status: ApplicantStatus.PENDING,
-          note,
-          pickup_location,
-          destination_location,
-          pickup_latitude,
-          pickup_longitude,
-          destination_latitude,
-          destination_longitude,
-          customer: authorization.userId,
-          offer: offer_id,
-        } as any)
-        .returning("id")
-        .executeTakeFirst();
+      {
+        insert: {
+          createOnly: true,
+          table: "offer_applicants",
+          record: {
+            applicant_status: ApplicantStatus.PENDING,
+            note,
+            pickup_location,
+            destination_location, 
+            pickup_latitude,
+            pickup_longitude,
+            destination_latitude,
+            destination_longitude,
+            customer: authorization.userId,
+            offer: offer_id
+          }
+        }
+      },
+    
+      // Update offer status jika mencapai max participants
+      ...(currentParticipants + 1 >= offer.max_participants ? [{
+        update: {
+          table: "offers" as const,
+          id: offer_id,
+          fields: {
+            offer_status: OfferStatus.CLOSED
+          }
+        }
+      }] : [])
+    ]);
+    
 
-      // Jika setelah insert ini jumlah participant sama dengan max_participants
-      // Update offer_status menjadi closed
-      if (currentParticipants + 1 >= offer.max_participants) {
-        await trx
-          .updateTable("offers")
-          .set({ offer_status: OfferStatus.CLOSED })
-          .where("id", "=", offer_id)
-          .execute();
-      }
-
-      return newApplication;
-    });
-
-    if (!result) return APIResponse.respondWithServerError();
-
+    if (!result.results?.[0]?.id) {
+      return APIResponse.respondWithServerError();
+    }
+    
+    // Ambil ID dari hasil insert aplikasi
+    const newApplicationId = result.results[0].id;
+    
     return APIResponse.respondWithSuccess<POSTResponse>({
       success: true,
-      id: result.id,
+      id: newApplicationId
     });
   } catch (e) {
     console.error(e);
