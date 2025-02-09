@@ -76,15 +76,14 @@ export async function GET(
       (authorization.role === "customer" &&
         applicants.some((a) => a.customer_id === authorization.userId));
 
-    // console freelancer id
-    console.log("freelancer id", offer.freelancer_id);
+    const { freelancer_id, freelancer_name, ...offerData } = offer;
 
     return APIResponse.respondWithSuccess({
       offer: {
-        ...offer,
+        ...offerData,
         freelancer: {
-          id: offer.freelancer_id,
-          name: offer.freelancer_name,
+          id: freelancer_id,
+          name: freelancer_name,
         },
         applicants_count: applicantsCount?.count || 0,
         has_applied: !!hasApplied,

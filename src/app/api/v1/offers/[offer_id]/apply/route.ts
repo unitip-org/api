@@ -4,7 +4,7 @@ import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
-import { ApplicantStatus } from "@/constants/constants";
+import { ApplicantStatus, OfferStatus } from "@/constants/constants";
 
 interface POSTResponse {
   success: boolean;
@@ -83,17 +83,33 @@ export async function POST(
       );
     }
 
-    const singleOffer = await database
+    const offer = await database
       .selectFrom("offers")
-      .select(["id", "offer_status"])
+      .select(["id", "offer_status", "max_participants"])
       .where("id", "=", offer_id)
       .where("offer_status", "=", "available")
       .where("available_until", ">", sql<Date>`NOW()`)
       .executeTakeFirst();
 
-    if (!singleOffer) {
+    if (!offer) {
       return APIResponse.respondWithConflict(
         "Offer tidak tersedia atau sudah berakhir!"
+      );
+    }
+
+    // Hitung jumlah aplikasi yang sudah ada
+    const applicantsCount = await database
+      .selectFrom("offer_applicants")
+      .where("offer", "=", offer_id as any)
+      .select(sql`count(*)`.as("count"))
+      .executeTakeFirst();
+
+    const currentParticipants = Number(applicantsCount?.count || 0);
+
+    // Cek apakah masih ada slot tersedia
+    if (currentParticipants >= offer.max_participants) {
+      return APIResponse.respondWithConflict(
+        "Maaf, kuota peserta untuk offer ini sudah penuh!"
       );
     }
 
@@ -110,32 +126,56 @@ export async function POST(
       );
     }
 
-    const result = await database
-      .insertInto("offer_applicants")
-      .values({
-        applicant_status: ApplicantStatus.PENDING,
-        note,
-        pickup_location,
-        destination_location,
-        pickup_latitude,
-        pickup_longitude,
-        destination_latitude,
-        destination_longitude,
-        customer: authorization.userId,
-        offer: offer_id,
-      } as any)
-      .returning("id")
-      .executeTakeFirst();
+    // const result = await database
+    //   .insertInto("offer_applicants")
+    //   .values({
+    //     applicant_status: ApplicantStatus.PENDING,
+    //     note,
+    //     pickup_location,
+    //     destination_location,
+    //     pickup_latitude,
+    //     pickup_longitude,
+    //     destination_latitude,
+    //     destination_longitude,
+    //     customer: authorization.userId,
+    //     offer: offer_id,
+    //   } as any)
+    //   .returning("id")
+    //   .executeTakeFirst();
+
+    const result = await database.transaction().execute(async (trx) => {
+      // Insert aplikasi baru
+      const newApplication = await trx
+        .insertInto("offer_applicants")
+        .values({
+          applicant_status: ApplicantStatus.PENDING,
+          note,
+          pickup_location,
+          destination_location,
+          pickup_latitude,
+          pickup_longitude,
+          destination_latitude,
+          destination_longitude,
+          customer: authorization.userId,
+          offer: offer_id,
+        } as any)
+        .returning("id")
+        .executeTakeFirst();
+
+      // Jika setelah insert ini jumlah participant sama dengan max_participants
+      // Update offer_status menjadi closed
+      if (currentParticipants + 1 >= offer.max_participants) {
+        await trx
+          .updateTable("offers")
+          .set({ offer_status: OfferStatus.CLOSED })
+          .where("id", "=", offer_id)
+          .execute();
+      }
+
+      return newApplication;
+    });
 
     if (!result) return APIResponse.respondWithServerError();
-
-    // await database
-    //   .updateTable("offers")
-    //   .set({
-    //     offer_status: "on_progress",
-    //   })
-    //   .where("id", "=", offer_id)
-    //   .execute();
 
     return APIResponse.respondWithSuccess<POSTResponse>({
       success: true,
