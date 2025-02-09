@@ -43,6 +43,7 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
+import { accountsCustomerDashboardPaths } from "@/app/api/v1/accounts/customer/dashboard/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -61,6 +62,7 @@ export const swaggerSpec = {
     ...accountsProfilePaths,
     ...accountCustomerOrdersPaths,
     ...accountsDriverDashboardPaths,
+    ...accountsCustomerDashboardPaths,
     ...accountDriverOrdersPaths,
     ...editPasswordPaths,
     ...accountDriverOrderHistoriesPaths,

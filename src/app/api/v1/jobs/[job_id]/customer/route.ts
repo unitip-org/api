@@ -13,9 +13,12 @@ interface Params {
 
 interface GETResponse {
   id: string;
-  title: string;
   note: string;
+  pickup_location: string;
+  destination_location: string;
+  expected_price: number;
   price: number;
+  service: string;
   status: string;
   applications: {
     id: string;
@@ -52,7 +55,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
     // verifikasi bearer token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
-    const { role, userId } = authorization;
+    const { role } = authorization;
 
     // verifikasi role user
     if (role !== "customer")
@@ -65,9 +68,12 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       .selectFrom("jobs as j")
       .select((eb) => [
         "j.id",
-        "j.title",
         "j.note",
+        "j.pickup_location",
+        "j.destination_location",
+        "j.expected_price",
         "j.price",
+        "j.service",
         "j.status",
         jsonArrayFrom(
           eb
@@ -75,7 +81,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
             .innerJoin("users as u", "u.id", "ja.freelancer")
             .select([
               "ja.id",
-              "ja.price as bid_price",
+              "ja.bid_price",
               "ja.bid_note",
               "u.name as driver_name",
             ])
@@ -98,9 +104,12 @@ export const GET = async (request: NextRequest, { params }: Params) => {
 
     return APIResponse.respondWithSuccess<GETResponse>({
       id: result.id,
-      title: result.title,
       note: result.note,
+      pickup_location: result.pickup_location,
+      destination_location: result.destination_location,
+      expected_price: result.expected_price,
       price: result.price,
+      service: result.service,
       status: result.status,
       applications: result.applications.map((it) => ({
         id: it.id,

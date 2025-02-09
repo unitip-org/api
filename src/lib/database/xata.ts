@@ -119,7 +119,6 @@ const tables = [
   {
     name: "jobs",
     columns: [
-      { name: "title", type: "text", notNull: true, defaultValue: "" },
       {
         name: "pickup_location",
         type: "text",
@@ -180,7 +179,7 @@ const tables = [
   {
     name: "job_applications",
     columns: [
-      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "bid_price", type: "int", notNull: true, defaultValue: "0" },
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "job", type: "link", link: { table: "jobs" } },
       { name: "bid_note", type: "text", notNull: true, defaultValue: "" },

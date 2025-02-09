@@ -7,15 +7,10 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 interface POSTBody {
-  title: string;
-  destination_location: string;
-  destination_latitude: number;
-  destination_longitude: number;
   note: string;
-  service: string;
   pickup_location: string;
-  pickup_latitude: number;
-  pickup_longitude: number;
+  destination_location: string;
+  service: string;
   expected_price: number;
 }
 interface POSTResponse {
@@ -25,37 +20,25 @@ export const POST = async (request: NextRequest) => {
   try {
     // validasi request dari user
     const {
-      title,
-      destination_location: destinationLocation,
-      destination_latitude: destinationLatitude,
-      destination_longitude: destinationLongitude,
       note,
-      service,
       pickup_location: pickupLocation,
-      pickup_latitude: pickupLatitude,
-      pickup_longitude: pickupLongitude,
+      destination_location: destinationLocation,
+      service,
       expected_price: expectedPrice,
     }: POSTBody = await request.json();
 
     const validate = z
       .object({
-        title: z
-          .string({ required_error: "Judul tidak boleh kosong!" })
-          .min(1, "Judul tidak boleh kosong!"),
-        destinationLocation: z
-          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
-          .min(1, "Lokasi tujuan tidak boleh kosong!"),
-        destinationLatitude: z.number().optional(),
-        destinationLongitude: z.number().optional(),
         note: z.string().optional(),
-        service: z.enum(["antar-jemput", "jasa-titip"], {
-          required_error: "Jenis layanan tidak boleh kosong!",
-        }),
         pickupLocation: z
           .string({ required_error: "Lokasi penjemputan tidak boleh kosong!" })
           .min(1, "Lokasi penjemputan tidak boleh kosong!"),
-        pickupLatitude: z.number().optional(),
-        pickupLongitude: z.number().optional(),
+        destinationLocation: z
+          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
+          .min(1, "Lokasi tujuan tidak boleh kosong!"),
+        service: z.enum(["antar-jemput", "jasa-titip"], {
+          required_error: "Jenis layanan tidak boleh kosong!",
+        }),
         expectedPrice: z
           .number({
             required_error: "Harga yang diharapkan tidak boleh kosong!",
@@ -63,15 +46,10 @@ export const POST = async (request: NextRequest) => {
           .min(0, "Harga yang diharapkan tidak boleh kurang dari 0!"),
       })
       .safeParse({
-        title,
-        destinationLocation,
-        destinationLatitude,
-        destinationLongitude,
         note,
-        service,
         pickupLocation,
-        pickupLatitude,
-        pickupLongitude,
+        destinationLocation,
+        service,
         expectedPrice,
       });
     if (!validate.success)
@@ -97,17 +75,12 @@ export const POST = async (request: NextRequest) => {
     const query = database
       .insertInto("jobs")
       .values({
-        title,
-        pickup_location: pickupLocation,
         note,
-        service,
-        pickup_latitude: pickupLatitude,
-        pickup_longitude: pickupLongitude,
+        pickup_location: pickupLocation,
         destination_location: destinationLocation,
-        destination_latitude: destinationLatitude,
-        destination_longitude: destinationLongitude,
-        customer: userId,
+        service,
         expected_price: expectedPrice,
+        customer: userId,
       } as any)
       .returning(["id"]);
     const result = await query.executeTakeFirstOrThrow();
