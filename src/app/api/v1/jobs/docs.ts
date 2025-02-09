@@ -70,22 +70,37 @@ export const jobsPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["jobs"],
                 properties: {
                   jobs: {
                     type: "array",
                     items: {
                       type: "object",
+                      required: [
+                        "id",
+                        "note",
+                        "pickup_location",
+                        "destination_location",
+                        "service",
+                        "created_at",
+                        "updated_at",
+                        "customer",
+                      ],
                       properties: {
                         id: { type: "string" },
-                        title: { type: "string" },
-                        destination_location: { type: "string" },
                         note: { type: "string" },
-                        service: { type: "string" },
                         pickup_location: { type: "string" },
-                        created_at: { type: "string" },
-                        updated_at: { type: "string" },
+                        destination_location: { type: "string" },
+                        service: {
+                          type: "string",
+                          enum: ["antar-jemput", "jasa-titip"],
+                          "x-enum-varnames": ["AntarJemput", "JasaTitip"],
+                        },
+                        created_at: { type: "string", format: "datetime" },
+                        updated_at: { type: "string", format: "datetime" },
                         customer: {
                           type: "object",
+                          required: ["name"],
                           properties: {
                             name: { type: "string" },
                           },

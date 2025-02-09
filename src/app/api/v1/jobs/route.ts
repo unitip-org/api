@@ -97,11 +97,10 @@ export const POST = async (request: NextRequest) => {
 interface GETResponse {
   jobs: {
     id: string;
-    title: string;
-    destination_location: string;
     note: string;
-    service: string;
     pickup_location: string;
+    destination_location: string;
+    service: string;
     created_at: string;
     updated_at: string;
     customer: {
@@ -182,11 +181,10 @@ export async function GET(request: NextRequest) {
       .innerJoin("users as u", "u.id", "j.customer")
       .select([
         "j.id",
-        "j.title",
-        "j.destination_location",
         "j.note",
-        "j.service",
         "j.pickup_location",
+        "j.destination_location",
+        "j.service",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.name as customer_name",
@@ -200,11 +198,10 @@ export async function GET(request: NextRequest) {
     return APIResponse.respondWithSuccess<GETResponse>({
       jobs: jobsResult.map((it) => ({
         id: it.id,
-        title: it.title,
-        destination_location: it.destination_location,
         note: it.note,
-        service: it.service,
         pickup_location: it.pickup_location,
+        destination_location: it.destination_location,
+        service: it.service,
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),
         customer: {
