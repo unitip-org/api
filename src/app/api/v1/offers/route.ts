@@ -47,6 +47,7 @@ export async function GET(request: NextRequest) {
     const totalCount = await database
       .selectFrom("offers")
       .select(sql<number>`count(*)`.as("count"))
+      .where("offer_status", "=", OfferStatus.AVAILABLE)
       .executeTakeFirst();
 
     // Ambil data dengan pagination
@@ -69,22 +70,23 @@ export async function GET(request: NextRequest) {
         sql<string>`so."xata.createdAt"`.as("created_at"),
         sql<string>`so."xata.updatedAt"`.as("updated_at"),
       ])
+      .where("so.offer_status", "=", OfferStatus.AVAILABLE) 
       .limit(limit)
       .offset((page - 1) * limit)
       .orderBy("created_at", "desc")
       .execute();
 
-    console.log(
-      "GET offers",
-      offers.forEach((it) => console.log(it))
-    );
+    // console.log(
+    //   "GET offers",
+    //   offers.forEach((it) => console.log(it))
+    // );
 
     return APIResponse.respondWithSuccess<GETResponse>({
-      offers: offers.map((it) => ({
-        ...it,
+      offers: offers.map(({ freelancer_id, freelancer_name, ...rest }) => ({
+        ...rest,
         freelancer: {
-          id: it.freelancer_id,
-          name: it.freelancer_name,
+          id: freelancer_id,
+          name: freelancer_name,
         },
       })),
       page_info: {
