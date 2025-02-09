@@ -19,6 +19,7 @@ export async function POST(
     const json = await request.json();
     const {
       note,
+      final_price,
       destination_location,
       pickup_location,
       pickup_latitude,
@@ -31,6 +32,9 @@ export async function POST(
     const schema = z.object({
       note: z.string({
         required_error: "Catatan untuk pemesanan tidak boleh kosong!",
+      }),
+      final_price: z.number({
+        required_error: "Harga akhir tidak boleh kosong!",
       }),
       destination_location: z.string({
         required_error: "Lokasi tujuan tidak boleh kosong!",
@@ -55,6 +59,7 @@ export async function POST(
 
     const data = schema.safeParse({
       note,
+      final_price,
       destination_location,
       pickup_location,
       pickup_latitude,
@@ -135,6 +140,7 @@ export async function POST(
           record: {
             applicant_status: ApplicantStatus.PENDING,
             note,
+            final_price,
             pickup_location,
             destination_location, 
             pickup_latitude,
@@ -304,6 +310,7 @@ export async function PATCH(
     const json = await request.json();
     const {
       note,
+      final_price,
       destination_location,
       pickup_location,
       pickup_latitude,
@@ -316,6 +323,9 @@ export async function PATCH(
     const schema = z.object({
       note: z.string({
         required_error: "Catatan untuk pemesanan tidak boleh kosong!",
+      }),
+      final_price: z.number({
+        required_error: "Harga akhir tidak boleh kosong!",
       }),
       destination_location: z.string({
         required_error: "Lokasi tujuan tidak boleh kosong!",
@@ -340,6 +350,7 @@ export async function PATCH(
 
     const data = schema.safeParse({
       note,
+      final_price,
       destination_location,
       pickup_location,
       pickup_latitude,
@@ -372,6 +383,7 @@ export async function PATCH(
       .select([
         "id",
         "note",
+        "final_price",
         "destination_location",
         "pickup_location",
         "pickup_latitude",
@@ -389,6 +401,7 @@ export async function PATCH(
       .updateTable("offer_applicants")
       .set({
         note,
+        final_price,
         destination_location,
         pickup_location,
         pickup_latitude,
