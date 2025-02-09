@@ -68,18 +68,22 @@ export async function GET(
       ])
       .execute();
 
-    // Check if the user can view applicants, 
+    // Check if the user can view applicants,
     // Hanya driver yang membuat post dan customer yang apply yang bisa melihat applicants
     const canViewApplicants =
       (authorization.role === "driver" &&
-        offer.id === authorization.userId) ||
+        offer.freelancer_id === authorization.userId) ||
       (authorization.role === "customer" &&
         applicants.some((a) => a.customer_id === authorization.userId));
+
+    // console freelancer id
+    console.log("freelancer id", offer.freelancer_id);
 
     return APIResponse.respondWithSuccess({
       offer: {
         ...offer,
         freelancer: {
+          id: offer.freelancer_id,
           name: offer.freelancer_name,
         },
         applicants_count: applicantsCount?.count || 0,
