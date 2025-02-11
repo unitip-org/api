@@ -22,6 +22,7 @@ import { jobsPaths } from "@/app/api/v1/jobs/docs";
 // import { singleJobPaths } from "@/app/api/v1/jobs/single/docs";
 import { applyOfferByIdPaths } from "@/app/api/v1/offers/[offer_id]/apply/docs";
 // import { acceptanceOffersByIdPaths } from "@/app/api/v1/offers/[offer_id]/requests/[request_id]/acceptence/docs";
+import { accountsCustomerDashboardPaths } from "@/app/api/v1/accounts/customer/dashboard/docs";
 import { accountCustomerOrdersPaths } from "@/app/api/v1/accounts/customer/orders/docs";
 import { accountCustomerOrderHistoriesPaths } from "@/app/api/v1/accounts/customer/orders/histories/docs";
 import { accountsDriverDashboardPaths } from "@/app/api/v1/accounts/driver/dashboard/docs";
@@ -43,7 +44,6 @@ import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { accountsCustomerDashboardPaths } from "@/app/api/v1/accounts/customer/dashboard/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",

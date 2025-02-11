@@ -242,6 +242,7 @@ export async function POST(request: Request) {
       "Terjadi kesalahan tak terduga pada server!"
     );
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError(
       "Terjadi kesalahan tak terduga pada server!"
     );
