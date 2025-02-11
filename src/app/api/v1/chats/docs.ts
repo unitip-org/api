@@ -70,5 +70,66 @@ export const chatsPaths = {
         },
       },
     },
+    get: {
+      tags: ["Chats"],
+      summary: "Get chat room by members",
+      description: "Find a chat room based on provided member IDs",
+      security: swaggerSecurity,
+      parameters: [
+        {
+          name: "members",
+          in: "query",
+          description: "Comma-separated list of member IDs",
+          required: true,
+          schema: {
+            type: "string",
+            example: "user_uuid_1,user_uuid_2",
+          },
+        },
+      ],
+      responses: {
+        200: {
+          description: "Successfully retrieved chat room",
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  room_id: {
+                    type: "string",
+                    description: "Chat room ID if found, null if not found",
+                    nullable: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+        400: {
+          description: "Bad request - Members parameter is missing",
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.BadRequestError },
+            },
+          },
+        },
+        401: {
+          description: "Unauthorized - Invalid or missing bearer token",
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.UnauthorizedError },
+            },
+          },
+        },
+        500: {
+          description: "Internal Server Error",
+          content: {
+            "application/json": {
+              schema: { $ref: swaggerComponentRefs.InternalServerError },
+            },
+          },
+        },
+      },
+    },
   },
 };

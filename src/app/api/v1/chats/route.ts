@@ -93,3 +93,50 @@ export const POST = async (request: NextRequest) => {
     return APIResponse.respondWithServerError();
   }
 };
+
+// GET endpoint untuk cek room berdasarkan members
+export const GET = async (request: NextRequest) => {
+  try {
+    const members = request.nextUrl.searchParams.get("members")?.split(",");
+    if (!members)
+      return APIResponse.respondWithBadRequest([
+        {
+          path: "members",
+          message: "Members tidak boleh kosong!",
+        },
+      ]);
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // Dapatkan semua room_id yang memiliki member yang dimaksud
+    const roomMembers = await xata.db.chat_room_members
+      .select(["room.id"])
+      .filter({
+        "user.id": { $any: members },
+      })
+      .getMany();
+
+    // Hitung frekuensi setiap room_id
+    const roomFrequency = roomMembers.reduce((acc, curr) => {
+      const roomId = curr.room?.id;
+      if (roomId) {
+        acc[roomId] = (acc[roomId] || 0) + 1;
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Cari room yang memiliki kedua member (frekuensi = jumlah members yang dicari)
+    const matchingRoomId = Object.entries(roomFrequency).find(
+      ([_, count]) => count === members.length
+    )?.[0];
+
+    return APIResponse.respondWithSuccess({
+      room_id: matchingRoomId || null,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
