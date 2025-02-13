@@ -7,13 +7,12 @@ import { z } from "zod";
 interface GETResponse {
   roles: string[];
 }
-
 export const GET = async (request: NextRequest) => {
   try {
     // verifikasi bearer token
     const authorization = await verifyBearerToken(request);
     if (!authorization) return APIResponse.respondWithUnauthorized();
-    const { userId, role } = authorization;
+    const { userId } = authorization;
 
     const query = database
       .selectFrom("user_roles as ur")
@@ -26,6 +25,7 @@ export const GET = async (request: NextRequest) => {
       roles: result.map((it) => it.role),
     });
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 };
