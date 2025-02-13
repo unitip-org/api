@@ -29,6 +29,7 @@ export const changeRolePaths = {
       },
     },
     patch: {
+      operationId: "changeRole",
       tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mengubah peran",
@@ -37,6 +38,7 @@ export const changeRolePaths = {
           "application/json": {
             schema: {
               type: "object",
+              required: ["role"],
               properties: {
                 role: { type: "string" },
               },
@@ -50,17 +52,11 @@ export const changeRolePaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["id", "token", "role"],
                 properties: {
-                  success: { type: "boolean" },
-                  users: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        id: { type: "string" },
-                      },
-                    },
-                  },
+                  id: { type: "string" },
+                  token: { type: "string" },
+                  role: { type: "string" },
                 },
               },
             },
