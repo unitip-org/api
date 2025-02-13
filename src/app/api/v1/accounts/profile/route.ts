@@ -12,7 +12,6 @@ interface GETResponse {
   role: string;
   gender: string;
 }
-
 export const GET = async (request: NextRequest) => {
   try {
     // verifikasi bearer token
@@ -45,22 +44,25 @@ interface PATCHBody {
   name: string;
   gender: string;
 }
-
 interface PATCHResponse {
   id: string;
+  name: string;
+  gender: string;
 }
-
 export const PATCH = async (request: NextRequest) => {
   try {
+    // validasi request dari user
     const { name, gender }: PATCHBody = await request.json();
-
     const validate = z
       .object({
         name: z
-          .string({ required_error: "Judul pekerjaan tidak boleh kosong!" })
-          .min(1, "Judul pekerjaan tidak boleh kosong!"),
+          .string({ required_error: "Nama pengguna tidak boleh kosong!" })
+          .min(1, "Nama pengguna tidak boleh kosong!"),
+        gender: z.enum(["male", "female", ""], {
+          required_error: "Jenis kelamin tidak boleh kosong!",
+        }),
       })
-      .safeParse({ name });
+      .safeParse({ name, gender });
 
     if (!validate.success)
       return APIResponse.respondWithBadRequest(
@@ -80,15 +82,17 @@ export const PATCH = async (request: NextRequest) => {
       .updateTable("users")
       .set({ name, gender })
       .where("id", "=", userId)
-      .returning(["id"]);
+      .returning(["id", "name", "gender"]);
 
     const result = await query.executeTakeFirstOrThrow();
 
     return APIResponse.respondWithSuccess<PATCHResponse>({
       id: result.id,
+      name: result.name,
+      gender: result.gender,
     });
-    //
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 };

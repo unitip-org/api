@@ -1,5 +1,4 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
-import { title } from "process";
 
 export const accountsProfilePaths = {
   "/api/v1/accounts/profile": {
@@ -30,6 +29,7 @@ export const accountsProfilePaths = {
       },
     },
     patch: {
+      operationId: "updateProfile",
       tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mengedit informasi akun",
@@ -38,9 +38,14 @@ export const accountsProfilePaths = {
           "application/json": {
             schema: {
               type: "object",
+              required: ["name", "gender"],
               properties: {
                 name: { type: "string" },
-                gender: { type: "string" },
+                gender: {
+                  type: "string",
+                  enum: ["male", "female", ""],
+                  "x-enum-varnames": ["Male", "Female", "NotSpecified"],
+                },
               },
             },
           },
@@ -52,18 +57,14 @@ export const accountsProfilePaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["id", "name", "gender"],
                 properties: {
-                  success: { type: "boolean" },
-                  users: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        id: { type: "string" },
-                        name: { type: "string" },
-                        gender: { type: "string" },
-                      },
-                    },
+                  id: { type: "string" },
+                  name: { type: "string" },
+                  gender: {
+                    type: "string",
+                    enum: ["male", "female", ""],
+                    "x-enum-varnames": ["Male", "Female", "NotSpecified"],
                   },
                 },
               },
