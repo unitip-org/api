@@ -3,6 +3,7 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const editPasswordPaths = {
   "/api/v1/accounts/profile/password": {
     patch: {
+      operationId: "updatePassword",
       tags: ["Account"],
       security: swaggerSecurity,
       summary: "Mengubah password",
@@ -11,6 +12,7 @@ export const editPasswordPaths = {
           "application/json": {
             schema: {
               type: "object",
+              required: ["password"],
               properties: {
                 password: { type: "string" },
               },
@@ -24,17 +26,9 @@ export const editPasswordPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["id"],
                 properties: {
-                  success: { type: "boolean" },
-                  users: {
-                    type: "array",
-                    items: {
-                      type: "object",
-                      properties: {
-                        id: { type: "string" },
-                      },
-                    },
-                  },
+                  id: { type: "string" },
                 },
               },
             },

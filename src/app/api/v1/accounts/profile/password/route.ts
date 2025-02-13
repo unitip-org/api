@@ -8,15 +8,13 @@ import { z } from "zod";
 interface PATCHBody {
   password: string;
 }
-
 interface PATCHResponse {
   id: string;
 }
-
 export const PATCH = async (request: NextRequest) => {
   try {
+    // validasi request dari user
     const { password }: PATCHBody = await request.json();
-
     const validate = z
       .object({
         password: z
@@ -55,6 +53,7 @@ export const PATCH = async (request: NextRequest) => {
       id: result.id,
     });
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
 };
