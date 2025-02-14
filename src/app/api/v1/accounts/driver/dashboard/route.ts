@@ -29,7 +29,25 @@ interface GETResponse {
       name: string;
     };
   }[];
-  offers: [];
+  offers: {
+    id: string;
+    title: string;
+    price: number;
+    description: string;
+    pickup_area: string;
+    destination_area: string;
+    type: string;
+    available_until: string;
+    max_participants: number;
+    applicants: {
+      id: string;
+      customer_name: string;
+      pickup_location: string;
+      destination_location: string;
+      status: string;
+      final_price: number;
+    }[];
+  }[];
 }
 export const GET = async (request: NextRequest) => {
   try {
@@ -77,10 +95,54 @@ export const GET = async (request: NextRequest) => {
             .where("j.status", "=", "ongoing")
         ).as("jobs"),
 
-        // query untuk mendapatkan daftar offers yang sedang dikerjakan
-        // jsonArrayFrom(eb.selectFrom("offers").limit(0)).as("offers"),
+         // query untuk mendapatkan daftar offers yang aktif
+         jsonArrayFrom(
+          eb
+            .selectFrom("offers as o")
+            .leftJoin("offer_applicants as oa", "oa.offer", "o.id")
+            .leftJoin("users as u2", "u2.id", "oa.customer")
+            .select([
+              "o.id",
+              "o.title",
+              "o.price",
+              "o.description",
+              "o.pickup_area",
+              "o.destination_area", 
+              "o.type",
+              "o.available_until",
+              "o.max_participants",
+              jsonArrayFrom(
+                eb
+                  .selectFrom("offer_applicants as oa2")
+                  .innerJoin("users as u3", "u3.id", "oa2.customer")
+                  .select([
+                    "oa2.id",
+                    "u3.name as customer_name",
+                    "oa2.pickup_location",
+                    "oa2.destination_location",
+                    "oa2.applicant_status as status",
+                    "oa2.final_price"
+                  ])
+                  .whereRef("oa2.offer", "=", "o.id" as any)
+              ).as("applicants")
+            ])
+            .where("o.freelancer", "=", userId as any)
+            .where("o.offer_status", "=", "available")
+            .groupBy([
+              "o.id",
+              "o.title",
+              "o.price",
+              "o.description",
+              "o.pickup_area",
+              "o.destination_area",
+              "o.type", 
+              "o.available_until",
+              "o.max_participants"
+            ])
+        ).as("offers"),
       ])
       .where("u.id", "=", userId);
+
     const result = await query.executeTakeFirstOrThrow();
 
     return APIResponse.respondWithSuccess<GETResponse>({
@@ -103,7 +165,25 @@ export const GET = async (request: NextRequest) => {
           name: it.customer_name,
         },
       })),
-      offers: [],
+      offers: result.offers.map((it) => ({
+        id: it.id,
+        title: it.title,
+        price: it.price,
+        description: it.description,
+        pickup_area: it.pickup_area,
+        destination_area: it.destination_area,
+        type: it.type,
+        available_until: it.available_until.toISOString(),
+        max_participants: it.max_participants,
+        applicants: it.applicants.map((app) => ({
+          id: app.id,
+          customer_name: app.customer_name,
+          pickup_location: app.pickup_location,
+          destination_location: app.destination_location,
+          status: app.status,
+          final_price: app.final_price
+        }))
+      })),
     });
   } catch (e) {
     console.log(e);
