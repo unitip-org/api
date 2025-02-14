@@ -21,14 +21,20 @@ export const accountsDriverDashboardPaths = {
                       required: ["id", "bid_price", "bid_note", "job"],
                       properties: {
                         id: { type: "string" },
-                        bid_price: { type: "number" },
+                        bid_price: { type: "integer" },
                         bid_note: { type: "string" },
                         job: {
                           type: "object",
-                          required: ["id", "title", "customer"],
+                          required: [
+                            "id",
+                            "note",
+                            "expected_price",
+                            "customer",
+                          ],
                           properties: {
                             id: { type: "string" },
-                            title: { type: "string" },
+                            note: { type: "string" },
+                            expected_price: { type: "integer" },
                             customer: {
                               type: "object",
                               required: ["name"],
@@ -48,7 +54,6 @@ export const accountsDriverDashboardPaths = {
                       required: ["id", "title", "customer"],
                       properties: {
                         id: { type: "string" },
-                        title: { type: "string" },
                         customer: {
                           type: "object",
                           required: ["name"],

@@ -16,7 +16,8 @@ interface GETResponse {
     bid_note: string;
     job: {
       id: string;
-      title: string;
+      note: string;
+      expected_price: number;
       customer: {
         name: string;
       };
@@ -24,7 +25,6 @@ interface GETResponse {
   }[];
   jobs: {
     id: string;
-    title: string;
     customer: {
       name: string;
     };
@@ -56,10 +56,11 @@ export const GET = async (request: NextRequest) => {
             .innerJoin("users as u2", "u2.id", "j.customer")
             .select([
               "ja.id",
-              "ja.price as bid_price",
+              "ja.bid_price",
               "ja.bid_note",
               "j.id as job_id",
-              "j.title as job_title",
+              "j.note as job_note",
+              "j.expected_price as job_expected_price",
               "u2.name as job_customer_name",
             ])
             .whereRef("ja.freelancer", "=", "u.id")
@@ -71,7 +72,7 @@ export const GET = async (request: NextRequest) => {
           eb
             .selectFrom("jobs as j")
             .innerJoin("users as u2", "u2.id", "j.customer")
-            .select(["j.id", "j.title", "u2.name as customer_name"])
+            .select(["j.id", "u2.name as customer_name"])
             .whereRef("j.freelancer", "=", "u.id")
             .where("j.status", "=", "ongoing")
         ).as("jobs"),
@@ -89,7 +90,8 @@ export const GET = async (request: NextRequest) => {
         bid_note: it.bid_note,
         job: {
           id: it.job_id,
-          title: it.job_title,
+          note: it.job_note,
+          expected_price: it.job_expected_price,
           customer: {
             name: it.job_customer_name,
           },
@@ -97,7 +99,6 @@ export const GET = async (request: NextRequest) => {
       })),
       jobs: result.jobs.map((it) => ({
         id: it.id,
-        title: it.title,
         customer: {
           name: it.customer_name,
         },
