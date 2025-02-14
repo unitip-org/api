@@ -173,7 +173,7 @@ export const GET = async (request: NextRequest) => {
         pickup_area: it.pickup_area,
         destination_area: it.destination_area,
         type: it.type,
-        available_until: it.available_until.toISOString(),
+        available_until: new Date(it.available_until).toISOString(),
         max_participants: it.max_participants,
         applicants: it.applicants.map((app) => ({
           id: app.id,
