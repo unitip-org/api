@@ -1,4 +1,5 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
+import { he } from "date-fns/locale";
 
 export const socialPaths = {
   "/api/v1/social": {
@@ -19,9 +20,16 @@ export const socialPaths = {
                     items: {
                       type: "object",
                       properties: {
-                        censored_name: { type: "string" },
-                        activity_type: { type: "string" },
-                        time_ago: { type: "string" },
+                        censored_name: {
+                          type: "string",
+                        },
+                        activity_type: {
+                          type: "string",
+                          enum: ["job", "offer"],
+                        },
+                        time_ago: {
+                          type: "string",
+                        },
                       },
                     },
                   },

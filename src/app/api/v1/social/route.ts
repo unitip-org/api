@@ -23,7 +23,9 @@ export const GET = async (request: NextRequest) => {
     const oneDayAgo = new Date();
     oneDayAgo.setDate(oneDayAgo.getDate() - 1);
 
-    // Pisahkan query jobs dan offers
+    const ifModifiedSince = request.headers.get("if-modified-since");
+
+    // query jobs dan offers
     const jobsQuery = database
       .selectFrom("jobs as j")
       .select([
@@ -44,7 +46,6 @@ export const GET = async (request: NextRequest) => {
       .innerJoin("users as u", "u.id", "o.freelancer")
       .where(sql`o."xata.createdAt"`, ">", oneDayAgo.toISOString());
 
-    // Gabungkan hasil kedua query
     const [jobsResult, offersResult] = await Promise.all([
       jobsQuery.execute(),
       offersQuery.execute(),
@@ -56,6 +57,22 @@ export const GET = async (request: NextRequest) => {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     );
 
+    const latestTimestamp =
+      activities.length > 0 ? new Date(activities[0].created_at) : new Date();
+
+    // Jika client mengirim header if-modified-since, bandingkan dengan latestTimestamp
+    if (ifModifiedSince) {
+      const clientDate = new Date(ifModifiedSince);
+      const clientSeconds = Math.floor(clientDate.getTime() / 1000);
+      const latestSeconds = Math.floor(latestTimestamp.getTime() / 1000);
+      
+      if (latestSeconds <= clientSeconds) {
+        return new Response(null, { status: 304 });
+      }
+    }
+    console.log("activities", activities);
+    console.log("latestTimestamp", latestTimestamp);
+    console.log("ifModifiedSince", ifModifiedSince);
     // Format response
     const formattedActivities = activities.map((activity: RecentActivity) => {
       const firstName = activity.user_name.split(" ")[0];
@@ -70,11 +87,13 @@ export const GET = async (request: NextRequest) => {
       };
     });
 
-    return APIResponse.respondWithSuccess<GETResponse>({
+    const response = APIResponse.respondWithSuccess<GETResponse>({
       activities: formattedActivities,
     });
+    response.headers.set("last-modified", latestTimestamp.toUTCString());
+    return response;
   } catch (e) {
-    return APIResponse.respondWithServerError;
+    return APIResponse.respondWithServerError();
   }
 };
 
