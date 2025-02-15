@@ -82,6 +82,7 @@ export const jobsPaths = {
                         "pickup_location",
                         "destination_location",
                         "service",
+                        "expected_price",
                         "created_at",
                         "updated_at",
                         "customer",
@@ -96,6 +97,7 @@ export const jobsPaths = {
                           enum: ["antar-jemput", "jasa-titip"],
                           "x-enum-varnames": ["AntarJemput", "JasaTitip"],
                         },
+                        expected_price: { type: "integer" },
                         created_at: { type: "string", format: "datetime" },
                         updated_at: { type: "string", format: "datetime" },
                         customer: {

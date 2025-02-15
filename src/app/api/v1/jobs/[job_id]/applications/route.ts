@@ -13,7 +13,7 @@ interface Params {
 }
 
 interface POSTBody {
-  price: number;
+  bid_price: number;
   bid_note: string;
 }
 interface POSTResponse {
@@ -23,18 +23,19 @@ export const POST = async (request: NextRequest, { params }: Params) => {
   try {
     // verifikasi request user
     const { job_id: jobId } = params;
-    const { price, bid_note: bidNote }: POSTBody = await request.json();
+    const { bid_price: bidPrice, bid_note: bidNote }: POSTBody =
+      await request.json();
     const validate = z
       .object({
         jobId: z
           .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
           .min(1, "ID pekerjaan tidak boleh kosong!"),
-        price: z
+        bidPrice: z
           .number({ required_error: "Harga tidak boleh kosong!" })
           .min(0, "Harga tidak boleh kurang dari 0!"),
         bidNote: z.string().optional(),
       })
-      .safeParse({ jobId, price, bidNote });
+      .safeParse({ jobId, bidPrice, bidNote });
     if (!validate.success)
       return APIResponse.respondWithBadRequest(
         validate.error.errors.map((it) => ({
@@ -70,7 +71,7 @@ export const POST = async (request: NextRequest, { params }: Params) => {
      * validasi jika harga penawaran kurang dari harga standar
      * maka perlu memberikan pesan error
      */
-    if (price < jobResult.expected_price)
+    if (bidPrice < jobResult.expected_price)
       return APIResponse.respondWithForbidden(
         "Harga penawaran tidak boleh kurang dari harga standar!"
       );
@@ -80,7 +81,7 @@ export const POST = async (request: NextRequest, { params }: Params) => {
      * maka perlu memberikan alasan penawaran sehingga
      * perlu validasi bidNote agar tidak kosong
      */
-    if (price !== jobResult.expected_price) {
+    if (bidPrice !== jobResult.expected_price) {
       const validate2 = z
         .object({
           bidNote: z
@@ -101,7 +102,7 @@ export const POST = async (request: NextRequest, { params }: Params) => {
     const query = database
       .insertInto("job_applications")
       .values({
-        price,
+        bid_price: bidPrice,
         bid_note: bidNote,
         freelancer: userId,
         job: jobId,
@@ -130,6 +131,9 @@ interface GETResponse {
     };
   }[];
 }
+/**
+ * @deprecated
+ */
 export const GET = async (request: NextRequest, { params }: Params) => {
   try {
     // verifikasi request user
@@ -159,14 +163,14 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       .innerJoin("users as u", "u.id", "ja.freelancer")
       .select([
         "ja.id",
-        "ja.price",
+        "ja.bid_price as price",
         "ja.bid_note",
         sql<string>`ja."xata.createdAt"`.as("created_at"),
         sql<string>`ja."xata.updatedAt"`.as("updated_at"),
         "u.name as driver_name",
       ])
       .where("ja.job", "=", jobId as any)
-      .orderBy("ja.price asc");
+      .orderBy("ja.bid_price");
     const result = await query.execute();
 
     return APIResponse.respondWithSuccess<GETResponse>({
