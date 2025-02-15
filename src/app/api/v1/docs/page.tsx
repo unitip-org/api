@@ -7,7 +7,14 @@ import "swagger-ui-react/swagger-ui.css";
 export default function Page() {
   return (
     <section className="container mx-auto dark:invert">
-      <SwaggerUI spec={swaggerSpec} />
+      <SwaggerUI
+        spec={swaggerSpec}
+        displayOperationId
+        displayRequestDuration
+        defaultModelRendering="model"
+        persistAuthorization
+        defaultModelExpandDepth={10}
+      />
     </section>
   );
 }

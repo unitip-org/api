@@ -72,6 +72,12 @@ export const detailOfferPaths = {
                       updated_at: {
                         type: "string",
                       },
+                      applicants_count: {
+                        type: "number",
+                      },
+                      has_applied: {
+                        type: "boolean",
+                      },
                     },
                   },
                 },

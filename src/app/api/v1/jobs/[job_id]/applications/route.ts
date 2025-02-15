@@ -1,6 +1,8 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
+import { convertDatetimeToISO } from "@/lib/utils";
+import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -9,6 +11,185 @@ interface Params {
     job_id: string;
   };
 }
+
+interface POSTBody {
+  bid_price: number;
+  bid_note: string;
+}
+interface POSTResponse {
+  id: string;
+}
+export const POST = async (request: NextRequest, { params }: Params) => {
+  try {
+    // verifikasi request user
+    const { job_id: jobId } = params;
+    const { bid_price: bidPrice, bid_note: bidNote }: POSTBody =
+      await request.json();
+    const validate = z
+      .object({
+        jobId: z
+          .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
+          .min(1, "ID pekerjaan tidak boleh kosong!"),
+        bidPrice: z
+          .number({ required_error: "Harga tidak boleh kosong!" })
+          .min(0, "Harga tidak boleh kurang dari 0!"),
+        bidNote: z.string().optional(),
+      })
+      .safeParse({ jobId, bidPrice, bidNote });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId, role } = authorization;
+
+    // verifikasi role user
+    if (role !== "driver")
+      return APIResponse.respondWithForbidden(
+        "Anda tidak memiliki akses untuk melakukan aksi ini!"
+      );
+
+    /**
+     * ambil job berdasarkan id serta cari job yang belum diambil
+     * oleh driver manapun untuk melakukan validasi harga penawaran
+     * agar sesuai dengan harga standar
+     */
+    const jobQuery = database
+      .selectFrom("jobs as j")
+      .select(["j.expected_price"])
+      .where("j.id", "=", jobId)
+      .where("j.freelancer", "is", null);
+    const jobResult = await jobQuery.executeTakeFirstOrThrow();
+
+    /**
+     * validasi jika harga penawaran kurang dari harga standar
+     * maka perlu memberikan pesan error
+     */
+    if (bidPrice < jobResult.expected_price)
+      return APIResponse.respondWithForbidden(
+        "Harga penawaran tidak boleh kurang dari harga standar!"
+      );
+
+    /**
+     * jika harga penawaran tidak sama dengan harga standar
+     * maka perlu memberikan alasan penawaran sehingga
+     * perlu validasi bidNote agar tidak kosong
+     */
+    if (bidPrice !== jobResult.expected_price) {
+      const validate2 = z
+        .object({
+          bidNote: z
+            .string({ required_error: "Alasan penawaran tidak boleh kosong!" })
+            .min(1, "Alasan penawaran tidak boleh kosong!"),
+        })
+        .safeParse({ bidNote });
+      if (!validate2.success)
+        return APIResponse.respondWithBadRequest(
+          validate2.error.errors.map((it) => ({
+            path: it.path[0] as string,
+            message: it.message,
+          }))
+        );
+    }
+
+    // apply job
+    const query = database
+      .insertInto("job_applications")
+      .values({
+        bid_price: bidPrice,
+        bid_note: bidNote,
+        freelancer: userId,
+        job: jobId,
+      } as any)
+      .returning("id");
+    const result = await query.executeTakeFirstOrThrow();
+
+    return APIResponse.respondWithSuccess<POSTResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
+
+interface GETResponse {
+  applications: {
+    id: string;
+    price: number;
+    bid_note: string;
+    created_at: string;
+    updated_at: string;
+    driver: {
+      name: string;
+    };
+  }[];
+}
+/**
+ * @deprecated
+ */
+export const GET = async (request: NextRequest, { params }: Params) => {
+  try {
+    // verifikasi request user
+    const { job_id: jobId } = params;
+    const validate = z
+      .object({
+        jobId: z
+          .string({ required_error: "ID pekerjaan tidak boleh kosong!" })
+          .min(1, "ID pekerjaan tidak boleh kosong!"),
+      })
+      .safeParse({ jobId });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // verifikasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+
+    // mendapatkan daftar applications
+    const query = database
+      .selectFrom("job_applications as ja")
+      .innerJoin("users as u", "u.id", "ja.freelancer")
+      .select([
+        "ja.id",
+        "ja.bid_price as price",
+        "ja.bid_note",
+        sql<string>`ja."xata.createdAt"`.as("created_at"),
+        sql<string>`ja."xata.updatedAt"`.as("updated_at"),
+        "u.name as driver_name",
+      ])
+      .where("ja.job", "=", jobId as any)
+      .orderBy("ja.bid_price");
+    const result = await query.execute();
+
+    return APIResponse.respondWithSuccess<GETResponse>({
+      applications: result.map((it) => ({
+        id: it.id,
+        price: it.price,
+        bid_note: it.bid_note,
+        created_at: convertDatetimeToISO(it.created_at),
+        updated_at: convertDatetimeToISO(it.updated_at),
+        driver: {
+          name: it.driver_name,
+        },
+      })),
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
 
 interface PATCHResponse {
   id: string;

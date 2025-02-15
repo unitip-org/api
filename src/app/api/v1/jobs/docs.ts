@@ -3,7 +3,8 @@ import { swaggerSecurity } from "@/lib/swagger/security";
 export const jobsPaths = {
   "/api/v1/jobs": {
     post: {
-      tags: ["Jobs"],
+      operationId: "createJob",
+      tags: ["Job"],
       summary: "membuat job baru",
       description: "endpoint ini digunakan untuk membuat job baru",
       security: swaggerSecurity,
@@ -12,19 +13,23 @@ export const jobsPaths = {
           "application/json": {
             schema: {
               type: "object",
+              required: [
+                "note",
+                "pickup_location",
+                "destination_location",
+                "service",
+                "expected_price",
+              ],
               properties: {
-                title: { type: "string" },
-                destination_location: { type: "string" },
-                destination_latitude: { type: "number", format: "float" },
-                destination_longitude: { type: "number", format: "float" },
                 note: { type: "string" },
+                pickup_location: { type: "string" },
+                destination_location: { type: "string" },
                 service: {
                   type: "string",
                   enum: ["antar-jemput", "jasa-titip"],
+                  "x-enum-varnames": ["AntarJemput", "JasaTitip"],
                 },
-                pickup_location: { type: "string" },
-                pickup_latitude: { type: "number", format: "float" },
-                pickup_longitude: { type: "number", format: "float" },
+                expected_price: { type: "integer" },
               },
             },
           },
@@ -33,7 +38,8 @@ export const jobsPaths = {
       responses: {},
     },
     get: {
-      tags: ["Jobs"],
+      operationId: "getAllJobs",
+      tags: ["Job"],
       summary: "mendapatkan daftar jobs",
       description:
         "endpoint ini digunakan untuk mendapatkan semua daftar jobs baik single maupun multi",
@@ -64,22 +70,39 @@ export const jobsPaths = {
             "application/json": {
               schema: {
                 type: "object",
+                required: ["jobs"],
                 properties: {
                   jobs: {
                     type: "array",
                     items: {
                       type: "object",
+                      required: [
+                        "id",
+                        "note",
+                        "pickup_location",
+                        "destination_location",
+                        "service",
+                        "expected_price",
+                        "created_at",
+                        "updated_at",
+                        "customer",
+                      ],
                       properties: {
                         id: { type: "string" },
-                        title: { type: "string" },
-                        destination_location: { type: "string" },
                         note: { type: "string" },
-                        service: { type: "string" },
                         pickup_location: { type: "string" },
-                        created_at: { type: "string" },
-                        updated_at: { type: "string" },
+                        destination_location: { type: "string" },
+                        service: {
+                          type: "string",
+                          enum: ["antar-jemput", "jasa-titip"],
+                          "x-enum-varnames": ["AntarJemput", "JasaTitip"],
+                        },
+                        expected_price: { type: "integer" },
+                        created_at: { type: "string", format: "datetime" },
+                        updated_at: { type: "string", format: "datetime" },
                         customer: {
                           type: "object",
+                          required: ["name"],
                           properties: {
                             name: { type: "string" },
                           },

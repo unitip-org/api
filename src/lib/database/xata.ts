@@ -13,26 +13,25 @@ const tables = [
       { name: "email", type: "text", notNull: true, defaultValue: "" },
       { name: "password", type: "text", notNull: true, defaultValue: "" },
       { name: "name", type: "text", notNull: true, defaultValue: "" },
-      { name: "gender", type: "text" },
+      { name: "gender", type: "text", notNull: true, defaultValue: "" },
     ],
     revLinks: [
-      { column: "freelancer", table: "single_offers" },
+      { column: "freelancer", table: "offers" },
       { column: "customer", table: "deprecated_multi_jobs" },
-      { column: "customer", table: "single_offer_applicants" },
-      { column: "customer", table: "single_offers" },
+      { column: "customer", table: "offer_applicants" },
+      { column: "user", table: "chat_room_members" },
       { column: "last_sent_user", table: "chat_rooms" },
       { column: "user", table: "user_roles" },
       { column: "user", table: "user_sessions" },
       { column: "customer", table: "jobs" },
       { column: "freelancer", table: "jobs" },
-      { column: "freelancer", table: "deprecated_single_job_applications" },
+      { column: "freelancer", table: "job_applications" },
       { column: "freelancer", table: "deprecated_multi_jobs" },
       { column: "freelancer", table: "multi_offers" },
       { column: "customer", table: "multi_offer_followers" },
       { column: "freelancer", table: "deprecated_multi_job_applications" },
       { column: "customer", table: "deprecated_multi_job_followers" },
       { column: "user", table: "chat_messages" },
-      { column: "user", table: "chat_room_members" },
     ],
   },
   {
@@ -120,7 +119,6 @@ const tables = [
   {
     name: "jobs",
     columns: [
-      { name: "title", type: "text", notNull: true, defaultValue: "" },
       {
         name: "pickup_location",
         type: "text",
@@ -143,8 +141,9 @@ const tables = [
       { name: "pickup_longitude", type: "float" },
       { name: "destination_latitude", type: "float" },
       { name: "destination_longitude", type: "float" },
+      { name: "expected_price", type: "int", notNull: true, defaultValue: "0" },
     ],
-    revLinks: [{ column: "job", table: "deprecated_single_job_applications" }],
+    revLinks: [{ column: "job", table: "job_applications" }],
   },
   {
     name: "deprecated_multi_jobs",
@@ -178,11 +177,12 @@ const tables = [
     ],
   },
   {
-    name: "deprecated_single_job_applications",
+    name: "job_applications",
     columns: [
-      { name: "price", type: "int", notNull: true, defaultValue: "0" },
+      { name: "bid_price", type: "int", notNull: true, defaultValue: "0" },
       { name: "freelancer", type: "link", link: { table: "users" } },
       { name: "job", type: "link", link: { table: "jobs" } },
+      { name: "bid_note", type: "text", notNull: true, defaultValue: "" },
     ],
   },
   {
@@ -195,10 +195,9 @@ const tables = [
     ],
   },
   {
-    name: "single_offers",
+    name: "offers",
     columns: [
       { name: "freelancer", type: "link", link: { table: "users" } },
-      { name: "customer", type: "link", link: { table: "users" } },
       { name: "price", type: "int", notNull: true, defaultValue: "0" },
       { name: "title", type: "text", notNull: true, defaultValue: "" },
       {
@@ -215,7 +214,6 @@ const tables = [
         notNull: true,
         defaultValue: "available",
       },
-      { name: "expired_at", type: "text" },
       {
         name: "available_until",
         type: "datetime",
@@ -230,10 +228,10 @@ const tables = [
         defaultValue: "1",
       },
     ],
-    revLinks: [{ column: "offer", table: "single_offer_applicants" }],
+    revLinks: [{ column: "offer", table: "offer_applicants" }],
   },
   {
-    name: "single_offer_applicants",
+    name: "offer_applicants",
     columns: [
       {
         name: "pickup_location",
@@ -248,7 +246,7 @@ const tables = [
         notNull: true,
         defaultValue: "",
       },
-      { name: "offer", type: "link", link: { table: "single_offers" } },
+      { name: "offer", type: "link", link: { table: "offers" } },
       { name: "customer", type: "link", link: { table: "users" } },
       {
         name: "pickup_latitude",
@@ -274,6 +272,13 @@ const tables = [
         notNull: true,
         defaultValue: "0.0",
       },
+      {
+        name: "applicant_status",
+        type: "text",
+        notNull: true,
+        defaultValue: "pending",
+      },
+      { name: "final_price", type: "int", notNull: true, defaultValue: "0" },
     ],
   },
   {
@@ -340,21 +345,19 @@ export type DeprecatedMultiJobFollowers =
 export type DeprecatedMultiJobFollowersRecord = DeprecatedMultiJobFollowers &
   XataRecord;
 
-export type DeprecatedSingleJobApplications =
-  InferredTypes["deprecated_single_job_applications"];
-export type DeprecatedSingleJobApplicationsRecord =
-  DeprecatedSingleJobApplications & XataRecord;
+export type JobApplications = InferredTypes["job_applications"];
+export type JobApplicationsRecord = JobApplications & XataRecord;
 
 export type DeprecatedMultiJobApplications =
   InferredTypes["deprecated_multi_job_applications"];
 export type DeprecatedMultiJobApplicationsRecord =
   DeprecatedMultiJobApplications & XataRecord;
 
-export type SingleOffers = InferredTypes["single_offers"];
-export type SingleOffersRecord = SingleOffers & XataRecord;
+export type Offers = InferredTypes["offers"];
+export type OffersRecord = Offers & XataRecord;
 
-export type SingleOfferApplicants = InferredTypes["single_offer_applicants"];
-export type SingleOfferApplicantsRecord = SingleOfferApplicants & XataRecord;
+export type OfferApplicants = InferredTypes["offer_applicants"];
+export type OfferApplicantsRecord = OfferApplicants & XataRecord;
 
 export type ChatRoomMembers = InferredTypes["chat_room_members"];
 export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
@@ -373,10 +376,10 @@ export type DatabaseSchema = {
   jobs: JobsRecord;
   deprecated_multi_jobs: DeprecatedMultiJobsRecord;
   deprecated_multi_job_followers: DeprecatedMultiJobFollowersRecord;
-  deprecated_single_job_applications: DeprecatedSingleJobApplicationsRecord;
+  job_applications: JobApplicationsRecord;
   deprecated_multi_job_applications: DeprecatedMultiJobApplicationsRecord;
-  single_offers: SingleOffersRecord;
-  single_offer_applicants: SingleOfferApplicantsRecord;
+  offers: OffersRecord;
+  offer_applicants: OfferApplicantsRecord;
   chat_room_members: ChatRoomMembersRecord;
   service_prices: ServicePricesRecord;
 };

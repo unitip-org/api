@@ -3,9 +3,11 @@ import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { sql } from "kysely";
+
 interface GETResponse {
   applicants: {
     id: string;
+    applicant_status: string;
     note: string;
     pickup_location: string;
     destination_location: string;
@@ -32,7 +34,7 @@ export async function GET(
 
     // Cek kepemilikan offer
     const offer = await database
-      .selectFrom("single_offers")
+      .selectFrom("offers")
       .select(["id", "freelancer"])
       .where("id", "=", offer_id)
       .executeTakeFirst();
@@ -48,27 +50,29 @@ export async function GET(
     }
 
     const applicants = await database
-      .selectFrom("single_offer_applicants")
+      .selectFrom("offer_applicants")
       .innerJoin("users", (join) =>
-        join.onRef("users.id", "=", "single_offer_applicants.customer")
+        join.onRef("users.id", "=", "offer_applicants.customer")
       )
       .select([
-        "single_offer_applicants.id",
-        "single_offer_applicants.note",
-        "single_offer_applicants.pickup_location",
-        "single_offer_applicants.destination_location",
-        "single_offer_applicants.pickup_latitude",
-        "single_offer_applicants.pickup_longitude",
-        "single_offer_applicants.destination_latitude",
-        "single_offer_applicants.destination_longitude",
+        "offer_applicants.id",
+        "offer_applicants.applicant_status",
+        "offer_applicants.note",
+        "offer_applicants.pickup_location",
+        "offer_applicants.destination_location",
+        "offer_applicants.pickup_latitude",
+        "offer_applicants.pickup_longitude",
+        "offer_applicants.destination_latitude",
+        "offer_applicants.destination_longitude",
         sql<string>`users.id`.as('customer_id'),
         sql<string>`users.name`.as('customer_name'),
       ])
-      .where("single_offer_applicants.offer", "=", offer_id as any)
+      .where("offer_applicants.offer", "=", offer_id as any)
       .execute();
 
     const formattedApplicants = applicants.map((applicant) => ({
       id: applicant.id,
+      applicant_status: applicant.applicant_status,
       note: applicant.note,
       pickup_location: applicant.pickup_location,
       destination_location: applicant.destination_location,

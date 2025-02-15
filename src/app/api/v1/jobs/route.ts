@@ -7,15 +7,11 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 interface POSTBody {
-  title: string;
-  destination_location: string;
-  destination_latitude: number;
-  destination_longitude: number;
   note: string;
-  service: string;
   pickup_location: string;
-  pickup_latitude: number;
-  pickup_longitude: number;
+  destination_location: string;
+  service: string;
+  expected_price: number;
 }
 interface POSTResponse {
   id: string;
@@ -24,47 +20,37 @@ export const POST = async (request: NextRequest) => {
   try {
     // validasi request dari user
     const {
-      title,
-      destination_location: destinationLocation,
-      destination_latitude: destinationLatitude,
-      destination_longitude: destinationLongitude,
       note,
-      service,
       pickup_location: pickupLocation,
-      pickup_latitude: pickupLatitude,
-      pickup_longitude: pickupLongitude,
+      destination_location: destinationLocation,
+      service,
+      expected_price: expectedPrice,
     }: POSTBody = await request.json();
 
     const validate = z
       .object({
-        title: z
-          .string({ required_error: "Judul tidak boleh kosong!" })
-          .min(1, "Judul tidak boleh kosong!"),
-        destinationLocation: z
-          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
-          .min(1, "Lokasi tujuan tidak boleh kosong!"),
-        destinationLatitude: z.number().optional(),
-        destinationLongitude: z.number().optional(),
         note: z.string().optional(),
-        service: z.enum(["antar-jemput", "jasa-titip"], {
-          required_error: "Jenis layanan tidak boleh kosong!",
-        }),
         pickupLocation: z
           .string({ required_error: "Lokasi penjemputan tidak boleh kosong!" })
           .min(1, "Lokasi penjemputan tidak boleh kosong!"),
-        pickupLatitude: z.number().optional(),
-        pickupLongitude: z.number().optional(),
+        destinationLocation: z
+          .string({ required_error: "Lokasi tujuan tidak boleh kosong!" })
+          .min(1, "Lokasi tujuan tidak boleh kosong!"),
+        service: z.enum(["antar-jemput", "jasa-titip"], {
+          required_error: "Jenis layanan tidak boleh kosong!",
+        }),
+        expectedPrice: z
+          .number({
+            required_error: "Harga yang diharapkan tidak boleh kosong!",
+          })
+          .min(0, "Harga yang diharapkan tidak boleh kurang dari 0!"),
       })
       .safeParse({
-        title,
-        destinationLocation,
-        destinationLatitude,
-        destinationLongitude,
         note,
-        service,
         pickupLocation,
-        pickupLatitude,
-        pickupLongitude,
+        destinationLocation,
+        service,
+        expectedPrice,
       });
     if (!validate.success)
       return APIResponse.respondWithBadRequest(
@@ -89,15 +75,11 @@ export const POST = async (request: NextRequest) => {
     const query = database
       .insertInto("jobs")
       .values({
-        title,
-        pickup_location: pickupLocation,
         note,
-        service,
-        pickup_latitude: pickupLatitude,
-        pickup_longitude: pickupLongitude,
+        pickup_location: pickupLocation,
         destination_location: destinationLocation,
-        destination_latitude: destinationLatitude,
-        destination_longitude: destinationLongitude,
+        service,
+        expected_price: expectedPrice,
         customer: userId,
       } as any)
       .returning(["id"]);
@@ -115,11 +97,11 @@ export const POST = async (request: NextRequest) => {
 interface GETResponse {
   jobs: {
     id: string;
-    title: string;
-    destination_location: string;
     note: string;
-    service: string;
     pickup_location: string;
+    destination_location: string;
+    service: string;
+    expected_price: number;
     created_at: string;
     updated_at: string;
     customer: {
@@ -200,11 +182,11 @@ export async function GET(request: NextRequest) {
       .innerJoin("users as u", "u.id", "j.customer")
       .select([
         "j.id",
-        "j.title",
-        "j.destination_location",
         "j.note",
-        "j.service",
         "j.pickup_location",
+        "j.destination_location",
+        "j.service",
+        "j.expected_price",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.name as customer_name",
@@ -218,11 +200,11 @@ export async function GET(request: NextRequest) {
     return APIResponse.respondWithSuccess<GETResponse>({
       jobs: jobsResult.map((it) => ({
         id: it.id,
-        title: it.title,
-        destination_location: it.destination_location,
         note: it.note,
-        service: it.service,
         pickup_location: it.pickup_location,
+        destination_location: it.destination_location,
+        service: it.service,
+        expected_price: it.expected_price,
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),
         customer: {

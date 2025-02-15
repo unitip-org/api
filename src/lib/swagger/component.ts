@@ -25,9 +25,11 @@ export const swaggerComponents = {
               type: "string",
             },
           },
+          required: ["path", "message"],
         },
       },
     },
+    required: ["errors"],
   },
   UnauthorizedError: {
     type: "object",
@@ -36,6 +38,7 @@ export const swaggerComponents = {
         type: "string",
       },
     },
+    required: ["message"],
   },
   ForbiddenError: {
     type: "object",
@@ -44,6 +47,7 @@ export const swaggerComponents = {
         type: "string",
       },
     },
+    required: ["message"],
   },
   NotFoundError: {
     type: "object",
@@ -52,6 +56,7 @@ export const swaggerComponents = {
         type: "string",
       },
     },
+    required: ["message"],
   },
   ConflictError: {
     type: "object",
@@ -60,6 +65,7 @@ export const swaggerComponents = {
         type: "string",
       },
     },
+    required: ["message"],
   },
   InternalServerError: {
     type: "object",
@@ -68,6 +74,7 @@ export const swaggerComponents = {
         type: "string",
       },
     },
+    required: ["message"],
   },
   PageInfo: {
     type: "object",

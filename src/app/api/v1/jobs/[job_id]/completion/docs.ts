@@ -1,7 +1,7 @@
 import { swaggerSecurity } from "@/lib/swagger/security";
 
-export const jobCompletionByIdPaths = {
-  "/api/v1/jobs/{job_id}/done": {
+export const jobsIdCompletionPaths = {
+  "/api/v1/jobs/{job_id}/completion": {
     patch: {
       tags: ["Jobs"],
       security: swaggerSecurity,

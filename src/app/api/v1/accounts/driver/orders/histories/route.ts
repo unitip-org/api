@@ -34,11 +34,11 @@ export const GET = async (request: NextRequest) => {
       .selectFrom("jobs as j")
       .innerJoin("users as u", "u.id", "j.customer")
       .select([
-        "j.id",
-        "j.title",
+        sql<string>`j.id`.as("id"),
+        sql<string>`j.title`.as("title"),
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
-        "u.name as customer_name",
+        sql<string>`u.name`.as("customer_name"),
       ])
       .where("j.freelancer", "=", userId as any)
       .where("j.status", "=", "done")

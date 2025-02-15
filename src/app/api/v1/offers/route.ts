@@ -1,3 +1,4 @@
+import { OfferStatus } from "@/constants/constants";
 import { verifyBearerToken } from "@/lib/bearer-token";
 import { database } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
@@ -14,10 +15,15 @@ interface Offer {
   available_until: Date;
   price: number;
   offer_status?: string;
-  freelancer_name: string;
   max_participants: number;
   created_at: string;
   updated_at: string;
+  freelancer: Freelancer;
+}
+
+interface Freelancer {
+  id: string;
+  name: string;
 }
 interface GETResponse {
   offers: Offer[];
@@ -39,13 +45,14 @@ export async function GET(request: NextRequest) {
 
     // Hitung total data
     const totalCount = await database
-      .selectFrom("single_offers")
+      .selectFrom("offers")
       .select(sql<number>`count(*)`.as("count"))
+      .where("offer_status", "=", OfferStatus.AVAILABLE)
       .executeTakeFirst();
 
     // Ambil data dengan pagination
     const offers = await database
-      .selectFrom("single_offers as so")
+      .selectFrom("offers as so")
       .innerJoin("users as u", "u.id", "so.freelancer")
       .select([
         "so.id",
@@ -58,20 +65,28 @@ export async function GET(request: NextRequest) {
         "so.pickup_area",
         "so.offer_status",
         "so.max_participants",
+        "u.id as freelancer_id",
         "u.name as freelancer_name",
         sql<string>`so."xata.createdAt"`.as("created_at"),
         sql<string>`so."xata.updatedAt"`.as("updated_at"),
       ])
+      .where("so.offer_status", "=", OfferStatus.AVAILABLE) 
       .limit(limit)
       .offset((page - 1) * limit)
       .orderBy("created_at", "desc")
       .execute();
 
+    // console.log(
+    //   "GET offers",
+    //   offers.forEach((it) => console.log(it))
+    // );
+
     return APIResponse.respondWithSuccess<GETResponse>({
-      offers: offers.map((it) => ({
-        ...it,
+      offers: offers.map(({ freelancer_id, freelancer_name, ...rest }) => ({
+        ...rest,
         freelancer: {
-          name: it.freelancer_name,
+          id: freelancer_id,
+          name: freelancer_name,
         },
       })),
       page_info: {
@@ -139,12 +154,11 @@ export async function POST(request: NextRequest) {
       );
 
     const result = await database
-      .insertInto("single_offers")
+      .insertInto("offers")
       .values({
         ...json,
         freelancer: authorization.userId,
-        offer_status: "available",
-        expired_at: null,
+        offer_status: OfferStatus.AVAILABLE,
       })
       // .returningAll()
       .returning("id")
