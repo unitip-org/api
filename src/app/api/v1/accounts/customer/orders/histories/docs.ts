@@ -18,7 +18,7 @@ export const accountCustomerOrderHistoriesPaths = {
                       type: "object",
                       properties: {
                         id: { type: "string" },
-                        title: { type: "string" },
+                        // title: { type: "string" },
                         created_at: { type: "string" },
                         updated_at: { type: "string" },
                         driver: {

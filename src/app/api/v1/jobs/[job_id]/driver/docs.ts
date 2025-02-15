@@ -24,7 +24,7 @@ export const jobsIdDriverPaths = {
                 type: "object",
                 properties: {
                   id: { type: "string" },
-                  title: { type: "string" },
+                  // title: { type: "string" },
                   note: { type: "string" },
                   applications: {
                     type: "array",

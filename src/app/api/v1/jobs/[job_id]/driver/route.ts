@@ -9,7 +9,7 @@ interface Params {
 
 interface GETResponse {
   id: string;
-  title: string;
+  // title: string;
   note: string;
 }
 export const GET = async (request: NextRequest, { params }: Params) => {

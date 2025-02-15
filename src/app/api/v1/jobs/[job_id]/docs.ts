@@ -28,7 +28,7 @@ export const jobsIdPaths = {
                 type: "object",
                 properties: {
                   id: { type: "string" },
-                  title: { type: "string" },
+                  // title: { type: "string" },
                   destination_location: { type: "string" },
                   destination_latitude: { type: "number", format: "float" },
                   destination_longitude: { type: "number", format: "float" },

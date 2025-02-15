@@ -110,6 +110,6 @@ export const GET = async (request: NextRequest) => {
       ]
     });
   } catch (e) {
-    return APIResponse.respondWithServerError;
+    return APIResponse.respondWithServerError();
   }
 };

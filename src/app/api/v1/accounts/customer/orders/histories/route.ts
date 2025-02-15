@@ -8,7 +8,7 @@ import { NextRequest } from "next/server";
 interface GETResponse {
   orders: {
     id: string;
-    title: string;
+    // title: string;
     created_at: string;
     updated_at: string;
     driver: {
@@ -35,7 +35,7 @@ export const GET = async (request: NextRequest) => {
       .innerJoin("users as u", "u.id", "j.freelancer")
       .select([
         "j.id",
-        "j.title",
+        // "j.title",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.name as driver_name",
@@ -48,7 +48,7 @@ export const GET = async (request: NextRequest) => {
     return APIResponse.respondWithSuccess<GETResponse>({
       orders: result.map((it) => ({
         id: it.id,
-        title: it.title,
+        // title: it.title,
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),
         driver: {

@@ -52,7 +52,7 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
     // approve job application
     const applicationQuery = database
       .selectFrom("job_applications as ja")
-      .select(["ja.price", "ja.freelancer"])
+      .select(["ja.bid_price", "ja.freelancer"])
       .where("ja.job", "=", jobId as any)
       .where("ja.id", "=", applicationId);
     const applicationResult = await applicationQuery.executeTakeFirstOrThrow();
@@ -64,7 +64,7 @@ export const PATCH = async (request: NextRequest, { params }: Params) => {
     const query = database
       .updateTable("jobs")
       .set({
-        price: applicationResult.price,
+        price: applicationResult.bid_price,
         status: "ongoing",
         freelancer: applicationResult.freelancer,
       })

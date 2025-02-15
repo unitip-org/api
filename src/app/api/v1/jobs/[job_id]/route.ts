@@ -14,7 +14,7 @@ interface Params {
 
 interface GETResponse {
   id: string;
-  title: string;
+  // title: string;
   destination_location: string;
   destination_latitude?: number;
   destination_longitude?: number;
@@ -60,7 +60,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
       .innerJoin("users as u", "u.id", "j.customer")
       .select([
         "j.id",
-        "j.title",
+        // "j.title",
         "j.destination_location",
         "j.destination_latitude",
         "j.destination_longitude",
@@ -84,7 +84,7 @@ export const GET = async (request: NextRequest, { params }: Params) => {
 
     return APIResponse.respondWithSuccess<GETResponse>({
       id: result.id,
-      title: result.title,
+      // title: result.title,
       destination_location: result.destination_location,
       destination_latitude: result.destination_latitude,
       destination_longitude: result.destination_longitude,

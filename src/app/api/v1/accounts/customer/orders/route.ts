@@ -7,7 +7,7 @@ import { NextRequest } from "next/server";
 interface GETResponse {
   orders: {
     id: string;
-    title: string;
+    // title: string;
     note: string;
     created_at: string;
     updated_at: string;
@@ -31,7 +31,7 @@ export const GET = async (request: NextRequest) => {
       .selectFrom("jobs as j")
       .select([
         "j.id",
-        "j.title",
+        // "j.title",
         "j.note",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),

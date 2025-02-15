@@ -24,7 +24,7 @@ export const jobsIdCustomerPaths = {
                 type: "object",
                 required: [
                   "id",
-                  "title",
+                  // "title",
                   "note",
                   "pickup_location",
                   "destination_location",
