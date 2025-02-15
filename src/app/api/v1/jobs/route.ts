@@ -101,6 +101,7 @@ interface GETResponse {
     pickup_location: string;
     destination_location: string;
     service: string;
+    expected_price: number;
     created_at: string;
     updated_at: string;
     customer: {
@@ -185,6 +186,7 @@ export async function GET(request: NextRequest) {
         "j.pickup_location",
         "j.destination_location",
         "j.service",
+        "j.expected_price",
         sql<string>`j."xata.createdAt"`.as("created_at"),
         sql<string>`j."xata.updatedAt"`.as("updated_at"),
         "u.name as customer_name",
@@ -202,6 +204,7 @@ export async function GET(request: NextRequest) {
         pickup_location: it.pickup_location,
         destination_location: it.destination_location,
         service: it.service,
+        expected_price: it.expected_price,
         created_at: convertDatetimeToISO(it.created_at),
         updated_at: convertDatetimeToISO(it.updated_at),
         customer: {
