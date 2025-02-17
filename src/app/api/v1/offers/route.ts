@@ -1,10 +1,11 @@
 import { OfferStatus } from "@/constants/constants";
 import { verifyBearerToken } from "@/lib/bearer-token";
-import { database } from "@/lib/database";
+import { database, xata } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 interface Offer {
   id: string;
   title: string;
@@ -70,7 +71,7 @@ export async function GET(request: NextRequest) {
         sql<string>`so."xata.createdAt"`.as("created_at"),
         sql<string>`so."xata.updatedAt"`.as("updated_at"),
       ])
-      .where("so.offer_status", "=", OfferStatus.AVAILABLE) 
+      .where("so.offer_status", "=", OfferStatus.AVAILABLE)
       .limit(limit)
       .offset((page - 1) * limit)
       .orderBy("created_at", "desc")
@@ -153,24 +154,46 @@ export async function POST(request: NextRequest) {
         "Anda tidak memiliki akses untuk membuat offer!"
       );
 
-    const result = await database
-      .insertInto("offers")
-      .values({
-        ...json,
-        freelancer: authorization.userId,
-        offer_status: OfferStatus.AVAILABLE,
-      })
-      // .returningAll()
-      .returning("id")
-      .executeTakeFirst();
+    const offerId = uuidv4();
 
-    if (!result) return APIResponse.respondWithServerError();
-
-    return APIResponse.respondWithSuccess({
-      success: true,
-      id: result.id,
-    });
+    const result = await xata.transactions.run([
+      // Create offer
+      {
+        insert: {
+          createOnly: true,
+          table: "offers",
+          record: {
+            id: offerId,
+            ...json,
+            freelancer: authorization.userId,
+            offer_status: OfferStatus.AVAILABLE,
+          },
+        },
+      },
+      // Create activity
+      {
+        insert: {
+          createOnly: true,
+          table: "activities",
+          record: {
+            user: authorization.userId,
+            activity_type: "offer",
+            reference_id: offerId,
+          },
+        },
+      },
+    ]);
+ 
+    if (result.results.length === 2) {
+      return APIResponse.respondWithSuccess({
+        success: true,
+        id: offerId,
+      });
+    }
+ 
+    return APIResponse.respondWithServerError();
   } catch (e) {
+    console.log(e);
     return APIResponse.respondWithServerError();
   }
-}
+ }

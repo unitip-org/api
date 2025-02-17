@@ -32,6 +32,7 @@ const tables = [
       { column: "freelancer", table: "deprecated_multi_job_applications" },
       { column: "customer", table: "deprecated_multi_job_followers" },
       { column: "user", table: "chat_messages" },
+      { column: "user", table: "activities" },
     ],
   },
   {
@@ -308,6 +309,14 @@ const tables = [
       { name: "max_price", type: "int", notNull: true, defaultValue: "0" },
     ],
   },
+  {
+    name: "activities",
+    columns: [
+      { name: "activity_type", type: "text", notNull: true, defaultValue: "" },
+      { name: "reference_id", type: "text", notNull: true, defaultValue: "" },
+      { name: "user", type: "link", link: { table: "users" } },
+    ],
+  },
 ] as const;
 
 export type SchemaTables = typeof tables;
@@ -365,6 +374,9 @@ export type ChatRoomMembersRecord = ChatRoomMembers & XataRecord;
 export type ServicePrices = InferredTypes["service_prices"];
 export type ServicePricesRecord = ServicePrices & XataRecord;
 
+export type Activities = InferredTypes["activities"];
+export type ActivitiesRecord = Activities & XataRecord;
+
 export type DatabaseSchema = {
   users: UsersRecord;
   chat_messages: ChatMessagesRecord;
@@ -382,6 +394,7 @@ export type DatabaseSchema = {
   offer_applicants: OfferApplicantsRecord;
   chat_room_members: ChatRoomMembersRecord;
   service_prices: ServicePricesRecord;
+  activities: ActivitiesRecord;
 };
 
 const DatabaseClient = buildClient();
