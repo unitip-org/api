@@ -186,10 +186,10 @@ export const offers2Paths = {
                 },
                 available_until: {
                   type: "string",
-                  format: "date-time",
+                  // format: "date-time",
                 },
                 price: {
-                  type: "number",
+                  type: "integer",
                   minimum: 0,
                 },
                 pickup_area: {
