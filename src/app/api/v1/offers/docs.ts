@@ -1,4 +1,3 @@
-import { swaggerComponentRefs } from "@/lib/swagger/component";
 import { swaggerSecurity } from "@/lib/swagger/security";
 
 export const offers2Paths = {
@@ -151,8 +150,8 @@ export const offers2Paths = {
       },
     },
     post: {
-      operationId: "create offer",
-      tags: ["Offers"],
+      operationId: "createOffer",
+      tags: ["Offer"],
       summary: "Membuat penawaran baru",
       security: swaggerSecurity,
       requestBody: {
@@ -183,6 +182,7 @@ export const offers2Paths = {
                 type: {
                   type: "string",
                   enum: ["antar-jemput", "jasa-titip"],
+                  "x-enum-varnames": ["AntarJemput", "JasaTitip"],
                 },
                 available_until: {
                   type: "string",
