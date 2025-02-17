@@ -1,10 +1,11 @@
 import { verifyBearerToken } from "@/lib/bearer-token";
-import { database } from "@/lib/database";
+import { database, xata } from "@/lib/database";
 import { APIResponse } from "@/lib/models/api-response";
 import { convertDatetimeToISO } from "@/lib/utils";
 import { sql } from "kysely";
 import { NextRequest } from "next/server";
 import { z } from "zod";
+import { v4 as uuidv4 } from "uuid";
 
 interface POSTBody {
   note: string;
@@ -71,28 +72,51 @@ export const POST = async (request: NextRequest) => {
         "Anda tidak memiliki akses untuk membuat pekerjaan!"
       );
 
-    // membuat job baru
-    const query = database
-      .insertInto("jobs")
-      .values({
-        note,
-        pickup_location: pickupLocation,
-        destination_location: destinationLocation,
-        service,
-        expected_price: expectedPrice,
-        customer: userId,
-      } as any)
-      .returning(["id"]);
-    const result = await query.executeTakeFirstOrThrow();
+    const jobId = uuidv4();
 
-    return APIResponse.respondWithSuccess<POSTResponse>({
-      id: result.id,
-    });
+    const result = await xata.transactions.run([
+      // Create job
+      {
+        insert: {
+          createOnly: true,
+          table: "jobs",
+          record: {
+            id: jobId,
+            note,
+            pickup_location: pickupLocation,
+            destination_location: destinationLocation,
+            service,
+            expected_price: expectedPrice,
+            customer: userId,
+          },
+        },
+      },
+      // Create activity
+      {
+        insert: {
+          createOnly: true,
+          table: "activities",
+          record: {
+            user: userId,
+            activity_type: "job",
+            reference_id: jobId,
+          },
+        },
+      },
+    ]);
+
+    if (result.results.length === 2) {
+      return APIResponse.respondWithSuccess<POSTResponse>({
+        id: jobId,
+      });
+    }
+
+    return APIResponse.respondWithServerError();
   } catch (e) {
     console.log(e);
     return APIResponse.respondWithServerError();
   }
-};
+ };
 
 interface GETResponse {
   jobs: {
