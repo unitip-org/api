@@ -72,6 +72,61 @@ export const GET = async (request: NextRequest, { params }: Params) => {
   }
 };
 
+interface PATCHBody {
+  content: string;
+}
+interface PATCHResponse {
+  id: string;
+}
+export const PATCH = async (request: NextRequest, { params }: Params) => {
+  try {
+    // validasi request dari user
+    const { activity_id: activityId } = params;
+    const { content }: PATCHBody = await request.json();
+    const validate = z
+      .object({
+        activityId: z
+          .string({ required_error: "ID aktivitas tidak boleh kosong!" })
+          .min(1, "ID aktivitas tidak boleh kosong!"),
+        content: z
+          .string({ required_error: "Konten aktivitas tidak boleh kosong!" })
+          .min(1, "Konten aktivitas tidak boleh kosong!"),
+      })
+      .safeParse({ activityId, content });
+    if (!validate.success)
+      return APIResponse.respondWithBadRequest(
+        validate.error.errors.map((it) => ({
+          path: it.path[0] as string,
+          message: it.message,
+        }))
+      );
+
+    // validasi bearer token
+    const authorization = await verifyBearerToken(request);
+    if (!authorization) return APIResponse.respondWithUnauthorized();
+    const { userId } = authorization;
+
+    // query untuk mengupdate activity
+    const query = database
+      .updateTable("activities")
+      .set("content", content)
+      .where("id", "=", activityId)
+      .where("user", "=", userId as any)
+      .returning("id");
+    const result = await query.executeTakeFirst();
+
+    if (!result)
+      return APIResponse.respondWithNotFound("Aktivitas tidak ditemukan!");
+
+    return APIResponse.respondWithSuccess<PATCHResponse>({
+      id: result.id,
+    });
+  } catch (e) {
+    console.log(e);
+    return APIResponse.respondWithServerError();
+  }
+};
+
 interface DELETEResponse {
   id: string;
 }

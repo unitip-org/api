@@ -44,7 +44,40 @@ export const activitiesIdPaths = {
         },
       },
     },
-    patch: {},
+    patch: {
+      operationId: "updateActivity",
+      tags: ["Activity"],
+      security: swaggerSecurity,
+      parameters,
+      requestBody: {
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["content"],
+              properties: {
+                content: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["id"],
+                properties: {
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
     delete: {
       operationId: "deleteActivity",
       tags: ["Activity"],
