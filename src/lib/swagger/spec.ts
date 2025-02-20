@@ -31,6 +31,7 @@ import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/o
 import { accountsProfilePaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
+import { activitiesIdPaths } from "@/app/api/v1/activities/[activity_id]/docs";
 import { activitiesPaths } from "@/app/api/v1/activities/docs";
 import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
 import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
@@ -113,6 +114,7 @@ export const swaggerSpec = {
 
     // activities
     ...activitiesPaths,
+    ...activitiesIdPaths,
 
     // example
     // ...examplePaths,
