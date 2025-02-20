@@ -15,6 +15,34 @@ export const activitiesIdPaths = {
       operationId: "getActivity",
       tags: ["Activity"],
       security: swaggerSecurity,
+      parameters,
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["id", "content", "children"],
+                properties: {
+                  id: { type: "string" },
+                  content: { type: "string" },
+                  children: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      required: ["id", "content"],
+                      properties: {
+                        id: { type: "string" },
+                        content: { type: "string" },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     },
     patch: {},
     delete: {},
