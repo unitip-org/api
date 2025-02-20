@@ -45,6 +45,26 @@ export const activitiesIdPaths = {
       },
     },
     patch: {},
-    delete: {},
+    delete: {
+      operationId: "deleteActivity",
+      tags: ["Activity"],
+      security: swaggerSecurity,
+      parameters,
+      responses: {
+        200: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["id"],
+                properties: {
+                  id: { type: "string" },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
   },
 };
