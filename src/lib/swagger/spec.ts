@@ -31,6 +31,7 @@ import { accountDriverOrderHistoriesPaths } from "@/app/api/v1/accounts/driver/o
 import { accountsProfilePaths } from "@/app/api/v1/accounts/profile/docs";
 import { editPasswordPaths } from "@/app/api/v1/accounts/profile/password/docs";
 import { changeRolePaths } from "@/app/api/v1/accounts/profile/roles/docs";
+import { activitiesPaths } from "@/app/api/v1/activities/docs";
 import { jobsIdApplicationsIdApprovalPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/approval/docs";
 import { jobsIdApplicationsIdPaths } from "@/app/api/v1/jobs/[job_id]/applications/[application_id]/docs";
 import { jobsIdApplicationsPaths } from "@/app/api/v1/jobs/[job_id]/applications/docs";
@@ -42,9 +43,9 @@ import { applicantsOfferPaths } from "@/app/api/v1/offers/[offer_id]/applicants/
 import { detailOfferPaths } from "@/app/api/v1/offers/[offer_id]/docs";
 import { offers2Paths } from "@/app/api/v1/offers/docs";
 import { servicePricesPaths } from "@/app/api/v1/services/prices/docs";
+import { socialPaths } from "@/app/api/v1/social/docs";
 import { swaggerComponents } from "./component";
 import { swaggerSecuritySchemes } from "./security";
-import { socialPaths } from "@/app/api/v1/social/docs";
 
 export const swaggerSpec = {
   openapi: "3.1.0",
@@ -109,6 +110,9 @@ export const swaggerSpec = {
 
     // social
     ...socialPaths,
+
+    // activities
+    ...activitiesPaths,
 
     // example
     // ...examplePaths,

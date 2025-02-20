@@ -315,7 +315,10 @@ const tables = [
       { name: "activity_type", type: "text", notNull: true, defaultValue: "" },
       { name: "reference_id", type: "text", notNull: true, defaultValue: "" },
       { name: "user", type: "link", link: { table: "users" } },
+      { name: "content", type: "text", notNull: true, defaultValue: "" },
+      { name: "parent", type: "link", link: { table: "activities" } },
     ],
+    revLinks: [{ column: "parent", table: "activities" }],
   },
 ] as const;
 
